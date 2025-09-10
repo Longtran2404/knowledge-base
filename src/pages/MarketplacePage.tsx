@@ -1,127 +1,156 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useAuth } from '../contexts/AuthContext';
-import { getCourses, purchaseCourse, Course as CourseType } from '../lib/supabase';
-import { 
-  Search, 
-  Filter, 
-  Star, 
-  Clock, 
-  Users, 
-  PlayCircle, 
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from "../contexts/AuthContext";
+import {
+  getCourses,
+  purchaseCourse,
+  Course as CourseType,
+} from "../lib/supabase";
+import {
+  Search,
+  Filter,
+  Star,
+  Clock,
+  Users,
+  PlayCircle,
   ShoppingCart,
   BookOpen,
   Award,
   TrendingUp,
-  Zap
-} from 'lucide-react';
-import { toast } from 'sonner';
+  Zap,
+} from "lucide-react";
+import { toast } from "sonner";
 
 export default function MarketplacePage() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  
+
   const [courses, setCourses] = useState<CourseType[]>([]);
   const [filteredCourses, setFilteredCourses] = useState<CourseType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedLevel, setSelectedLevel] = useState('all');
-  const [sortBy, setSortBy] = useState('newest');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedLevel, setSelectedLevel] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
   const [purchasing, setPurchasing] = useState<string | null>(null);
 
   useEffect(() => {
     const mockCourses: CourseType[] = [
       {
-        id: '1',
-        title: 'Revit Architecture 2024 - Từ cơ bản đến nâng cao',
-        description: 'Học Revit Architecture từ những kiến thức cơ bản nhất đến các kỹ thuật nâng cao cho việc thiết kế kiến trúc chuyên nghiệp.',
+        id: "1",
+        title: "Revit Architecture 2024 - Từ cơ bản đến nâng cao",
+        description:
+          "Học Revit Architecture từ những kiến thức cơ bản nhất đến các kỹ thuật nâng cao cho việc thiết kế kiến trúc chuyên nghiệp.",
         price: 2500000,
-        image_url: 'https://images.unsplash.com/photo-1581093458791-9f3c3270e8b8?w=500',
-        instructor_id: 'instructor1',
-        category: 'BIM',
-        level: 'Cơ bản',
-        duration: '120 giờ',
+        image_url:
+          "https://images.unsplash.com/photo-1581093458791-9f3c3270e8b8?w=500",
+        instructor_id: "instructor1",
+        category: "BIM",
+        level: "Cơ bản",
+        duration: "120 giờ",
         is_published: true,
-        created_at: '2024-01-01',
-        updated_at: '2024-01-01'
+        created_at: "2024-01-01",
+        updated_at: "2024-01-01",
       },
       {
-        id: '2',
-        title: 'AutoCAD 2024 - Vẽ kỹ thuật chuyên nghiệp',
-        description: 'Khóa học AutoCAD toàn diện từ cơ bản đến nâng cao, bao gồm 2D và 3D modeling.',
+        id: "2",
+        title: "AutoCAD 2024 - Vẽ kỹ thuật chuyên nghiệp",
+        description:
+          "Khóa học AutoCAD toàn diện từ cơ bản đến nâng cao, bao gồm 2D và 3D modeling.",
         price: 1800000,
-        image_url: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=500',
-        instructor_id: 'instructor2',
-        category: 'CAD',
-        level: 'Trung cấp',
-        duration: '80 giờ',
+        image_url:
+          "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=500",
+        instructor_id: "instructor2",
+        category: "CAD",
+        level: "Trung cấp",
+        duration: "80 giờ",
         is_published: true,
-        created_at: '2024-01-02',
-        updated_at: '2024-01-02'
+        created_at: "2024-01-02",
+        updated_at: "2024-01-02",
       },
       {
-        id: '3',
-        title: 'SketchUp Pro - Thiết kế kiến trúc 3D',
-        description: 'Học SketchUp Pro để tạo ra những mô hình 3D kiến trúc ấn tượng và chuyên nghiệp.',
+        id: "3",
+        title: "SketchUp Pro - Thiết kế kiến trúc 3D",
+        description:
+          "Học SketchUp Pro để tạo ra những mô hình 3D kiến trúc ấn tượng và chuyên nghiệp.",
         price: 1500000,
-        image_url: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500',
-        instructor_id: 'instructor3',
-        category: '3D',
-        level: 'Cơ bản',
-        duration: '60 giờ',
+        image_url:
+          "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500",
+        instructor_id: "instructor3",
+        category: "3D",
+        level: "Cơ bản",
+        duration: "60 giờ",
         is_published: true,
-        created_at: '2024-01-03',
-        updated_at: '2024-01-03'
+        created_at: "2024-01-03",
+        updated_at: "2024-01-03",
       },
       {
-        id: '4',
-        title: 'Lumion - Render kiến trúc chuyên nghiệp',
-        description: 'Tạo ra những hình ảnh render và video kiến trúc chất lượng cao với Lumion.',
+        id: "4",
+        title: "Lumion - Render kiến trúc chuyên nghiệp",
+        description:
+          "Tạo ra những hình ảnh render và video kiến trúc chất lượng cao với Lumion.",
         price: 2200000,
-        image_url: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=500',
-        instructor_id: 'instructor4',
-        category: 'Render',
-        level: 'Nâng cao',
-        duration: '100 giờ',
+        image_url:
+          "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=500",
+        instructor_id: "instructor4",
+        category: "Render",
+        level: "Nâng cao",
+        duration: "100 giờ",
         is_published: true,
-        created_at: '2024-01-04',
-        updated_at: '2024-01-04'
+        created_at: "2024-01-04",
+        updated_at: "2024-01-04",
       },
       {
-        id: '5',
-        title: 'Quản lý dự án xây dựng với Microsoft Project',
-        description: 'Học cách quản lý dự án xây dựng hiệu quả với Microsoft Project và các công cụ khác.',
+        id: "5",
+        title: "Quản lý dự án xây dựng với Microsoft Project",
+        description:
+          "Học cách quản lý dự án xây dựng hiệu quả với Microsoft Project và các công cụ khác.",
         price: 1200000,
-        image_url: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=500',
-        instructor_id: 'instructor5',
-        category: 'Quản lý',
-        level: 'Trung cấp',
-        duration: '40 giờ',
+        image_url:
+          "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=500",
+        instructor_id: "instructor5",
+        category: "Quản lý",
+        level: "Trung cấp",
+        duration: "40 giờ",
         is_published: true,
-        created_at: '2024-01-05',
-        updated_at: '2024-01-05'
+        created_at: "2024-01-05",
+        updated_at: "2024-01-05",
       },
       {
-        id: '6',
-        title: 'SAP2000 - Tính toán kết cấu',
-        description: 'Khóa học SAP2000 để tính toán và phân tích kết cấu công trình một cách chính xác.',
+        id: "6",
+        title: "SAP2000 - Tính toán kết cấu",
+        description:
+          "Khóa học SAP2000 để tính toán và phân tích kết cấu công trình một cách chính xác.",
         price: 2800000,
-        image_url: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=500',
-        instructor_id: 'instructor6',
-        category: 'Kết cấu',
-        level: 'Nâng cao',
-        duration: '150 giờ',
+        image_url:
+          "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=500",
+        instructor_id: "instructor6",
+        category: "Kết cấu",
+        level: "Nâng cao",
+        duration: "150 giờ",
         is_published: true,
-        created_at: '2024-01-06',
-        updated_at: '2024-01-06'
-      }
+        created_at: "2024-01-06",
+        updated_at: "2024-01-06",
+      },
     ];
     // Simulate loading courses
     setTimeout(() => {
@@ -132,26 +161,32 @@ export default function MarketplacePage() {
   }, []);
 
   useEffect(() => {
-    let filtered = courses.filter(course => {
-      const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           course.description.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory = selectedCategory === 'all' || course.category === selectedCategory;
-      const matchesLevel = selectedLevel === 'all' || course.level === selectedLevel;
-      
+    let filtered = courses.filter((course) => {
+      const matchesSearch =
+        course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        course.description.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory =
+        selectedCategory === "all" || course.category === selectedCategory;
+      const matchesLevel =
+        selectedLevel === "all" || course.level === selectedLevel;
+
       return matchesSearch && matchesCategory && matchesLevel;
     });
 
     // Sort courses
     switch (sortBy) {
-      case 'price-low':
+      case "price-low":
         filtered = filtered.sort((a, b) => a.price - b.price);
         break;
-      case 'price-high':
+      case "price-high":
         filtered = filtered.sort((a, b) => b.price - a.price);
         break;
-      case 'newest':
+      case "newest":
       default:
-        filtered = filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        filtered = filtered.sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
         break;
     }
 
@@ -160,32 +195,40 @@ export default function MarketplacePage() {
 
   const handlePurchase = async (courseId: string, price: number) => {
     if (!user) {
-      navigate('/auth', { state: { from: { pathname: '/marketplace' } } });
+      navigate("/auth", { state: { from: { pathname: "/marketplace" } } });
       return;
     }
 
     setPurchasing(courseId);
     try {
       await purchaseCourse(courseId, price);
-      toast.success('Mua khóa học thành công! Bạn có thể bắt đầu học ngay.');
+      toast.success("Mua khóa học thành công! Bạn có thể bắt đầu học ngay.");
       // Redirect to user courses or course detail
-      navigate('/profile');
+      navigate("/profile");
     } catch (error: any) {
-      toast.error(error.message || 'Có lỗi xảy ra khi mua khóa học');
+      toast.error(error.message || "Có lỗi xảy ra khi mua khóa học");
     } finally {
       setPurchasing(null);
     }
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND',
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
     }).format(price);
   };
 
-  const categories = ['all', 'BIM', 'CAD', '3D', 'Render', 'Quản lý', 'Kết cấu'];
-  const levels = ['all', 'Cơ bản', 'Trung cấp', 'Nâng cao'];
+  const categories = [
+    "all",
+    "BIM",
+    "CAD",
+    "3D",
+    "Render",
+    "Quản lý",
+    "Kết cấu",
+  ];
+  const levels = ["all", "Cơ bản", "Trung cấp", "Nâng cao"];
 
   if (loading) {
     return (
@@ -210,7 +253,8 @@ export default function MarketplacePage() {
               Marketplace Khóa Học
             </h1>
             <p className="text-xl text-blue-100 mb-8">
-              Khám phá hàng trăm khóa học chất lượng cao từ các chuyên gia hàng đầu
+              Khám phá hàng trăm khóa học chất lượng cao từ các chuyên gia hàng
+              đầu
             </p>
             <div className="flex flex-wrap justify-center gap-4 text-sm">
               <div className="flex items-center gap-2">
@@ -247,14 +291,17 @@ export default function MarketplacePage() {
 
             {/* Filters */}
             <div className="flex flex-wrap gap-4">
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <Select
+                value={selectedCategory}
+                onValueChange={setSelectedCategory}
+              >
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Danh mục" />
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((category) => (
                     <SelectItem key={category} value={category}>
-                      {category === 'all' ? 'Tất cả danh mục' : category}
+                      {category === "all" ? "Tất cả danh mục" : category}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -267,7 +314,7 @@ export default function MarketplacePage() {
                 <SelectContent>
                   {levels.map((level) => (
                     <SelectItem key={level} value={level}>
-                      {level === 'all' ? 'Tất cả trình độ' : level}
+                      {level === "all" ? "Tất cả trình độ" : level}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -301,7 +348,10 @@ export default function MarketplacePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredCourses.map((course) => (
-            <Card key={course.id} className="group hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
+            <Card
+              key={course.id}
+              className="group hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden"
+            >
               <CardHeader className="p-0">
                 <div className="relative h-48 bg-gradient-to-br from-blue-100 to-indigo-200 overflow-hidden">
                   <img
@@ -310,14 +360,22 @@ export default function MarketplacePage() {
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <div className="absolute top-4 left-4">
-                    <Badge variant="secondary" className="bg-white/90 text-gray-800">
+                    <Badge
+                      variant="secondary"
+                      className="bg-white/90 text-gray-800"
+                    >
                       {course.category}
                     </Badge>
                   </div>
                   <div className="absolute top-4 right-4">
-                    <Badge 
-                      variant={course.level === 'Cơ bản' ? 'default' : 
-                              course.level === 'Trung cấp' ? 'secondary' : 'destructive'}
+                    <Badge
+                      variant={
+                        course.level === "Cơ bản"
+                          ? "default"
+                          : course.level === "Trung cấp"
+                          ? "secondary"
+                          : "destructive"
+                      }
                       className="bg-white/90"
                     >
                       {course.level}
@@ -360,23 +418,23 @@ export default function MarketplacePage() {
 
               <CardFooter className="p-6 pt-0">
                 <div className="flex gap-2 w-full">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     className="flex-1"
                     onClick={() => navigate(`/course/${course.id}`)}
                   >
                     <PlayCircle className="w-4 h-4 mr-2" />
                     Xem chi tiết
                   </Button>
-                  <Button 
-                    size="sm" 
+                  <Button
+                    size="sm"
                     className="flex-1 bg-blue-600 hover:bg-blue-700"
                     onClick={() => handlePurchase(course.id, course.price)}
                     disabled={purchasing === course.id}
                   >
                     {purchasing === course.id ? (
-                      'Đang mua...'
+                      "Đang mua..."
                     ) : (
                       <>
                         <ShoppingCart className="w-4 h-4 mr-2" />
@@ -401,11 +459,13 @@ export default function MarketplacePage() {
             <p className="text-gray-600 mb-6">
               Hãy thử thay đổi bộ lọc hoặc từ khóa tìm kiếm
             </p>
-            <Button onClick={() => {
-              setSearchTerm('');
-              setSelectedCategory('all');
-              setSelectedLevel('all');
-            }}>
+            <Button
+              onClick={() => {
+                setSearchTerm("");
+                setSelectedCategory("all");
+                setSelectedLevel("all");
+              }}
+            >
               Xóa bộ lọc
             </Button>
           </div>

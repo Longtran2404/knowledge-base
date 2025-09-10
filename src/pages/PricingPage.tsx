@@ -13,4 +13,3 @@ const PricingPage: React.FC = () => {
 
 export default PricingPage;
 
-

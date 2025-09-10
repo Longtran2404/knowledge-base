@@ -1,22 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { useAuth } from '../contexts/AuthContext';
-import { getUserCourses, getUserProfile, updateUserProfile } from '../lib/supabase';
-import AvatarUpload from '../components/avatar-upload';
-import { 
-  User, 
-  Mail, 
-  Phone, 
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { useAuth } from "../contexts/AuthContext";
+import {
+  getUserCourses,
+  getUserProfile,
+  updateUserProfile,
+} from "../lib/supabase";
+import AvatarUpload from "../components/avatar-upload";
+import {
+  User,
+  Mail,
+  Phone,
   Calendar,
-  BookOpen, 
+  BookOpen,
   Award,
   Clock,
   PlayCircle,
@@ -27,22 +37,22 @@ import {
   Download,
   Star,
   TrendingUp,
-  Target
-} from 'lucide-react';
-import { toast } from 'sonner';
+  Target,
+} from "lucide-react";
+import { toast } from "sonner";
 
 export default function ProfilePage() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  
+
   const [userCourses, setUserCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
   const [profileData, setProfileData] = useState({
-    full_name: user?.user_metadata?.full_name || '',
-    phone: user?.user_metadata?.phone || '',
-    avatar_url: user?.user_metadata?.avatar_url || '',
+    full_name: user?.user_metadata?.full_name || "",
+    phone: user?.user_metadata?.phone || "",
+    avatar_url: user?.user_metadata?.avatar_url || "",
   });
 
   // mock data defined inside effect to avoid lint missing dep in CI
@@ -50,7 +60,7 @@ export default function ProfilePage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!user) {
-      navigate('/auth');
+      navigate("/auth");
       return;
     }
 
@@ -60,17 +70,18 @@ export default function ProfilePage() {
         const profile = await getUserProfile(user.id);
         setUserProfile(profile);
         setProfileData({
-          full_name: profile.full_name || user.user_metadata?.full_name || '',
-          phone: profile.phone || user.user_metadata?.phone || '',
-          avatar_url: profile.avatar_url || user.user_metadata?.avatar_url || '',
+          full_name: profile.full_name || user.user_metadata?.full_name || "",
+          phone: profile.phone || user.user_metadata?.phone || "",
+          avatar_url:
+            profile.avatar_url || user.user_metadata?.avatar_url || "",
         });
       } catch (error) {
-        console.error('Error loading user profile:', error);
+        console.error("Error loading user profile:", error);
         // Fallback to auth metadata
         setProfileData({
-          full_name: user.user_metadata?.full_name || '',
-          phone: user.user_metadata?.phone || '',
-          avatar_url: user.user_metadata?.avatar_url || '',
+          full_name: user.user_metadata?.full_name || "",
+          phone: user.user_metadata?.phone || "",
+          avatar_url: user.user_metadata?.avatar_url || "",
         });
       }
 
@@ -78,32 +89,34 @@ export default function ProfilePage() {
       setTimeout(() => {
         const mockUserCourses = [
           {
-            id: '1',
+            id: "1",
             progress: 75,
             completed: false,
-            started_at: '2024-01-15',
+            started_at: "2024-01-15",
             course: {
-              id: '1',
-              title: 'Revit Architecture 2024 - Từ cơ bản đến nâng cao',
-              image_url: 'https://images.unsplash.com/photo-1581093458791-9f3c3270e8b8?w=500',
-              duration: '120 giờ',
-              category: 'BIM'
-            }
+              id: "1",
+              title: "Revit Architecture 2024 - Từ cơ bản đến nâng cao",
+              image_url:
+                "https://images.unsplash.com/photo-1581093458791-9f3c3270e8b8?w=500",
+              duration: "120 giờ",
+              category: "BIM",
+            },
           },
           {
-            id: '2',
+            id: "2",
             progress: 100,
             completed: true,
-            started_at: '2024-01-10',
-            completed_at: '2024-02-20',
+            started_at: "2024-01-10",
+            completed_at: "2024-02-20",
             course: {
-              id: '2',
-              title: 'AutoCAD 2024 - Vẽ kỹ thuật chuyên nghiệp',
-              image_url: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=500',
-              duration: '80 giờ',
-              category: 'CAD'
-            }
-          }
+              id: "2",
+              title: "AutoCAD 2024 - Vẽ kỹ thuật chuyên nghiệp",
+              image_url:
+                "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=500",
+              duration: "80 giờ",
+              category: "CAD",
+            },
+          },
         ];
         setUserCourses(mockUserCourses);
         setLoading(false);
@@ -116,32 +129,32 @@ export default function ProfilePage() {
   const handleLogout = async () => {
     try {
       await logout();
-      toast.success('Đăng xuất thành công');
-      navigate('/');
+      toast.success("Đăng xuất thành công");
+      navigate("/");
     } catch (error) {
-      toast.error('Có lỗi xảy ra khi đăng xuất');
+      toast.error("Có lỗi xảy ra khi đăng xuất");
     }
   };
 
   const handleSaveProfile = async () => {
     try {
       if (!user) return;
-      
+
       await updateUserProfile(user.id, {
         full_name: profileData.full_name,
         phone: profileData.phone,
       });
-      
+
       setEditMode(false);
-      toast.success('Cập nhật thông tin thành công');
+      toast.success("Cập nhật thông tin thành công");
     } catch (error: any) {
-      console.error('Error saving profile:', error);
-      toast.error('Có lỗi xảy ra khi cập nhật thông tin');
+      console.error("Error saving profile:", error);
+      toast.error("Có lỗi xảy ra khi cập nhật thông tin");
     }
   };
 
   const handleAvatarUpdate = (newAvatarUrl: string) => {
-    setProfileData(prev => ({ ...prev, avatar_url: newAvatarUrl }));
+    setProfileData((prev) => ({ ...prev, avatar_url: newAvatarUrl }));
     // Update userProfile state as well
     if (userProfile) {
       setUserProfile({ ...userProfile, avatar_url: newAvatarUrl });
@@ -149,7 +162,7 @@ export default function ProfilePage() {
   };
 
   const getCompletedCoursesCount = () => {
-    return userCourses.filter(uc => uc.completed).length;
+    return userCourses.filter((uc) => uc.completed).length;
   };
 
   const getAverageProgress = () => {
@@ -160,7 +173,7 @@ export default function ProfilePage() {
 
   const getTotalLearningTime = () => {
     // Mock calculation
-    return '240 giờ';
+    return "240 giờ";
   };
 
   if (loading) {
@@ -187,10 +200,18 @@ export default function ProfilePage() {
         <div className="mb-8">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Hồ sơ cá nhân</h1>
-              <p className="text-gray-600">Quản lý thông tin và theo dõi tiến độ học tập</p>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Hồ sơ cá nhân
+              </h1>
+              <p className="text-gray-600">
+                Quản lý thông tin và theo dõi tiến độ học tập
+              </p>
             </div>
-            <Button variant="outline" onClick={handleLogout} className="text-red-600 hover:text-red-700">
+            <Button
+              variant="outline"
+              onClick={handleLogout}
+              className="text-red-600 hover:text-red-700"
+            >
               Đăng xuất
             </Button>
           </div>
@@ -205,13 +226,13 @@ export default function ProfilePage() {
                   <AvatarUpload
                     currentAvatar={profileData.avatar_url}
                     userId={user.id}
-                    userName={profileData.full_name || user.email || 'User'}
+                    userName={profileData.full_name || user.email || "User"}
                     onAvatarUpdate={handleAvatarUpdate}
                     size="lg"
                   />
                 </div>
                 <CardTitle className="text-xl">
-                  {profileData.full_name || 'Chưa cập nhật tên'}
+                  {profileData.full_name || "Chưa cập nhật tên"}
                 </CardTitle>
                 <CardDescription>{user.email}</CardDescription>
                 <Badge variant="secondary" className="w-fit mx-auto">
@@ -223,26 +244,49 @@ export default function ProfilePage() {
                 {editMode ? (
                   <div className="space-y-4">
                     <div>
-                      <label className="text-sm font-medium text-gray-700">Họ và tên</label>
+                      <label className="text-sm font-medium text-gray-700">
+                        Họ và tên
+                      </label>
                       <Input
                         value={profileData.full_name}
-                        onChange={(e) => setProfileData({ ...profileData, full_name: e.target.value })}
+                        onChange={(e) =>
+                          setProfileData({
+                            ...profileData,
+                            full_name: e.target.value,
+                          })
+                        }
                         placeholder="Nhập họ và tên"
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-700">Số điện thoại</label>
+                      <label className="text-sm font-medium text-gray-700">
+                        Số điện thoại
+                      </label>
                       <Input
                         value={profileData.phone}
-                        onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
+                        onChange={(e) =>
+                          setProfileData({
+                            ...profileData,
+                            phone: e.target.value,
+                          })
+                        }
                         placeholder="Nhập số điện thoại"
                       />
                     </div>
                     <div className="flex gap-2">
-                      <Button onClick={handleSaveProfile} size="sm" className="flex-1">
+                      <Button
+                        onClick={handleSaveProfile}
+                        size="sm"
+                        className="flex-1"
+                      >
                         Lưu
                       </Button>
-                      <Button onClick={() => setEditMode(false)} variant="outline" size="sm" className="flex-1">
+                      <Button
+                        onClick={() => setEditMode(false)}
+                        variant="outline"
+                        size="sm"
+                        className="flex-1"
+                      >
                         Hủy
                       </Button>
                     </div>
@@ -261,9 +305,16 @@ export default function ProfilePage() {
                     )}
                     <div className="flex items-center gap-3 text-sm">
                       <Calendar className="w-4 h-4 text-gray-400" />
-                      <span>Tham gia {new Date(user.created_at).toLocaleDateString('vi-VN')}</span>
+                      <span>
+                        Tham gia{" "}
+                        {new Date(user.created_at).toLocaleDateString("vi-VN")}
+                      </span>
                     </div>
-                    <Button onClick={() => setEditMode(true)} size="sm" className="w-full mt-4">
+                    <Button
+                      onClick={() => setEditMode(true)}
+                      size="sm"
+                      className="w-full mt-4"
+                    >
                       <Settings className="w-4 h-4 mr-2" />
                       Chỉnh sửa thông tin
                     </Button>
@@ -276,14 +327,18 @@ export default function ProfilePage() {
                 <div className="space-y-3">
                   <div className="text-sm font-medium">Hướng dẫn sử dụng</div>
                   <div className="flex gap-2">
-                    <Button onClick={() => navigate('/huong-dan')} size="sm" className="flex-1">
+                    <Button
+                      onClick={() => navigate("/huong-dan")}
+                      size="sm"
+                      className="flex-1"
+                    >
                       Xem hướng dẫn
                     </Button>
                     <Button
                       onClick={() => {
                         try {
-                          localStorage.removeItem('nlc_guide_completed');
-                          toast.success('Đã đặt lại trạng thái hướng dẫn');
+                          localStorage.removeItem("nlc_guide_completed");
+                          toast.success("Đã đặt lại trạng thái hướng dẫn");
                         } catch {}
                       }}
                       variant="outline"
@@ -298,11 +353,15 @@ export default function ProfilePage() {
                 {/* Stats */}
                 <div className="grid grid-cols-2 gap-4 text-center">
                   <div>
-                    <div className="text-2xl font-bold text-blue-600">{userCourses.length}</div>
+                    <div className="text-2xl font-bold text-blue-600">
+                      {userCourses.length}
+                    </div>
                     <div className="text-xs text-gray-500">Khóa học</div>
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-green-600">{getCompletedCoursesCount()}</div>
+                    <div className="text-2xl font-bold text-green-600">
+                      {getCompletedCoursesCount()}
+                    </div>
                     <div className="text-xs text-gray-500">Hoàn thành</div>
                   </div>
                 </div>
@@ -319,19 +378,31 @@ export default function ProfilePage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Tiến độ trung bình</span>
-                  <span className="text-sm font-medium">{getAverageProgress()}%</span>
+                  <span className="text-sm text-gray-600">
+                    Tiến độ trung bình
+                  </span>
+                  <span className="text-sm font-medium">
+                    {getAverageProgress()}%
+                  </span>
                 </div>
                 <Progress value={getAverageProgress()} className="h-2" />
 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Tổng thời gian học</span>
-                  <span className="text-sm font-medium">{getTotalLearningTime()}</span>
+                  <span className="text-sm text-gray-600">
+                    Tổng thời gian học
+                  </span>
+                  <span className="text-sm font-medium">
+                    {getTotalLearningTime()}
+                  </span>
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Chứng chỉ đạt được</span>
-                  <span className="text-sm font-medium">{getCompletedCoursesCount()}</span>
+                  <span className="text-sm text-gray-600">
+                    Chứng chỉ đạt được
+                  </span>
+                  <span className="text-sm font-medium">
+                    {getCompletedCoursesCount()}
+                  </span>
                 </div>
               </CardContent>
             </Card>
@@ -351,7 +422,7 @@ export default function ProfilePage() {
               <TabsContent value="courses" className="space-y-6">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xl font-semibold">Khóa học của tôi</h3>
-                  <Button onClick={() => navigate('/marketplace')} size="sm">
+                  <Button onClick={() => navigate("/marketplace")} size="sm">
                     <BookOpen className="w-4 h-4 mr-2" />
                     Khám phá thêm
                   </Button>
@@ -359,7 +430,10 @@ export default function ProfilePage() {
 
                 <div className="grid gap-4">
                   {userCourses.map((userCourse) => (
-                    <Card key={userCourse.id} className="hover:shadow-md transition-shadow">
+                    <Card
+                      key={userCourse.id}
+                      className="hover:shadow-md transition-shadow"
+                    >
                       <CardContent className="p-6">
                         <div className="flex gap-4">
                           <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
@@ -386,29 +460,49 @@ export default function ProfilePage() {
                                 </div>
                               </div>
                               <div className="text-right">
-                                <div className={`text-sm font-medium ${userCourse.completed ? 'text-green-600' : 'text-blue-600'}`}>
-                                  {userCourse.completed ? 'Hoàn thành' : `${userCourse.progress}%`}
+                                <div
+                                  className={`text-sm font-medium ${
+                                    userCourse.completed
+                                      ? "text-green-600"
+                                      : "text-blue-600"
+                                  }`}
+                                >
+                                  {userCourse.completed
+                                    ? "Hoàn thành"
+                                    : `${userCourse.progress}%`}
                                 </div>
-                                {userCourse.completed && userCourse.completed_at && (
-                                  <div className="text-xs text-gray-500">
-                                    {new Date(userCourse.completed_at).toLocaleDateString('vi-VN')}
-                                  </div>
-                                )}
+                                {userCourse.completed &&
+                                  userCourse.completed_at && (
+                                    <div className="text-xs text-gray-500">
+                                      {new Date(
+                                        userCourse.completed_at
+                                      ).toLocaleDateString("vi-VN")}
+                                    </div>
+                                  )}
                               </div>
                             </div>
-                            
+
                             <div className="mt-3">
                               <div className="flex items-center gap-2 mb-2">
-                                <span className="text-xs text-gray-500">Tiến độ:</span>
-                                <span className="text-xs font-medium">{userCourse.progress}%</span>
+                                <span className="text-xs text-gray-500">
+                                  Tiến độ:
+                                </span>
+                                <span className="text-xs font-medium">
+                                  {userCourse.progress}%
+                                </span>
                               </div>
-                              <Progress value={userCourse.progress} className="h-2" />
+                              <Progress
+                                value={userCourse.progress}
+                                className="h-2"
+                              />
                             </div>
 
                             <div className="flex gap-2 mt-4">
                               <Button size="sm" className="flex-1">
                                 <PlayCircle className="w-4 h-4 mr-2" />
-                                {userCourse.progress === 0 ? 'Bắt đầu học' : 'Tiếp tục học'}
+                                {userCourse.progress === 0
+                                  ? "Bắt đầu học"
+                                  : "Tiếp tục học"}
                               </Button>
                               {userCourse.completed && (
                                 <Button variant="outline" size="sm">
@@ -433,7 +527,7 @@ export default function ProfilePage() {
                         <p className="text-gray-500 mb-4">
                           Khám phá marketplace để tìm khóa học phù hợp với bạn
                         </p>
-                        <Button onClick={() => navigate('/marketplace')}>
+                        <Button onClick={() => navigate("/marketplace")}>
                           Khám phá khóa học
                         </Button>
                       </CardContent>
@@ -455,27 +549,37 @@ export default function ProfilePage() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    {userCourses.filter(uc => uc.completed).length > 0 ? (
+                    {userCourses.filter((uc) => uc.completed).length > 0 ? (
                       <div className="grid gap-4">
-                        {userCourses.filter(uc => uc.completed).map((userCourse) => (
-                          <div key={userCourse.id} className="flex items-center justify-between p-4 border rounded-lg">
-                            <div className="flex items-center gap-3">
-                              <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                                <Award className="w-6 h-6 text-yellow-600" />
+                        {userCourses
+                          .filter((uc) => uc.completed)
+                          .map((userCourse) => (
+                            <div
+                              key={userCourse.id}
+                              className="flex items-center justify-between p-4 border rounded-lg"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                  <Award className="w-6 h-6 text-yellow-600" />
+                                </div>
+                                <div>
+                                  <h4 className="font-medium">
+                                    {userCourse.course.title}
+                                  </h4>
+                                  <p className="text-sm text-gray-500">
+                                    Hoàn thành ngày{" "}
+                                    {new Date(
+                                      userCourse.completed_at
+                                    ).toLocaleDateString("vi-VN")}
+                                  </p>
+                                </div>
                               </div>
-                              <div>
-                                <h4 className="font-medium">{userCourse.course.title}</h4>
-                                <p className="text-sm text-gray-500">
-                                  Hoàn thành ngày {new Date(userCourse.completed_at).toLocaleDateString('vi-VN')}
-                                </p>
-                              </div>
+                              <Button size="sm" variant="outline">
+                                <Download className="w-4 h-4 mr-2" />
+                                Tải xuống
+                              </Button>
                             </div>
-                            <Button size="sm" variant="outline">
-                              <Download className="w-4 h-4 mr-2" />
-                              Tải xuống
-                            </Button>
-                          </div>
-                        ))}
+                          ))}
                       </div>
                     ) : (
                       <div className="text-center py-8">
@@ -502,7 +606,9 @@ export default function ProfilePage() {
                   <CardContent>
                     <div className="text-center py-8">
                       <Target className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                      <p className="text-gray-500">Tính năng đang được phát triển</p>
+                      <p className="text-gray-500">
+                        Tính năng đang được phát triển
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
@@ -522,17 +628,31 @@ export default function ProfilePage() {
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <div>
-                            <h4 className="font-medium">Email thông báo khóa học</h4>
-                            <p className="text-sm text-gray-500">Nhận thông báo về khóa học mới</p>
+                            <h4 className="font-medium">
+                              Email thông báo khóa học
+                            </h4>
+                            <p className="text-sm text-gray-500">
+                              Nhận thông báo về khóa học mới
+                            </p>
                           </div>
-                          <input type="checkbox" defaultChecked className="toggle" />
+                          <input
+                            type="checkbox"
+                            defaultChecked
+                            className="toggle"
+                          />
                         </div>
                         <div className="flex items-center justify-between">
                           <div>
                             <h4 className="font-medium">Nhắc nhở học tập</h4>
-                            <p className="text-sm text-gray-500">Nhận nhắc nhở khi chưa học trong thời gian dài</p>
+                            <p className="text-sm text-gray-500">
+                              Nhận nhắc nhở khi chưa học trong thời gian dài
+                            </p>
                           </div>
-                          <input type="checkbox" defaultChecked className="toggle" />
+                          <input
+                            type="checkbox"
+                            defaultChecked
+                            className="toggle"
+                          />
                         </div>
                       </div>
                     </CardContent>

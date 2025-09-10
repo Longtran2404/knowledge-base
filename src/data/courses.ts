@@ -1,0 +1,91 @@
+import { Course } from "@/types/course";
+
+export const coursesData: Course[] = [
+  {
+    id: "c-bim-001",
+    slug: "bim-automation",
+    title: "BIM Automation cho Kỹ sư",
+    level: "Intermediate",
+    domain: "BIM",
+    year: 2025,
+    tags: ["BIM", "Automation", "Revit", "Dynamo"],
+    ratingAvg: 4.8,
+    ratingCount: 121,
+    thumbnail: "/images/courses/bim-auto.jpg",
+    price: 1490000,
+    isHot: true,
+    createdAt: "2025-08-01T00:00:00.000Z"
+  },
+  {
+    id: "c-ktxd-101",
+    slug: "ket-cau-can-ban",
+    title: "Kết cấu căn bản cho Kỹ sư",
+    level: "Beginner",
+    domain: "Kết cấu",
+    year: 2024,
+    tags: ["Kết cấu", "Bê tông cốt thép", "Thép"],
+    ratingAvg: 4.6,
+    ratingCount: 86,
+    thumbnail: "/images/courses/ket-cau.jpg",
+    price: 990000,
+    createdAt: "2024-12-10T00:00:00.000Z"
+  },
+  {
+    id: "c-cad-201",
+    slug: "autocad-nang-cao",
+    title: "AutoCAD Nâng cao & Tối ưu",
+    level: "Advanced",
+    domain: "CAD",
+    year: 2025,
+    tags: ["AutoCAD", "LISP", "Automation"],
+    ratingAvg: 4.9,
+    ratingCount: 203,
+    thumbnail: "/images/courses/autocad-advanced.jpg",
+    price: 1290000,
+    isHot: true,
+    createdAt: "2025-07-15T00:00:00.000Z"
+  },
+  {
+    id: "c-pm-301",
+    slug: "quan-ly-du-an-xay-dung",
+    title: "Quản lý Dự án Xây dựng",
+    level: "Intermediate",
+    domain: "Project Management",
+    year: 2025,
+    tags: ["PM", "Primavera P6", "MS Project"],
+    ratingAvg: 4.7,
+    ratingCount: 95,
+    thumbnail: "/images/courses/project-mgmt.jpg",
+    price: 1190000,
+    createdAt: "2025-06-20T00:00:00.000Z"
+  },
+  {
+    id: "c-green-401",
+    slug: "xay-dung-xanh",
+    title: "Xây dựng Xanh & Bền vững",
+    level: "Advanced",
+    domain: "Green Building",
+    year: 2025,
+    tags: ["LEED", "Green Building", "Sustainability"],
+    ratingAvg: 4.5,
+    ratingCount: 67,
+    thumbnail: "/images/courses/green-building.jpg",
+    price: 1590000,
+    createdAt: "2025-05-10T00:00:00.000Z"
+  },
+  {
+    id: "c-drone-501",
+    slug: "drone-khao-sat-xay-dung",
+    title: "Drone trong Khảo sát Xây dựng",
+    level: "Intermediate",
+    domain: "Survey Technology",
+    year: 2025,
+    tags: ["Drone", "Survey", "Photogrammetry"],
+    ratingAvg: 4.4,
+    ratingCount: 42,
+    thumbnail: "/images/courses/drone-survey.jpg",
+    price: 890000,
+    isHot: true,
+    createdAt: "2025-04-25T00:00:00.000Z"
+  }
+];
