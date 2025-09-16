@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npm start)",
+      "Bash(set PORT=3001)",
+      "Bash(taskkill:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(PORT=3001 npm start)",
+      "Bash(npx tsc:*)",
+      "Bash(set PORT=3002)",
+      "Bash(npm test:*)",
+      "Bash(npm install:*)",
+      "Bash(npx playwright:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

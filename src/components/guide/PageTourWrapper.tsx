@@ -57,11 +57,11 @@ const PageTourWrapper: React.FC<PageTourWrapperProps> = ({
   useEffect(() => {
     if (autoStart && tourSteps.length > 0) {
       const timer = setTimeout(() => {
-        startTour();
+        startTour(tourSteps);
       }, delay);
       return () => clearTimeout(timer);
     }
-  }, [autoStart, delay, startTour, tourSteps.length]);
+  }, [autoStart, delay, startTour, tourSteps]);
 
   return (
     <>

@@ -8,7 +8,7 @@ export interface FileUpload {
   file_path: string;
   file_size: number;
   mime_type: string;
-  file_type: 'personal' | 'public' | 'course_material';
+  file_type: "personal" | "public" | "course_material";
   course_id?: string;
   is_public: boolean;
   download_count: number;
@@ -25,7 +25,7 @@ export interface UploadProgress {
 // Upload file to Supabase Storage
 export const uploadFile = async (
   file: File,
-  fileType: 'personal' | 'public' | 'course_material',
+  fileType: "personal" | "public" | "course_material",
   courseId?: string,
   onProgress?: (progress: UploadProgress) => void
 ): Promise<{ success: boolean; data?: FileUpload; error?: string }> => {
@@ -33,29 +33,29 @@ export const uploadFile = async (
     // Generate unique filename
     const timestamp = Date.now();
     const randomString = Math.random().toString(36).substring(2, 15);
-    const fileExtension = file.name.split('.').pop();
+    const fileExtension = file.name.split(".").pop();
     const filename = `${timestamp}_${randomString}.${fileExtension}`;
-    
+
     // Determine storage path based on file type
-    let storagePath = '';
+    let storagePath = "";
     switch (fileType) {
-      case 'personal':
+      case "personal":
         storagePath = `personal/${filename}`;
         break;
-      case 'public':
+      case "public":
         storagePath = `public/${filename}`;
         break;
-      case 'course_material':
+      case "course_material":
         storagePath = `courses/${courseId}/${filename}`;
         break;
     }
 
     // Upload to Supabase Storage
     const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('files')
+      .from("files")
       .upload(storagePath, file, {
-        cacheControl: '3600',
-        upsert: false
+        cacheControl: "3600",
+        upsert: false,
       });
 
     if (uploadError) {
@@ -64,12 +64,12 @@ export const uploadFile = async (
 
     // Get public URL
     const { data: urlData } = supabase.storage
-      .from('files')
+      .from("files")
       .getPublicUrl(storagePath);
 
     // Save file metadata to database
     const { data: fileData, error: dbError } = await supabase
-      .from('file_uploads')
+      .from("file_uploads")
       .insert({
         filename: filename,
         original_filename: file.name,
@@ -78,22 +78,22 @@ export const uploadFile = async (
         mime_type: file.type,
         file_type: fileType,
         course_id: courseId || null,
-        is_public: fileType === 'public'
+        is_public: fileType === "public",
       })
       .select()
       .single();
 
     if (dbError) {
       // Clean up uploaded file if database insert fails
-      await supabase.storage.from('files').remove([storagePath]);
+      await supabase.storage.from("files").remove([storagePath]);
       return { success: false, error: dbError.message };
     }
 
     return { success: true, data: fileData };
   } catch (error) {
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Upload failed' 
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Upload failed",
     };
   }
 };
@@ -101,11 +101,11 @@ export const uploadFile = async (
 // Get user's personal files
 export const getUserFiles = async (userId: string): Promise<FileUpload[]> => {
   const { data, error } = await supabase
-    .from('file_uploads')
-    .select('*')
-    .eq('user_id', userId)
-    .eq('file_type', 'personal')
-    .order('created_at', { ascending: false });
+    .from("file_uploads")
+    .select("*")
+    .eq("user_id", userId)
+    .eq("file_type", "personal")
+    .order("created_at", { ascending: false });
 
   if (error) throw error;
   return data || [];
@@ -114,36 +114,40 @@ export const getUserFiles = async (userId: string): Promise<FileUpload[]> => {
 // Get public files
 export const getPublicFiles = async (): Promise<FileUpload[]> => {
   const { data, error } = await supabase
-    .from('file_uploads')
-    .select('*')
-    .eq('is_public', true)
-    .order('created_at', { ascending: false });
+    .from("file_uploads")
+    .select("*")
+    .eq("is_public", true)
+    .order("created_at", { ascending: false });
 
   if (error) throw error;
   return data || [];
 };
 
 // Get course materials
-export const getCourseMaterials = async (courseId: string): Promise<FileUpload[]> => {
+export const getCourseMaterials = async (
+  courseId: string
+): Promise<FileUpload[]> => {
   const { data, error } = await supabase
-    .from('file_uploads')
-    .select('*')
-    .eq('course_id', courseId)
-    .eq('file_type', 'course_material')
-    .order('created_at', { ascending: false });
+    .from("file_uploads")
+    .select("*")
+    .eq("course_id", courseId)
+    .eq("file_type", "course_material")
+    .order("created_at", { ascending: false });
 
   if (error) throw error;
   return data || [];
 };
 
 // Delete file
-export const deleteFile = async (fileId: string): Promise<{ success: boolean; error?: string }> => {
+export const deleteFile = async (
+  fileId: string
+): Promise<{ success: boolean; error?: string }> => {
   try {
     // Get file info first
     const { data: fileData, error: fetchError } = await supabase
-      .from('file_uploads')
-      .select('file_path')
-      .eq('id', fileId)
+      .from("file_uploads")
+      .select("file_path")
+      .eq("id", fileId)
       .single();
 
     if (fetchError) {
@@ -152,7 +156,7 @@ export const deleteFile = async (fileId: string): Promise<{ success: boolean; er
 
     // Delete from storage
     const { error: storageError } = await supabase.storage
-      .from('files')
+      .from("files")
       .remove([fileData.file_path]);
 
     if (storageError) {
@@ -161,9 +165,9 @@ export const deleteFile = async (fileId: string): Promise<{ success: boolean; er
 
     // Delete from database
     const { error: dbError } = await supabase
-      .from('file_uploads')
+      .from("file_uploads")
       .delete()
-      .eq('id', fileId);
+      .eq("id", fileId);
 
     if (dbError) {
       return { success: false, error: dbError.message };
@@ -171,20 +175,22 @@ export const deleteFile = async (fileId: string): Promise<{ success: boolean; er
 
     return { success: true };
   } catch (error) {
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Delete failed' 
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Delete failed",
     };
   }
 };
 
 // Download file
-export const downloadFile = async (fileId: string): Promise<{ success: boolean; url?: string; error?: string }> => {
+export const downloadFile = async (
+  fileId: string
+): Promise<{ success: boolean; url?: string; error?: string }> => {
   try {
     const { data: fileData, error } = await supabase
-      .from('file_uploads')
-      .select('file_path, original_filename')
-      .eq('id', fileId)
+      .from("file_uploads")
+      .select("file_path, original_filename")
+      .eq("id", fileId)
       .single();
 
     if (error) {
@@ -193,7 +199,7 @@ export const downloadFile = async (fileId: string): Promise<{ success: boolean; 
 
     // Get signed URL for download
     const { data: urlData, error: urlError } = await supabase.storage
-      .from('files')
+      .from("files")
       .createSignedUrl(fileData.file_path, 3600); // 1 hour expiry
 
     if (urlError) {
@@ -201,26 +207,36 @@ export const downloadFile = async (fileId: string): Promise<{ success: boolean; 
     }
 
     // Increment download count
-    await supabase
-      .from('file_uploads')
-      .update({ download_count: supabase.raw('download_count + 1') })
-      .eq('id', fileId);
+    const { data: currentFile } = await supabase
+      .from("file_uploads")
+      .select("download_count")
+      .eq("id", fileId)
+      .single();
+
+    if (currentFile) {
+      await supabase
+        .from("file_uploads")
+        .update({ download_count: currentFile.download_count + 1 })
+        .eq("id", fileId);
+    }
 
     return { success: true, url: urlData.signedUrl };
   } catch (error) {
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Download failed' 
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Download failed",
     };
   }
 };
 
 // Get file info
-export const getFileInfo = async (fileId: string): Promise<FileUpload | null> => {
+export const getFileInfo = async (
+  fileId: string
+): Promise<FileUpload | null> => {
   const { data, error } = await supabase
-    .from('file_uploads')
-    .select('*')
-    .eq('id', fileId)
+    .from("file_uploads")
+    .select("*")
+    .eq("id", fileId)
     .single();
 
   if (error) return null;
@@ -229,24 +245,26 @@ export const getFileInfo = async (fileId: string): Promise<FileUpload | null> =>
 
 // Format file size
 export const formatFileSize = (bytes: number): string => {
-  if (bytes === 0) return '0 Bytes';
-  
+  if (bytes === 0) return "0 Bytes";
+
   const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const sizes = ["Bytes", "KB", "MB", "GB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
 };
 
 // Get file icon based on mime type
 export const getFileIcon = (mimeType: string): string => {
-  if (mimeType.startsWith('image/')) return '🖼️';
-  if (mimeType.startsWith('video/')) return '🎥';
-  if (mimeType.startsWith('audio/')) return '🎵';
-  if (mimeType.includes('pdf')) return '📄';
-  if (mimeType.includes('word')) return '📝';
-  if (mimeType.includes('excel') || mimeType.includes('spreadsheet')) return '📊';
-  if (mimeType.includes('powerpoint') || mimeType.includes('presentation')) return '📽️';
-  if (mimeType.includes('zip') || mimeType.includes('rar')) return '📦';
-  return '📁';
+  if (mimeType.startsWith("image/")) return "🖼️";
+  if (mimeType.startsWith("video/")) return "🎥";
+  if (mimeType.startsWith("audio/")) return "🎵";
+  if (mimeType.includes("pdf")) return "📄";
+  if (mimeType.includes("word")) return "📝";
+  if (mimeType.includes("excel") || mimeType.includes("spreadsheet"))
+    return "📊";
+  if (mimeType.includes("powerpoint") || mimeType.includes("presentation"))
+    return "📽️";
+  if (mimeType.includes("zip") || mimeType.includes("rar")) return "📦";
+  return "📁";
 };

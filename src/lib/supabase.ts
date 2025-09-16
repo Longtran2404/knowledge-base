@@ -1,8 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
+import { config } from "../services/config";
 
-const supabaseUrl = "https://byidgbgvnrfhujprzzge.supabase.co";
-const supabaseAnonKey =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5aWRnYmd2bnJmaHVqcHJ6emdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI1MjQxMjAsImV4cCI6MjA1ODEwMDEyMH0.LJmu6PzY89Uc1K_5W-M7rsD18sWm-mHeMx1SeV4o_Dw";
+const { url: supabaseUrl, anonKey: supabaseAnonKey } =
+  config.getSupabaseConfig();
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
@@ -77,21 +77,27 @@ export const upsertAccount = async (params: {
   plan?: "free" | "student_299" | "business";
   provider?: string;
 }) => {
-  const { userId, email, fullName, role, plan, provider } = params;
-  const payload = {
-    user_id: userId,
-    email,
-    full_name: fullName,
-    role,
-    plan,
-    provider,
-    updated_at: new Date().toISOString(),
-  } as Record<string, unknown>;
-
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("account_nam_long_center")
-    .upsert(payload, { onConflict: "user_id" });
-  if (error) throw error;
+    .upsert({
+      user_id: params.userId,
+      email: params.email,
+      full_name: params.fullName,
+      role: params.role || "sinh_vien",
+      plan: params.plan || "free",
+      provider: params.provider || "email",
+      status: "active",
+      updated_at: new Date().toISOString(),
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error upserting account:", error);
+    throw error;
+  }
+
+  return data;
 };
 
 export const getAccount = async (userId: string) => {
@@ -100,63 +106,77 @@ export const getAccount = async (userId: string) => {
     .select("*")
     .eq("user_id", userId)
     .single();
-  if (error) throw error;
+
+  if (error) {
+    if (error.code === "PGRST116") {
+      // No rows returned
+      return null;
+    }
+    console.error("Error getting account:", error);
+    throw error;
+  }
+
   return data;
 };
 
 export const isAccountEligible = async (email: string) => {
   const { data, error } = await supabase
     .from("account_nam_long_center")
-    .select("is_paid,status,plan")
+    .select("status, is_paid")
     .eq("email", email)
     .single();
+
   if (error) {
-    return { eligible: false as const, reason: "not_found" as const };
+    if (error.code === "PGRST116") {
+      // No account found, eligible for free tier
+      return { eligible: true as const, reason: "ok" as const };
+    }
+    console.error("Error checking account eligibility:", error);
+    return { eligible: false as const, reason: "error" as const };
   }
-  const eligible =
-    data?.plan === "free" || (!!data?.is_paid && data?.status !== "rejected");
-  return {
-    eligible,
-    reason: eligible
-      ? ("ok" as const)
-      : data?.status === "rejected"
-      ? ("rejected" as const)
-      : ("not_paid" as const),
-  };
+
+  if (data.status === "rejected") {
+    return { eligible: false as const, reason: "rejected" as const };
+  }
+
+  if (data.status === "pending" && !data.is_paid) {
+    return { eligible: false as const, reason: "pending_payment" as const };
+  }
+
+  return { eligible: true as const, reason: "ok" as const };
 };
 
 export const ensureActiveAccount = async (
   userId: string,
   email: string | null
 ) => {
-  const targetEmail = email || "";
+  if (!email) {
+    return false;
+  }
+
   const { data, error } = await supabase
     .from("account_nam_long_center")
-    .select("is_paid,status")
+    .select("status")
     .eq("user_id", userId)
     .single();
 
-  if (error || !data) {
-    const check = await supabase
-      .from("account_nam_long_center")
-      .select("is_paid,status,user_id")
-      .eq("email", targetEmail)
-      .single();
-    if (
-      check.error ||
-      !check.data ||
-      !check.data.is_paid ||
-      check.data.status !== "active"
-    ) {
-      throw new Error("Tài khoản chưa được kích hoạt hoặc chưa thanh toán.");
+  if (error) {
+    if (error.code === "PGRST116") {
+      // No account found, create one
+      await upsertAccount({
+        userId,
+        email,
+        role: "sinh_vien",
+        plan: "free",
+        provider: "email",
+      });
+      return true;
     }
-    return true;
+    console.error("Error ensuring active account:", error);
+    return false;
   }
 
-  if (!data.is_paid || data.status !== "active") {
-    throw new Error("Tài khoản chưa được kích hoạt hoặc chưa thanh toán.");
-  }
-  return true;
+  return data.status === "active";
 };
 
 export const signUp = async (
@@ -484,13 +504,11 @@ export const uploadAvatar = async (
 export const updateUserAvatar = async (userId: string, avatarUrl: string) => {
   const { error } = await supabase
     .from("users")
-    .update({
-      avatar_url: avatarUrl,
-      updated_at: new Date().toISOString(),
-    })
+    .update({ avatar_url: avatarUrl })
     .eq("id", userId);
 
   if (error) {
+    console.error("Error updating user avatar:", error);
     throw error;
   }
 };
@@ -523,6 +541,10 @@ export const getUserProfile = async (userId: string) => {
     .single();
 
   if (error) {
+    if (error.code === "PGRST116") {
+      return null;
+    }
+    console.error("Error getting user profile:", error);
     throw error;
   }
 
@@ -545,6 +567,7 @@ export const updateUserProfile = async (
     .single();
 
   if (error) {
+    console.error("Error updating user profile:", error);
     throw error;
   }
 

@@ -4,6 +4,12 @@ export type SpotlightItem = {
   refId: string;
   title: string;
   subtitle?: string;
+  description: string;
+  category: string;
+  type: string;
+  isActive: boolean;
+  link: string;
+  buttonText: string;
   ctaLabel?: string;
   ctaHref?: string;
   image?: string;

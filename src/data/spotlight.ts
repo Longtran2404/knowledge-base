@@ -1,4 +1,4 @@
-import { SpotlightItem } from "@/types/spotlight";
+import { SpotlightItem } from "../types/spotlight";
 
 export const spotlightData: SpotlightItem[] = [
   {
@@ -7,13 +7,20 @@ export const spotlightData: SpotlightItem[] = [
     refId: "c-bim-001",
     title: "Khóa học BIM Automation cho Kỹ sư XDDD",
     subtitle: "Học tư duy workflow + tool tự động",
+    description:
+      "Khóa học toàn diện về BIM Automation, từ cơ bản đến nâng cao, phù hợp cho kỹ sư xây dựng muốn nâng cao kỹ năng.",
+    category: "Education",
+    type: "course",
+    isActive: true,
+    link: "/khoa-hoc/bim-automation",
+    buttonText: "Tham gia ngay",
     ctaLabel: "Tham gia ngay",
     ctaHref: "/khoa-hoc/bim-automation",
     image: "/images/spotlight-bim.jpg",
     pinned: true,
     isHot: true,
     priority: 10,
-    createdAt: "2025-08-10T00:00:00.000Z"
+    createdAt: "2025-08-10T00:00:00.000Z",
   },
   {
     id: "s2",
@@ -21,26 +28,40 @@ export const spotlightData: SpotlightItem[] = [
     refId: "p-tool-001",
     title: "Ra mắt AutoCAD Cleaner Tool 2.0",
     subtitle: "Công cụ dọn dẹp và tối ưu file AutoCAD",
+    description:
+      "Phiên bản mới với nhiều tính năng cải tiến, giúp tối ưu hóa file AutoCAD và tăng hiệu suất làm việc.",
+    category: "Software",
+    type: "tool",
+    isActive: true,
+    link: "/san-pham/autocad-cleaner",
+    buttonText: "Khám phá ngay",
     ctaLabel: "Khám phá ngay",
     ctaHref: "/san-pham/autocad-cleaner",
     image: "/images/spotlight-tool.jpg",
     pinned: false,
     isHot: true,
     priority: 8,
-    createdAt: "2025-08-05T00:00:00.000Z"
+    createdAt: "2025-08-05T00:00:00.000Z",
   },
   {
     id: "s3",
     refType: "collab",
-    refId: "collab-001",
-    title: "Hợp tác với các trường Đại học hàng đầu",
-    subtitle: "Chương trình đào tạo chuyên sâu BIM & Construction Tech",
-    ctaLabel: "Liên hệ hợp tác",
-    ctaHref: "/hop-tac",
+    refId: "col-001",
+    title: "Hợp tác với Đại học Xây dựng Hà Nội",
+    subtitle: "Chương trình đào tạo BIM chuyên sâu",
+    description:
+      "Chương trình hợp tác đào tạo BIM chuyên sâu dành cho sinh viên và kỹ sư, với chứng chỉ quốc tế.",
+    category: "Partnership",
+    type: "collaboration",
+    isActive: true,
+    link: "/hop-tac/dai-hoc-xay-dung",
+    buttonText: "Tìm hiểu thêm",
+    ctaLabel: "Tìm hiểu thêm",
+    ctaHref: "/hop-tac/dai-hoc-xay-dung",
     image: "/images/spotlight-collab.jpg",
     pinned: false,
     isHot: false,
-    priority: 5,
-    createdAt: "2025-08-01T00:00:00.000Z"
-  }
+    priority: 6,
+    createdAt: "2025-08-01T00:00:00.000Z",
+  },
 ];

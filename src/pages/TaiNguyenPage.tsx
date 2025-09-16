@@ -1,23 +1,70 @@
 import React from "react";
 
-import { FileText, Video, BookOpen, Calculator, Download, Eye, Calendar, Users, Star, Search, Filter } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  FileText,
+  Video,
+  BookOpen,
+  Calculator,
+  Download,
+  Eye,
+  Calendar,
+  Users,
+  Star,
+  Search,
+  Filter,
+} from "lucide-react";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { resourcesData } from "../data/resources";
 
-import { AppProviders } from "@/lib/providers/app-providers";
-
+import { AppProviders } from "../lib/providers/app-providers";
 
 const categories = [
   { id: "all", label: "Tất cả", count: resourcesData.length, icon: FileText },
-  { id: "documents", label: "Tài liệu", count: resourcesData.filter(r => r.type === "pdf" || r.type === "doc").length, icon: FileText },
-  { id: "videos", label: "Video", count: resourcesData.filter(r => r.type === "guide").length, icon: Video },
-  { id: "standards", label: "Tiêu chuẩn", count: resourcesData.filter(r => r.domain === "BIM" || r.domain === "Quality Management").length, icon: BookOpen },
-  { id: "tools", label: "Công cụ", count: resourcesData.filter(r => r.type === "project").length, icon: Calculator },
+  {
+    id: "documents",
+    label: "Tài liệu",
+    count: resourcesData.filter((r) => r.type === "pdf" || r.type === "doc")
+      .length,
+    icon: FileText,
+  },
+  {
+    id: "videos",
+    label: "Video",
+    count: resourcesData.filter((r) => r.type === "guide").length,
+    icon: Video,
+  },
+  {
+    id: "standards",
+    label: "Tiêu chuẩn",
+    count: resourcesData.filter(
+      (r) => r.field === "BIM" || r.field === "Quality Management"
+    ).length,
+    icon: BookOpen,
+  },
+  {
+    id: "tools",
+    label: "Công cụ",
+    count: resourcesData.filter((r) => r.type === "project").length,
+    icon: Calculator,
+  },
 ];
 
 export default function ResourcesPage() {
@@ -30,7 +77,10 @@ export default function ResourcesPage() {
           <div className="relative z-10 container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <div className="max-w-4xl mx-auto space-y-8">
               <div className="space-y-4">
-                <Badge variant="outline" className="border-purple-400/50 text-purple-200 bg-purple-950/50 backdrop-blur-sm">
+                <Badge
+                  variant="outline"
+                  className="border-purple-400/50 text-purple-200 bg-purple-950/50 backdrop-blur-sm"
+                >
                   <FileText className="h-4 w-4 mr-2" />
                   Thư viện tài nguyên
                 </Badge>
@@ -42,18 +92,18 @@ export default function ResourcesPage() {
                   </span>
                 </h1>
                 <p className="text-xl text-purple-100 max-w-2xl mx-auto">
-                  Thư viện tài liệu, video hướng dẫn, tiêu chuẩn xây dựng và công cụ tính toán 
-                  giúp bạn nâng cao kiến thức và kỹ năng.
+                  Thư viện tài liệu, video hướng dẫn, tiêu chuẩn xây dựng và
+                  công cụ tính toán giúp bạn nâng cao kiến thức và kỹ năng.
                 </p>
               </div>
-              
+
               {/* Stats */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-8">
                 {[
                   { label: "Tài liệu", value: "1000+", icon: FileText },
                   { label: "Video", value: "500+", icon: Video },
                   { label: "Tiêu chuẩn", value: "200+", icon: BookOpen },
-                  { label: "Công cụ", value: "50+", icon: Calculator }
+                  { label: "Công cụ", value: "50+", icon: Calculator },
                 ].map((stat, index) => {
                   const IconComponent = stat.icon;
                   return (
@@ -61,8 +111,12 @@ export default function ResourcesPage() {
                       <div className="flex items-center justify-center w-12 h-12 bg-white/10 rounded-full mx-auto mb-2">
                         <IconComponent className="h-6 w-6 text-purple-200" />
                       </div>
-                      <div className="text-2xl font-bold text-white">{stat.value}</div>
-                      <div className="text-sm text-purple-200">{stat.label}</div>
+                      <div className="text-2xl font-bold text-white">
+                        {stat.value}
+                      </div>
+                      <div className="text-sm text-purple-200">
+                        {stat.label}
+                      </div>
                     </div>
                   );
                 })}
@@ -120,7 +174,11 @@ export default function ResourcesPage() {
                 {categories.map((category) => {
                   const IconComponent = category.icon;
                   return (
-                    <TabsTrigger key={category.id} value={category.id} className="text-sm">
+                    <TabsTrigger
+                      key={category.id}
+                      value={category.id}
+                      className="text-sm"
+                    >
                       <IconComponent className="h-4 w-4 mr-2" />
                       {category.label}
                       <Badge variant="secondary" className="ml-2 text-xs">
@@ -132,20 +190,36 @@ export default function ResourcesPage() {
               </TabsList>
 
               {categories.map((category) => (
-                <TabsContent key={category.id} value={category.id} className="mt-8">
+                <TabsContent
+                  key={category.id}
+                  value={category.id}
+                  className="mt-8"
+                >
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {resourcesData
-                      .filter(resource => category.id === "all" || resource.domain === category.id)
+                      .filter(
+                        (resource) =>
+                          category.id === "all" ||
+                          resource.field === category.id
+                      )
                       .map((resource) => (
-                        <Card key={resource.id} className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                        <Card
+                          key={resource.id}
+                          className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                        >
                           <CardHeader className="pb-4">
                             <div className="flex items-start justify-between">
                               <Badge variant="outline" className="text-xs">
-                                {resource.type === "pdf" || resource.type === "doc" ? "Tài liệu" : 
-                                 resource.type === "guide" ? "Video" : 
-                                 resource.domain === "BIM" ? "Tiêu chuẩn" : "Công cụ"}
+                                {resource.type === "pdf" ||
+                                resource.type === "doc"
+                                  ? "Tài liệu"
+                                  : resource.type === "guide"
+                                  ? "Video"
+                                  : resource.field === "BIM"
+                                  ? "Tiêu chuẩn"
+                                  : "Công cụ"}
                               </Badge>
-                              {resource.access === "free" && (
+                              {resource.accessLevel === "free" && (
                                 <Badge variant="secondary" className="text-xs">
                                   Miễn phí
                                 </Badge>
@@ -155,10 +229,10 @@ export default function ResourcesPage() {
                               {resource.title}
                             </CardTitle>
                             <CardDescription className="line-clamp-2">
-                              {resource.domain} - {resource.type}
+                              {resource.field} - {resource.type}
                             </CardDescription>
                           </CardHeader>
-                          
+
                           <CardContent className="pb-4">
                             <div className="space-y-3">
                               {/* Resource Stats */}
@@ -172,7 +246,7 @@ export default function ResourcesPage() {
                                   <span>500+ lượt xem</span>
                                 </div>
                               </div>
-                              
+
                               {/* Rating */}
                               <div className="flex items-center gap-2">
                                 <div className="flex items-center gap-1">
@@ -195,15 +269,26 @@ export default function ResourcesPage() {
                               {/* Tags */}
                               {resource.tags && (
                                 <div className="space-y-2">
-                                  <div className="text-sm font-medium text-muted-foreground">Tags:</div>
+                                  <div className="text-sm font-medium text-muted-foreground">
+                                    Tags:
+                                  </div>
                                   <div className="flex flex-wrap gap-1">
-                                    {resource.tags.slice(0, 3).map((tag, index) => (
-                                      <Badge key={index} variant="secondary" className="text-xs">
-                                        {tag}
-                                      </Badge>
-                                    ))}
+                                    {resource.tags
+                                      .slice(0, 3)
+                                      .map((tag, index) => (
+                                        <Badge
+                                          key={index}
+                                          variant="secondary"
+                                          className="text-xs"
+                                        >
+                                          {tag}
+                                        </Badge>
+                                      ))}
                                     {resource.tags.length > 3 && (
-                                      <Badge variant="secondary" className="text-xs">
+                                      <Badge
+                                        variant="secondary"
+                                        className="text-xs"
+                                      >
                                         +{resource.tags.length - 3}
                                       </Badge>
                                     )}
@@ -215,11 +300,13 @@ export default function ResourcesPage() {
                               <div className="flex items-center justify-between text-sm text-muted-foreground">
                                 <div className="flex items-center gap-1">
                                   <Calendar className="h-4 w-4" />
-                                  <span>{new Date(resource.createdAt).toLocaleDateString('vi-VN')}</span>
+                                  <span>
+                                    {new Date(
+                                      resource.createdAt
+                                    ).toLocaleDateString("vi-VN")}
+                                  </span>
                                 </div>
-                                {resource.type === "pdf" && (
-                                  <span>2.5 MB</span>
-                                )}
+                                {resource.type === "pdf" && <span>2.5 MB</span>}
                               </div>
                             </div>
                           </CardContent>
@@ -228,9 +315,15 @@ export default function ResourcesPage() {
                             <div className="w-full space-y-3">
                               <div className="flex gap-2">
                                 <Button className="flex-1" size="lg">
-                                  {resource.type === "guide" ? "Xem video" : "Tải xuống"}
+                                  {resource.type === "guide"
+                                    ? "Xem video"
+                                    : "Tải xuống"}
                                 </Button>
-                                <Button variant="outline" size="lg" className="px-3">
+                                <Button
+                                  variant="outline"
+                                  size="lg"
+                                  className="px-3"
+                                >
                                   <Eye className="h-4 w-4" />
                                 </Button>
                               </div>
@@ -251,12 +344,15 @@ export default function ResourcesPage() {
                   Những tài liệu và công cụ được đánh giá cao nhất
                 </p>
               </div>
-              
+
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Featured Document */}
                 <Card className="bg-gradient-to-r from-purple-50 to-violet-50 border-purple-200">
                   <CardHeader>
-                    <Badge variant="outline" className="w-fit border-purple-400 text-purple-700">
+                    <Badge
+                      variant="outline"
+                      className="w-fit border-purple-400 text-purple-700"
+                    >
                       <FileText className="h-4 w-4 mr-2" />
                       Tài liệu nổi bật
                     </Badge>
@@ -264,7 +360,8 @@ export default function ResourcesPage() {
                       Hướng dẫn BIM cho Dự án Xây dựng
                     </CardTitle>
                     <CardDescription className="text-purple-700">
-                      Tài liệu toàn diện về quy trình BIM từ thiết kế đến thi công
+                      Tài liệu toàn diện về quy trình BIM từ thiết kế đến thi
+                      công
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="pb-6">
@@ -293,7 +390,10 @@ export default function ResourcesPage() {
                 {/* Featured Video Series */}
                 <Card className="bg-gradient-to-r from-violet-50 to-indigo-50 border-violet-200">
                   <CardHeader>
-                    <Badge variant="outline" className="w-fit border-violet-400 text-violet-700">
+                    <Badge
+                      variant="outline"
+                      className="w-fit border-violet-400 text-violet-700"
+                    >
                       <Video className="h-4 w-4 mr-2" />
                       Video series
                     </Badge>
@@ -301,7 +401,8 @@ export default function ResourcesPage() {
                       Khóa học AutoCAD từ Cơ bản đến Nâng cao
                     </CardTitle>
                     <CardDescription className="text-violet-700">
-                      Series video 20 bài giảng với hơn 10 giờ nội dung chất lượng
+                      Series video 20 bài giảng với hơn 10 giờ nội dung chất
+                      lượng
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="pb-6">
@@ -316,7 +417,9 @@ export default function ResourcesPage() {
                       </div>
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-violet-700">Đánh giá:</span>
-                        <span className="font-semibold">4.9★ (500+ đánh giá)</span>
+                        <span className="font-semibold">
+                          4.9★ (500+ đánh giá)
+                        </span>
                       </div>
                     </div>
                   </CardContent>
@@ -334,10 +437,14 @@ export default function ResourcesPage() {
               <div className="max-w-2xl mx-auto space-y-6">
                 <h2 className="text-3xl font-bold">Đóng góp tài nguyên?</h2>
                 <p className="text-lg text-muted-foreground">
-                  Chia sẻ kiến thức và kinh nghiệm của bạn với cộng đồng kỹ sư xây dựng
+                  Chia sẻ kiến thức và kinh nghiệm của bạn với cộng đồng kỹ sư
+                  xây dựng
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button size="lg" className="bg-purple-600 hover:bg-purple-700">
+                  <Button
+                    size="lg"
+                    className="bg-purple-600 hover:bg-purple-700"
+                  >
                     Đăng tải tài nguyên
                   </Button>
                   <Button variant="outline" size="lg">

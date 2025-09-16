@@ -1,7 +1,9 @@
 export type Product = {
   id: string;
   slug: string;
+  name: string;
   title: string;
+  description: string;
   type: "tool" | "book" | "software" | "bundle";
   price: number;
   compareAtPrice?: number;
@@ -10,6 +12,7 @@ export type Product = {
   year: number;
   tags: string[];
   isHot?: boolean;
+  isNew?: boolean;
   ratingAvg?: number;
   ratingCount?: number;
   thumbnail?: string;

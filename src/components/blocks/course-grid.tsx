@@ -4,21 +4,21 @@ import { Link } from "react-router-dom";
 
 import { Clock, Users, Star, BookOpen, Filter } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "../../components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader } from "../../components/ui/card";
+import { Badge } from "../../components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
+import { Skeleton } from "../../components/ui/skeleton";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "../../components/ui/select";
 
-import { Course } from "@/types/course";
-import { formatPrice, getLevelBadgeColor } from "@/lib/spotlight";
+import { Course } from "../../types/course";
+import { formatPrice, getLevelBadgeColor } from "../../lib/shared";
 
 interface CourseGridProps {
   className?: string;

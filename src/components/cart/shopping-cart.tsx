@@ -1,12 +1,18 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
-import { ShoppingBag, Plus, Minus, X, CreditCard, ArrowRight } from "lucide-react";
-import { useAppStore } from "@/lib/stores/app-store";
+import {
+  ShoppingBag,
+  Plus,
+  Minus,
+  X,
+  CreditCard,
+  ArrowRight,
+} from "lucide-react";
+import { useAppStore } from "../../lib/stores/app-store";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
 import {
   Sheet,
   SheetContent,
@@ -14,70 +20,70 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import { Separator } from "@/components/ui/separator";
-import { OptimizedImage } from "@/components/ui/optimized-image";
+} from "../ui/sheet";
+import { Separator } from "../ui/separator";
+import { OptimizedImage } from "../ui/optimized-image";
 
 interface ShoppingCartProps {
   className?: string;
 }
 
 export function ShoppingCart({ className }: ShoppingCartProps) {
-  const { 
-    cartItems, 
-    cartTotal, 
-    removeFromCart, 
-    updateCartQuantity, 
-    clearCart 
+  const {
+    cartItems,
+    cartTotal,
+    removeFromCart,
+    updateCartQuantity,
+    clearCart,
   } = useAppStore();
 
   const itemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND',
-      minimumFractionDigits: 0
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      minimumFractionDigits: 0,
     }).format(price);
   };
 
   const handleCheckout = () => {
     if (cartItems.length === 0) {
-      toast.error('Giỏ hàng trống');
+      toast.error("Giỏ hàng trống");
       return;
     }
-    
-    toast.success('Đang chuyển đến trang thanh toán...');
+
+    toast.success("Đang chuyển đến trang thanh toán...");
     // Navigate to checkout page
-    window.location.href = '/checkout';
+    window.location.href = "/checkout";
   };
 
   const handleClearCart = () => {
     clearCart();
-    toast.success('Đã xóa tất cả sản phẩm khỏi giỏ hàng');
+    toast.success("Đã xóa tất cả sản phẩm khỏi giỏ hàng");
   };
 
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size="sm" 
+        <Button
+          variant="ghost"
+          size="sm"
           className={`relative hover:bg-blue-50 ${className}`}
           aria-label={`Giỏ hàng (${itemCount} sản phẩm)`}
         >
           <ShoppingBag className="h-5 w-5" />
           {itemCount > 0 && (
-            <Badge 
-              variant="destructive" 
+            <Badge
+              variant="destructive"
               className="absolute -right-2 -top-2 h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center animate-pulse"
             >
-              {itemCount > 99 ? '99+' : itemCount}
+              {itemCount > 99 ? "99+" : itemCount}
             </Badge>
           )}
         </Button>
       </SheetTrigger>
-      
+
       <SheetContent className="w-full sm:max-w-lg flex flex-col">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2 text-xl">
@@ -95,7 +101,9 @@ export function ShoppingCart({ className }: ShoppingCartProps) {
               <ShoppingBag className="h-12 w-12 text-gray-400" />
             </div>
             <div className="space-y-2">
-              <h3 className="text-lg font-semibold text-gray-900">Giỏ hàng trống</h3>
+              <h3 className="text-lg font-semibold text-gray-900">
+                Giỏ hàng trống
+              </h3>
               <p className="text-sm text-gray-500 max-w-sm">
                 Hãy khám phá các khóa học và sản phẩm tuyệt vời của chúng tôi
               </p>
@@ -117,7 +125,7 @@ export function ShoppingCart({ className }: ShoppingCartProps) {
                     {/* Item Image */}
                     <div className="relative w-16 h-16 bg-white rounded-md overflow-hidden border">
                       <OptimizedImage
-                        src={item.image || ''}
+                        src={item.image || ""}
                         alt={item.title}
                         width={64}
                         height={64}
@@ -132,9 +140,9 @@ export function ShoppingCart({ className }: ShoppingCartProps) {
                         {item.title}
                       </h4>
                       <p className="text-xs text-gray-500 capitalize mt-1">
-                        {item.type === 'course' ? 'Khóa học' : 'Sản phẩm'}
+                        {item.type === "course" ? "Khóa học" : "Sản phẩm"}
                       </p>
-                      
+
                       {/* Price */}
                       <div className="mt-2">
                         <span className="font-bold text-blue-600">
@@ -153,27 +161,31 @@ export function ShoppingCart({ className }: ShoppingCartProps) {
                       >
                         <X className="h-3 w-3" />
                       </Button>
-                      
+
                       <div className="flex items-center gap-1">
                         <Button
                           variant="outline"
                           size="sm"
                           className="h-6 w-6 p-0"
-                          onClick={() => updateCartQuantity(item.id, item.quantity - 1)}
+                          onClick={() =>
+                            updateCartQuantity(item.id, item.quantity - 1)
+                          }
                           disabled={item.quantity <= 1}
                         >
                           <Minus className="h-3 w-3" />
                         </Button>
-                        
+
                         <span className="px-2 py-1 text-sm font-medium min-w-[2rem] text-center">
                           {item.quantity}
                         </span>
-                        
+
                         <Button
                           variant="outline"
                           size="sm"
                           className="h-6 w-6 p-0"
-                          onClick={() => updateCartQuantity(item.id, item.quantity + 1)}
+                          onClick={() =>
+                            updateCartQuantity(item.id, item.quantity + 1)
+                          }
                         >
                           <Plus className="h-3 w-3" />
                         </Button>
@@ -204,7 +216,9 @@ export function ShoppingCart({ className }: ShoppingCartProps) {
               <div className="bg-blue-50 rounded-lg p-4">
                 <div className="flex items-center justify-between text-lg font-bold">
                   <span>Tổng cộng:</span>
-                  <span className="text-blue-600">{formatPrice(cartTotal)}</span>
+                  <span className="text-blue-600">
+                    {formatPrice(cartTotal)}
+                  </span>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
                   Đã bao gồm VAT (nếu có)
@@ -212,7 +226,7 @@ export function ShoppingCart({ className }: ShoppingCartProps) {
               </div>
 
               {/* Checkout Button */}
-              <Button 
+              <Button
                 className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 shadow-lg hover:shadow-xl transition-all group"
                 onClick={handleCheckout}
               >
@@ -222,14 +236,8 @@ export function ShoppingCart({ className }: ShoppingCartProps) {
               </Button>
 
               {/* Continue Shopping */}
-              <Button 
-                variant="outline" 
-                className="w-full"
-                asChild
-              >
-                <Link to="/san-pham">
-                  Tiếp tục mua sắm
-                </Link>
+              <Button variant="outline" className="w-full" asChild>
+                <Link to="/san-pham">Tiếp tục mua sắm</Link>
               </Button>
             </div>
           </>

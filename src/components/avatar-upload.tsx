@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from "../components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Camera, Loader2, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { uploadAvatar, updateUserAvatar, deleteOldAvatar } from '../lib/supabase';

@@ -1,250 +1,165 @@
-# 🎓 Nam Long Center - Nền tảng đào tạo trực tuyến
+# 🚀 Nam Long Center
 
-<div align="center">
-  <img src="https://img.shields.io/badge/React-18.3.1-blue?style=for-the-badge&logo=react" alt="React Version" />
-  <img src="https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript" alt="TypeScript Version" />
-  <img src="https://img.shields.io/badge/Next.js-15.5.0-black?style=for-the-badge&logo=next.js" alt="Next.js Version" />
-  <img src="https://img.shields.io/badge/Tailwind_CSS-3.0-blue?style=for-the-badge&logo=tailwind-css" alt="Tailwind CSS" />
-  <img src="https://img.shields.io/badge/Vercel-Deployed-green?style=for-the-badge&logo=vercel" alt="Vercel Deployed" />
-</div>
-
-## 📖 Giới thiệu
-
-**Nam Long Center** là một nền tảng đào tạo trực tuyến hiện đại, được xây dựng với công nghệ tiên tiến để mang đến trải nghiệm học tập tốt nhất cho học viên. Dự án tập trung vào việc cung cấp các khóa học chất lượng cao, tài nguyên học tập phong phú và hệ thống quản lý toàn diện.
+Hệ thống quản lý học tập và khóa học trực tuyến với đầy đủ tính năng hiện đại.
 
 ## ✨ Tính năng chính
 
-### 🔐 Hệ thống xác thực tùy chỉnh
-- **Đăng ký/Đăng nhập** với email và mật khẩu
-- **Xác thực email** tự động sau đăng ký
-- **Quên mật khẩu** với email reset
-- **Bảo mật cao** với mã hóa bcrypt và JWT
-- **Giao diện đẹp** với password strength indicator
+- 🎓 **Quản lý khóa học** - Tạo, quản lý và theo dõi khóa học
+- 📝 **Blog hệ thống** - Viết và quản lý bài viết
+- 👤 **Quản lý người dùng** - Đăng ký, đăng nhập, profile
+- 💳 **Hệ thống thanh toán** - Tích hợp Stripe
+- 📁 **Upload file** - Avatar và tài liệu
+- 🔐 **Bảo mật** - Row Level Security với Supabase
+- 📱 **Responsive** - Giao diện thân thiện mọi thiết bị
 
-### 📚 Quản lý khóa học
-- **Danh sách khóa học** với bộ lọc thông minh
-- **Chi tiết khóa học** với thông tin đầy đủ
-- **Đánh giá và rating** từ học viên
-- **Phân loại theo cấp độ** (Cơ bản, Trung cấp, Nâng cao)
+## 🛠️ Công nghệ sử dụng
 
-### 🛒 Marketplace
-- **Sản phẩm số** và template
-- **Giỏ hàng** thông minh
-- **Thanh toán** đa dạng phương thức
-- **Quản lý đơn hàng** chi tiết
+- **Frontend**: React 18.3.1 + TypeScript + Tailwind CSS
+- **Backend**: Supabase (PostgreSQL + Auth + Storage)
+- **UI Library**: Shadcn/UI + Radix UI
+- **State Management**: Zustand + React Query
+- **Build Tool**: CRACO + Webpack
 
-### 📖 Tài nguyên học tập
-- **Thư viện tài liệu** phong phú
-- **Tải xuống** PDF, video, template
-- **Phân loại** theo chủ đề
-- **Tìm kiếm** nhanh chóng
+## 🚀 Cài đặt và chạy
 
-### 🎯 Hệ thống quản lý
-- **Dashboard** cho quản trị viên
-- **Thống kê** chi tiết
-- **Quản lý người dùng**
-- **Báo cáo** doanh thu
+### 1. Cài đặt dependencies
 
-## 🚀 Công nghệ sử dụng
-
-### Frontend
-- **React 18.3.1** - UI framework
-- **TypeScript 5.0** - Type safety
-- **Tailwind CSS** - Styling
-- **Shadcn/UI** - Component library
-- **React Router DOM** - Routing
-- **Zustand** - State management
-- **Sonner** - Toast notifications
-
-### Backend & Database
-- **Supabase** - Database và API
-- **PostgreSQL** - Database chính
-- **Custom Email Auth** - Hệ thống xác thực tùy chỉnh
-- **JWT** - Token authentication
-- **bcryptjs** - Password hashing
-
-### Email Service
-- **Nodemailer** - Email sending
-- **Custom templates** - Email design
-- **SMTP configuration** - Email delivery
-
-### Development Tools
-- **Vite** - Build tool
-- **ESLint** - Code linting
-- **Prettier** - Code formatting
-- **CRACO** - Webpack configuration
-
-## 📦 Cài đặt
-
-### Yêu cầu hệ thống
-- Node.js >= 18.0.0
-- npm >= 8.0.0
-- Git
-
-### Các bước cài đặt
-
-1. **Clone repository**
-```bash
-git clone https://github.com/LongTran2404/namlongcenter.git
-cd namlongcenter
-```
-
-2. **Cài đặt dependencies**
 ```bash
 npm install
 ```
 
-3. **Cấu hình environment variables**
+### 2. Cấu hình environment
+
 ```bash
-cp .env.example .env.local
+cp env.example .env.local
 ```
 
 Cập nhật các biến môi trường trong `.env.local`:
+
 ```env
-# Supabase Configuration
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-
-# Email Configuration
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your_email@gmail.com
-SMTP_PASS=your_app_password
-SMTP_FROM=Nam Long Center <your_email@gmail.com>
-
-# JWT Secret
-JWT_SECRET=your_jwt_secret_key
+REACT_APP_SUPABASE_URL=your_supabase_url
+REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-4. **Chạy database migrations**
+### 3. Setup database
+
 ```bash
-# Chạy file SQL trong database/email-auth-schema.sql
-# trên Supabase SQL Editor
+# Xem hướng dẫn chi tiết
+cat docs/DATABASE_SETUP_GUIDE.md
+
+# Hoặc chạy script test
+npm run test:db
 ```
 
-5. **Khởi chạy ứng dụng**
+### 4. Chạy ứng dụng
+
 ```bash
 # Development
 npm start
 
 # Production build
 npm run build
-npm run preview
 ```
 
-## 🗂️ Cấu trúc dự án
+## 📁 Cấu trúc thư mục
 
 ```
 namlongcenter/
-├── 📁 public/                 # Static assets
-├── 📁 src/
-│   ├── 📁 components/         # React components
-│   │   ├── 📁 ui/            # Shadcn/UI components
-│   │   ├── 📁 layout/        # Layout components
-│   │   └── 📁 guide/         # Tour guide components
-│   ├── 📁 contexts/          # React contexts
-│   ├── 📁 data/              # Mock data
-│   ├── 📁 lib/               # Utilities và helpers
-│   │   ├── 📁 hooks/         # Custom hooks
-│   │   ├── 📁 stores/        # Zustand stores
-│   │   └── 📁 schemas/       # Validation schemas
-│   ├── 📁 pages/             # Page components
-│   ├── 📁 types/             # TypeScript types
-│   └── 📁 config/            # Configuration files
-├── 📁 database/              # Database schemas
-├── 📄 package.json
-├── 📄 tailwind.config.js
-├── 📄 tsconfig.json
-└── 📄 README.md
+├── docs/                    # Tài liệu hướng dẫn
+├── scripts/                 # Scripts tiện ích
+├── database/               # Database schema
+├── src/
+│   ├── components/         # React components
+│   ├── pages/             # Trang chính
+│   ├── lib/               # Utilities và services
+│   ├── contexts/          # React contexts
+│   └── types/             # TypeScript types
+└── public/                # Static files
 ```
 
-## 🔧 Cấu hình
+## 🗄️ Database
 
-### Email Service
-Dự án sử dụng Nodemailer để gửi email. Cấu hình trong `src/config/email.config.ts`:
+### Tables chính:
 
-```typescript
-export const emailConfig = {
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS
-  }
-};
-```
-
-### Database Schema
-Dự án sử dụng Supabase với các bảng chính:
 - `users` - Thông tin người dùng
-- `sessions` - Quản lý phiên đăng nhập
-- `email_verification_tokens` - Token xác thực email
-- `password_reset_tokens` - Token reset mật khẩu
+- `courses` - Khóa học
+- `blog_posts` - Bài viết blog
+- `user_courses` - Đăng ký khóa học
+- `purchases` - Giao dịch
+- `account_nam_long_center` - Quản lý tài khoản
+- `managers` - Danh sách quản lý
+- `manager_approvals` - Phê duyệt quản lý
+- `manager_notifications` - Thông báo
 
-## 🚀 Deployment
+## 🧪 Testing
 
-### Vercel (Recommended)
-1. **Connect GitHub repository** với Vercel
-2. **Cấu hình Environment Variables** trong Vercel dashboard
-3. **Deploy** tự động từ main branch
-
-### Manual Deployment
 ```bash
-# Build project
-npm run build
+# Test database connection
+npm run test:db
 
-# Deploy to your hosting provider
-# Upload dist/ folder to your server
+# Run unit tests
+npm run test
+
+# Run E2E tests
+npm run test:e2e
+
+# Run all tests
+npm run test:all
 ```
 
-## 📱 Tính năng nổi bật
+## 📚 Tài liệu
 
-### 🎨 UI/UX Design
-- **Responsive design** - Tương thích mọi thiết bị
-- **Dark/Light mode** - Chế độ sáng/tối
-- **Smooth animations** - Hiệu ứng mượt mà
-- **Accessibility** - Hỗ trợ người khuyết tật
+- [Database Setup Guide](docs/DATABASE_SETUP_GUIDE.md)
+- [Supabase Integration Summary](docs/SUPABASE_INTEGRATION_SUMMARY.md)
+- [Testing Guide](docs/TESTING_GUIDE.md)
+- [Payment Setup Guide](docs/PAYMENT_SETUP_GUIDE.md)
 
-### 🔒 Bảo mật
-- **Password strength** - Kiểm tra độ mạnh mật khẩu
-- **Email verification** - Xác thực email bắt buộc
-- **JWT tokens** - Bảo mật phiên đăng nhập
-- **HTTPS** - Mã hóa dữ liệu
+## 🚀 Scripts có sẵn
 
-### ⚡ Performance
-- **Code splitting** - Tải trang nhanh
-- **Image optimization** - Tối ưu hình ảnh
-- **Caching** - Cache thông minh
-- **Lazy loading** - Tải lazy
+```bash
+npm start              # Chạy development server
+npm run build          # Build production
+npm run test           # Chạy tests
+npm run test:db        # Test database connection
+npm run setup:db       # Setup database
+npm run lint           # Lint code
+npm run lint:check     # Check linting
+```
 
-## 🤝 Đóng góp
+## 🔧 Troubleshooting
 
-Chúng tôi hoan nghênh mọi đóng góp từ cộng đồng! Hãy:
+### Lỗi thường gặp:
 
-1. **Fork** repository này
-2. **Tạo branch** mới cho feature (`git checkout -b feature/AmazingFeature`)
-3. **Commit** thay đổi (`git commit -m 'Add some AmazingFeature'`)
-4. **Push** lên branch (`git push origin feature/AmazingFeature`)
-5. **Mở Pull Request**
+1. **Database connection error**
+
+   - Kiểm tra Supabase URL và API key
+   - Chạy `npm run test:db` để kiểm tra
+
+2. **Build error**
+
+   - Chạy `npm run lint:check` để kiểm tra lỗi code
+   - Kiểm tra TypeScript types
+
+3. **Authentication error**
+   - Kiểm tra Supabase Auth configuration
+   - Xem [Database Setup Guide](docs/DATABASE_SETUP_GUIDE.md)
 
 ## 📄 License
 
-Dự án này được phân phối dưới MIT License. Xem file `LICENSE` để biết thêm chi tiết.
+MIT License - Xem file [LICENSE](LICENSE) để biết thêm chi tiết.
 
-## 📞 Liên hệ
+## 🤝 Contributing
 
-- **Email**: info@namlongcenter.com
-- **Website**: https://namlongcenter.com
-- **GitHub**: [@LongTran2404](https://github.com/LongTran2404)
+1. Fork repository
+2. Tạo feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Tạo Pull Request
 
-## 🙏 Lời cảm ơn
+## 📞 Support
 
-Cảm ơn tất cả các contributors đã đóng góp cho dự án này!
+Nếu có vấn đề, vui lòng tạo issue trên GitHub hoặc liên hệ qua email.
 
 ---
 
-<div align="center">
-  <p>Được phát triển với ❤️ bởi <strong>Nam Long Center Team</strong></p>
-  <p>© 2024 Nam Long Center. All rights reserved.</p>
-</div>
+**Nam Long Center** - Học tập hiệu quả, phát triển bền vững! 🎓✨

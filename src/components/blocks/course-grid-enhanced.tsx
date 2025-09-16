@@ -4,11 +4,11 @@ import { Link } from "react-router-dom";
 import { Clock, Users, Star, TrendingUp, Calendar, BookOpen, Heart, Play, Award, Zap, Target, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { Button } from "../../components/ui/button";
+import { Card, CardContent } from "../../components/ui/card";
+import { Badge } from "../../components/ui/badge";
+import { Progress } from "../../components/ui/progress";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "../../components/ui/hover-card";
 
 interface Course {
   id: string;

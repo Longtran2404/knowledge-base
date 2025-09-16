@@ -10,11 +10,16 @@ import {
   Settings,
   BookOpen,
 } from "lucide-react";
-import { useEmailAuth } from "../../contexts/EmailAuthContext";
+import { useAuth } from "../../contexts/UnifiedAuthContext";
+import { ThemeToggle } from "../ui/theme-toggle";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "../../components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,7 +27,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "../../components/ui/dropdown-menu";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -30,7 +35,7 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
+} from "../../components/ui/navigation-menu";
 import {
   Sheet,
   SheetContent,
@@ -38,19 +43,17 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import { Badge } from "@/components/ui/badge";
+} from "../../components/ui/sheet";
+import { Badge } from "../../components/ui/badge";
 
 const navigationItems = [
   {
     label: "Trang chủ",
     href: "/",
-    description: "Về trang chủ Nam Long Center",
   },
   {
     label: "Khóa học",
     href: "/khoa-hoc",
-    description: "Khóa học chuyên môn cho kỹ sư xây dựng",
     items: [
       { label: "BIM & Revit", href: "/khoa-hoc/bim" },
       { label: "AutoCAD", href: "/khoa-hoc/autocad" },
@@ -61,7 +64,6 @@ const navigationItems = [
   {
     label: "Tài liệu",
     href: "/tai-lieu",
-    description: "Tài liệu, đồ án, luận văn",
     items: [
       { label: "Tài liệu công khai", href: "/tai-lieu" },
       { label: "Tài liệu cá nhân", href: "/account" },
@@ -71,27 +73,19 @@ const navigationItems = [
   {
     label: "Marketplace",
     href: "/marketplace",
-    description: "Công cụ, sách, phần mềm cho xây dựng",
   },
   {
     label: "Blog",
     href: "/blog",
-    description: "Tin tức và kiến thức ngành",
   },
   {
     label: "Hợp tác",
     href: "/hop-tac",
-    description: "Cơ hội hợp tác và đối tác",
-  },
-  {
-    label: "Liên hệ",
-    href: "/lien-he",
-    description: "Thông tin liên hệ và hỗ trợ",
   },
 ];
 
 export default function MainHeader() {
-  const { user, logout } = useEmailAuth();
+  const { userProfile: user, signOut } = useAuth();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -107,7 +101,7 @@ export default function MainHeader() {
 
   const handleLogout = async () => {
     try {
-      await logout();
+      await signOut();
       navigate("/");
     } catch (error) {
       console.error("Error logging out:", error);
@@ -115,18 +109,23 @@ export default function MainHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-soft">
       <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
+        <div className="flex h-14 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-6">
-            <Link to="/" className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-purple-600">
+            <Link
+              to="/"
+              className="flex items-center gap-3 flex-shrink-0 group"
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 shadow-medium group-hover:shadow-glow transition-all duration-300 group-hover:scale-105">
                 <span className="text-lg font-bold text-white">NL</span>
               </div>
               <div className="hidden sm:block">
-                <div className="text-xl font-bold">Nam Long Center</div>
-                <div className="text-xs text-muted-foreground">
+                <div className="text-lg font-bold text-foreground group-hover:text-blue-600 transition-colors duration-300">
+                  Nam Long Center
+                </div>
+                <div className="text-xs text-muted-foreground font-medium">
                   Xây dựng tương lai
                 </div>
               </div>
@@ -134,39 +133,34 @@ export default function MainHeader() {
 
             {/* Desktop Navigation */}
             <NavigationMenu className="hidden lg:flex">
-              <NavigationMenuList data-tour="navigation">
+              <NavigationMenuList data-tour="navigation" className="gap-1">
                 {navigationItems.map((item) => (
                   <NavigationMenuItem key={item.label}>
                     {item.items ? (
                       <>
-                        <NavigationMenuTrigger className="text-sm font-medium">
+                        <NavigationMenuTrigger className="text-sm font-medium h-9 px-3">
                           {item.label}
                         </NavigationMenuTrigger>
                         <NavigationMenuContent>
-                          <div className="grid w-[400px] gap-3 p-4">
-                            <div className="row-span-3">
-                              <NavigationMenuLink asChild>
-                                <Link
-                                  className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-                                  to={item.href}
-                                >
-                                  <div className="mb-2 mt-4 text-lg font-medium">
-                                    {item.label}
-                                  </div>
-                                  <p className="text-sm leading-tight text-muted-foreground">
-                                    {item.description}
-                                  </p>
-                                </Link>
-                              </NavigationMenuLink>
-                            </div>
+                          <div className="grid w-[300px] gap-2 p-3">
+                            <NavigationMenuLink asChild>
+                              <Link
+                                className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                to={item.href}
+                              >
+                                <div className="text-sm font-medium leading-none">
+                                  {item.label}
+                                </div>
+                              </Link>
+                            </NavigationMenuLink>
                             <div className="grid gap-1">
                               {item.items.map((subItem) => (
                                 <NavigationMenuLink key={subItem.label} asChild>
                                   <Link
                                     to={subItem.href}
-                                    className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                    className="block select-none space-y-1 rounded-md p-2 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                                   >
-                                    <div className="text-sm font-medium leading-none">
+                                    <div className="text-sm leading-none">
                                       {subItem.label}
                                     </div>
                                   </Link>
@@ -180,7 +174,7 @@ export default function MainHeader() {
                       <NavigationMenuLink asChild>
                         <Link
                           to={item.href}
-                          className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50"
+                          className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50"
                         >
                           {item.label}
                         </Link>
@@ -193,7 +187,7 @@ export default function MainHeader() {
           </div>
 
           {/* Search and Actions */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             {/* Search Bar */}
             <form
               onSubmit={handleSearch}
@@ -204,8 +198,8 @@ export default function MainHeader() {
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   type="search"
-                  placeholder="Tìm kiếm khóa học, sản phẩm..."
-                  className="w-64 pl-10"
+                  placeholder="Tìm kiếm..."
+                  className="w-48 h-9 pl-10 text-sm"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   aria-label="Tìm kiếm"
@@ -213,30 +207,20 @@ export default function MainHeader() {
               </div>
             </form>
 
+            {/* Theme Toggle */}
+            <ThemeToggle />
+
             {/* User Actions */}
-            <div className="flex items-center gap-2" data-tour="auth-buttons">
+            <div className="flex items-center gap-1" data-tour="auth-buttons">
               {user ? (
                 <>
-                  {/* Marketplace Link */}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="hidden sm:inline-flex"
-                    asChild
-                  >
-                    <Link to="/marketplace">
-                      <BookOpen className="h-4 w-4 mr-2" />
-                      Marketplace
-                    </Link>
-                  </Button>
-
                   {/* User Menu */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="relative h-8 w-8 rounded-full"
+                        className="relative h-9 w-9 rounded-full"
                       >
                         <Avatar className="h-8 w-8">
                           <AvatarImage
@@ -280,6 +264,12 @@ export default function MainHeader() {
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
+                        <Link to="/marketplace">
+                          <ShoppingBag className="mr-2 h-4 w-4" />
+                          <span>Marketplace</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
                         <Link to="/security">
                           <Settings className="mr-2 h-4 w-4" />
                           <span>Bảo mật</span>
@@ -298,45 +288,37 @@ export default function MainHeader() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="hidden sm:inline-flex"
+                    className="hidden sm:inline-flex h-9"
                     asChild
                   >
                     <Link to="/auth">
-                      <User className="h-4 w-4 mr-2" />
+                      <User className="h-4 w-4 mr-1" />
                       Đăng nhập
                     </Link>
                   </Button>
 
                   <Button
                     size="sm"
-                    className="hidden sm:inline-flex bg-blue-600 hover:bg-blue-700"
+                    className="hidden sm:inline-flex h-9 bg-blue-600 hover:bg-blue-700"
                     asChild
                   >
                     <Link to="/auth">Đăng ký</Link>
-                  </Button>
-
-                  {/* Marketplace Link for non-logged users */}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="hidden md:inline-flex"
-                    asChild
-                  >
-                    <Link to="/marketplace">
-                      <BookOpen className="h-4 w-4 mr-2" />
-                      Marketplace
-                    </Link>
                   </Button>
                 </>
               )}
 
               {/* Cart */}
-              <Button variant="ghost" size="sm" className="relative" asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="relative h-9 w-9"
+                asChild
+              >
                 <Link to="/cart" aria-label="Giỏ hàng">
                   <ShoppingBag className="h-4 w-4" />
                   <Badge
                     variant="destructive"
-                    className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 text-xs"
+                    className="absolute -right-1 -top-1 h-4 w-4 rounded-full p-0 text-xs"
                   >
                     0
                   </Badge>
@@ -349,13 +331,13 @@ export default function MainHeader() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="lg:hidden"
+                    className="lg:hidden h-9 w-9"
                     aria-label="Mở menu"
                   >
                     {isOpen ? (
-                      <X className="h-5 w-5" />
+                      <X className="h-4 w-4" />
                     ) : (
-                      <Menu className="h-5 w-5" />
+                      <Menu className="h-4 w-4" />
                     )}
                   </Button>
                 </SheetTrigger>
@@ -375,7 +357,7 @@ export default function MainHeader() {
                         <Input
                           type="search"
                           placeholder="Tìm kiếm..."
-                          className="w-full pl-10"
+                          className="w-full pl-10 h-9"
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -385,18 +367,18 @@ export default function MainHeader() {
 
                   {/* Mobile Navigation */}
                   <nav className="mt-6">
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       {navigationItems.map((item) => (
                         <div key={item.label} className="space-y-2">
                           <Link
                             to={item.href}
-                            className="block text-lg font-medium hover:text-blue-600 transition-colors"
+                            className="block text-base font-medium hover:text-blue-600 transition-colors"
                             onClick={() => setIsOpen(false)}
                           >
                             {item.label}
                           </Link>
                           {item.items && (
-                            <div className="ml-4 space-y-2">
+                            <div className="ml-4 space-y-1">
                               {item.items.map((subItem) => (
                                 <Link
                                   key={subItem.label}
@@ -415,22 +397,24 @@ export default function MainHeader() {
                   </nav>
 
                   {/* Mobile Auth Buttons */}
-                  <div className="mt-8 space-y-2">
-                    <Button variant="outline" className="w-full" asChild>
-                      <Link to="/dang-nhap" onClick={() => setIsOpen(false)}>
-                        <User className="h-4 w-4 mr-2" />
-                        Đăng nhập
-                      </Link>
-                    </Button>
-                    <Button
-                      className="w-full bg-blue-600 hover:bg-blue-700"
-                      asChild
-                    >
-                      <Link to="/dang-ky" onClick={() => setIsOpen(false)}>
-                        Đăng ký
-                      </Link>
-                    </Button>
-                  </div>
+                  {!user && (
+                    <div className="mt-8 space-y-2">
+                      <Button variant="outline" className="w-full h-9" asChild>
+                        <Link to="/auth" onClick={() => setIsOpen(false)}>
+                          <User className="h-4 w-4 mr-2" />
+                          Đăng nhập
+                        </Link>
+                      </Button>
+                      <Button
+                        className="w-full h-9 bg-blue-600 hover:bg-blue-700"
+                        asChild
+                      >
+                        <Link to="/auth" onClick={() => setIsOpen(false)}>
+                          Đăng ký
+                        </Link>
+                      </Button>
+                    </div>
+                  )}
                 </SheetContent>
               </Sheet>
             </div>

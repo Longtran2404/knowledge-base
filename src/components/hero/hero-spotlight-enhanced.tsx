@@ -4,15 +4,15 @@ import { Link } from "react-router-dom";
 
 import { ArrowRight, Star, TrendingUp, Users, Sparkles, Play, BookOpen, ShoppingBag, Briefcase, FileText, Zap, Award, Target, Clock } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Progress } from "@/components/ui/progress";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { Button } from "../../components/ui/button";
+import { Card, CardContent } from "../../components/ui/card";
+import { Badge } from "../../components/ui/badge";
+import { Skeleton } from "../../components/ui/skeleton";
+import { Progress } from "../../components/ui/progress";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "../../components/ui/hover-card";
 
-import { SpotlightItem } from "@/types/spotlight";
-import { pickSpotlight } from "@/lib/spotlight";
+import { SpotlightItem } from "../../types/spotlight";
+import { pickSpotlight } from "../../lib/spotlight";
 
 interface HeroSpotlightEnhancedProps {
   className?: string;

@@ -1,35 +1,34 @@
-
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { 
-  FileText, 
-  Download, 
-  Eye, 
-  Search, 
-  Filter, 
+import {
+  FileText,
+  Download,
+  Eye,
+  Search,
+  Filter,
   Calendar,
   Tag,
   Lock,
   Users,
-  Crown
+  Crown,
 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "../../components/ui/button";
+import { Card, CardContent, CardHeader } from "../../components/ui/card";
+import { Input } from "../../components/ui/input";
+import { Badge } from "../../components/ui/badge";
+import { Skeleton } from "../../components/ui/skeleton";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
+} from "../../components/ui/select";
+import { Checkbox } from "../../components/ui/checkbox";
 
-import { Resource } from "@/types/resource";
-import { getAccessBadgeColor } from "@/lib/spotlight";
+import { Resource } from "../../types/resource";
+import { getAccessBadgeColor } from "../../lib/spotlight";
 
 interface ResourceLibraryProps {
   className?: string;
@@ -64,17 +63,28 @@ export default function ResourceLibrary({ className }: ResourceLibraryProps) {
     fetchResources();
   }, []);
 
-  const domains = [...new Set(resources.map(resource => resource.domain))];
-  const fileTypes = [...new Set(resources.map(resource => resource.type))];
+  const domains = [...new Set(resources.map((resource) => resource.field))];
+  const fileTypes = [...new Set(resources.map((resource) => resource.type))];
 
-  const filteredResources = resources.filter(resource => {
-    const matchesSearch = resource.title.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesType = selectedType === "all" || resource.type === selectedType;
-    const matchesDomain = selectedDomain === "all" || resource.domain === selectedDomain;
-    const matchesAccess = selectedAccess === "all" || resource.access === selectedAccess;
-    const matchesFree = !showFreeOnly || resource.access === "free";
-    
-    return matchesSearch && matchesType && matchesDomain && matchesAccess && matchesFree;
+  const filteredResources = resources.filter((resource) => {
+    const matchesSearch = resource.title
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const matchesType =
+      selectedType === "all" || resource.type === selectedType;
+    const matchesDomain =
+      selectedDomain === "all" || resource.field === selectedDomain;
+    const matchesAccess =
+      selectedAccess === "all" || resource.accessLevel === selectedAccess;
+    const matchesFree = !showFreeOnly || resource.accessLevel === "free";
+
+    return (
+      matchesSearch &&
+      matchesType &&
+      matchesDomain &&
+      matchesAccess &&
+      matchesFree
+    );
   });
 
   const getFileTypeIcon = (type: string) => {
@@ -143,15 +153,21 @@ export default function ResourceLibrary({ className }: ResourceLibraryProps) {
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between mb-3">
           {/* File Type Badge */}
-          <Badge variant="outline" className={`gap-1 ${getFileTypeColor(resource.type)}`}>
+          <Badge
+            variant="outline"
+            className={`gap-1 ${getFileTypeColor(resource.type)}`}
+          >
             <span className="text-sm">{getFileTypeIcon(resource.type)}</span>
             {resource.type.toUpperCase()}
           </Badge>
 
           {/* Access Badge */}
-          <Badge variant="outline" className={`gap-1 ${getAccessBadgeColor(resource.access)}`}>
-            {getAccessIcon(resource.access)}
-            {getAccessLabel(resource.access)}
+          <Badge
+            variant="outline"
+            className={`gap-1 ${getAccessBadgeColor(resource.accessLevel)}`}
+          >
+            {getAccessIcon(resource.accessLevel)}
+            {getAccessLabel(resource.accessLevel)}
           </Badge>
         </div>
 
@@ -166,7 +182,7 @@ export default function ResourceLibrary({ className }: ResourceLibraryProps) {
         <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
           <div className="flex items-center gap-1">
             <Tag className="h-4 w-4" />
-            <span>{resource.domain}</span>
+            <span>{resource.field}</span>
           </div>
           <div className="flex items-center gap-1">
             <Calendar className="h-4 w-4" />
@@ -185,24 +201,19 @@ export default function ResourceLibrary({ className }: ResourceLibraryProps) {
 
         {/* Action Buttons */}
         <div className="flex gap-2">
-          <Button 
-            size="sm" 
-            variant="outline" 
-            className="flex-1"
-            asChild
-          >
+          <Button size="sm" variant="outline" className="flex-1" asChild>
             <Link to={`/tai-lieu/${resource.slug}`}>
               <Eye className="h-4 w-4 mr-1" />
               Xem trước
             </Link>
           </Button>
-          <Button 
-            size="sm" 
+          <Button
+            size="sm"
             className="flex-1 bg-blue-600 hover:bg-blue-700"
-            disabled={resource.access === "paid"}
-            asChild={resource.access !== "paid"}
+            disabled={resource.accessLevel === "premium"}
+            asChild={resource.accessLevel !== "premium"}
           >
-            {resource.access === "paid" ? (
+            {resource.accessLevel === "premium" ? (
               <>
                 <Crown className="h-4 w-4 mr-1" />
                 Trả phí
@@ -254,7 +265,8 @@ export default function ResourceLibrary({ className }: ResourceLibraryProps) {
             Thư Viện Tài Liệu
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Kho tài liệu phong phú với các giáo trình, đồ án, luận văn và tài liệu chuyên ngành
+            Kho tài liệu phong phú với các giáo trình, đồ án, luận văn và tài
+            liệu chuyên ngành
           </p>
         </div>
 
@@ -286,8 +298,10 @@ export default function ResourceLibrary({ className }: ResourceLibraryProps) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Tất cả</SelectItem>
-                  {fileTypes.map(type => (
-                    <SelectItem key={type} value={type}>{type.toUpperCase()}</SelectItem>
+                  {fileTypes.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type.toUpperCase()}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -303,8 +317,10 @@ export default function ResourceLibrary({ className }: ResourceLibraryProps) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Tất cả</SelectItem>
-                  {domains.map(domain => (
-                    <SelectItem key={domain} value={domain}>{domain}</SelectItem>
+                  {domains.map((domain) => (
+                    <SelectItem key={domain} value={domain}>
+                      {domain}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -329,13 +345,13 @@ export default function ResourceLibrary({ className }: ResourceLibraryProps) {
 
             {/* Free Only Checkbox */}
             <div className="flex items-center space-x-2">
-              <Checkbox 
-                id="free-only" 
+              <Checkbox
+                id="free-only"
                 checked={showFreeOnly}
                 onCheckedChange={(checked) => setShowFreeOnly(checked === true)}
               />
-              <label 
-                htmlFor="free-only" 
+              <label
+                htmlFor="free-only"
                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
                 Chỉ miễn phí
@@ -347,7 +363,11 @@ export default function ResourceLibrary({ className }: ResourceLibraryProps) {
         {/* Results Count */}
         <div className="mb-6 text-center">
           <p className="text-muted-foreground">
-            Tìm thấy <span className="font-semibold text-blue-600">{filteredResources.length}</span> tài liệu
+            Tìm thấy{" "}
+            <span className="font-semibold text-blue-600">
+              {filteredResources.length}
+            </span>{" "}
+            tài liệu
           </p>
         </div>
 
@@ -367,23 +387,20 @@ export default function ResourceLibrary({ className }: ResourceLibraryProps) {
         ) : (
           <div className="text-center py-12">
             <FileText className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-foreground mb-2">Không tìm thấy tài liệu</h3>
-            <p className="text-muted-foreground">Hãy thử thay đổi từ khóa tìm kiếm hoặc bộ lọc</p>
+            <h3 className="text-xl font-semibold text-foreground mb-2">
+              Không tìm thấy tài liệu
+            </h3>
+            <p className="text-muted-foreground">
+              Hãy thử thay đổi từ khóa tìm kiếm hoặc bộ lọc
+            </p>
           </div>
         )}
 
         {/* Load More Button */}
         {!loading && filteredResources.length > 0 && (
           <div className="text-center">
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="px-8 py-3"
-              asChild
-            >
-              <Link to="/thu-vien">
-                Xem thêm tài liệu
-              </Link>
+            <Button variant="outline" size="lg" className="px-8 py-3" asChild>
+              <Link to="/thu-vien">Xem thêm tài liệu</Link>
             </Button>
           </div>
         )}
@@ -391,11 +408,16 @@ export default function ResourceLibrary({ className }: ResourceLibraryProps) {
         {/* Upload CTA */}
         <div className="mt-12 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 text-center border border-blue-100">
           <div className="max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold text-foreground mb-2">Chia Sẻ Tài Liệu Của Bạn</h3>
+            <h3 className="text-2xl font-bold text-foreground mb-2">
+              Chia Sẻ Tài Liệu Của Bạn
+            </h3>
             <p className="text-lg text-muted-foreground mb-6">
               Có tài liệu chất lượng? Chia sẻ với cộng đồng và nhận điểm thưởng
             </p>
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700 font-semibold">
+            <Button
+              size="lg"
+              className="bg-blue-600 hover:bg-blue-700 font-semibold"
+            >
               Tải lên tài liệu
             </Button>
           </div>

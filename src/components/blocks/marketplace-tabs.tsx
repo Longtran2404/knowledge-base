@@ -1,17 +1,29 @@
-
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-import { ShoppingCart, Star, Package, Wrench, Book, Code, Zap } from "lucide-react";
+import {
+  ShoppingCart,
+  Star,
+  Package,
+  Wrench,
+  Book,
+  Code,
+  Zap,
+} from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "../../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "../../components/ui/card";
+import { Badge } from "../../components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
+import { Skeleton } from "../../components/ui/skeleton";
 
-import { Product } from "@/types/product";
-import { formatPrice } from "@/lib/spotlight";
+import { Product } from "../../types/product";
+import { formatPrice } from "../../lib/spotlight";
 
 interface MarketplaceTabsProps {
   className?: string;
@@ -42,8 +54,8 @@ export default function MarketplaceTabs({ className }: MarketplaceTabsProps) {
     fetchProducts();
   }, []);
 
-  const filteredProducts = products.filter(product => 
-    activeTab === "all" || product.type === activeTab
+  const filteredProducts = products.filter(
+    (product) => activeTab === "all" || product.type === activeTab
   );
 
   const getTypeIcon = (type: string) => {
@@ -76,20 +88,26 @@ export default function MarketplaceTabs({ className }: MarketplaceTabsProps) {
     }
   };
 
-  const StarRating = ({ rating, count }: { rating?: number; count?: number }) => {
+  const StarRating = ({
+    rating,
+    count,
+  }: {
+    rating?: number;
+    count?: number;
+  }) => {
     if (!rating) return null;
-    
+
     return (
       <div className="flex items-center gap-1">
         <div className="flex">
           {[...Array(5)].map((_, i) => (
-            <Star 
-              key={i} 
+            <Star
+              key={i}
               className={`h-3 w-3 ${
-                i < Math.floor(rating) 
-                  ? 'text-yellow-400 fill-current' 
-                  : 'text-gray-300'
-              }`} 
+                i < Math.floor(rating)
+                  ? "text-yellow-400 fill-current"
+                  : "text-gray-300"
+              }`}
             />
           ))}
         </div>
@@ -107,7 +125,7 @@ export default function MarketplaceTabs({ className }: MarketplaceTabsProps) {
           {product.thumbnail ? (
             <img
               src={product.thumbnail}
-              alt={product.title}
+              alt={product.name}
               className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />
           ) : (
@@ -117,12 +135,10 @@ export default function MarketplaceTabs({ className }: MarketplaceTabsProps) {
               </div>
             </div>
           )}
-          
+
           {/* Badges */}
           <div className="absolute top-4 left-4 flex gap-2">
-            {product.isHot && (
-              <Badge variant="destructive">HOT</Badge>
-            )}
+            {product.isHot && <Badge variant="destructive">HOT</Badge>}
           </div>
 
           {/* Quick Add Button */}
@@ -145,7 +161,7 @@ export default function MarketplaceTabs({ className }: MarketplaceTabsProps) {
 
         {/* Title */}
         <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-2">
-          {product.title}
+          {product.name}
         </h3>
 
         {/* Tags */}
@@ -184,9 +200,7 @@ export default function MarketplaceTabs({ className }: MarketplaceTabsProps) {
             </Link>
           </Button>
           <Button variant="outline" asChild>
-            <Link to={`/san-pham/${product.slug}`}>
-              Chi tiết
-            </Link>
+            <Link to={`/san-pham/${product.slug}`}>Chi tiết</Link>
           </Button>
         </div>
       </CardFooter>
@@ -225,7 +239,8 @@ export default function MarketplaceTabs({ className }: MarketplaceTabsProps) {
             Marketplace
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Khám phá các công cụ, sách, phần mềm và gói bundle chất lượng cao cho ngành xây dựng
+            Khám phá các công cụ, sách, phần mềm và gói bundle chất lượng cao
+            cho ngành xây dựng
           </p>
         </div>
 
@@ -273,8 +288,8 @@ export default function MarketplaceTabs({ className }: MarketplaceTabsProps) {
             {/* Show More Button */}
             {!loading && filteredProducts.length > 6 && (
               <div className="text-center">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="lg"
                   className="px-8 py-3"
                   asChild
@@ -293,9 +308,13 @@ export default function MarketplaceTabs({ className }: MarketplaceTabsProps) {
           <div className="max-w-2xl mx-auto">
             <h3 className="text-2xl font-bold mb-2">Ưu Đãi Đặc Biệt</h3>
             <p className="text-lg mb-6 text-white/90">
-              Mua 2 sản phẩm bất kỳ và nhận ngay voucher 500K cho lần mua tiếp theo
+              Mua 2 sản phẩm bất kỳ và nhận ngay voucher 500K cho lần mua tiếp
+              theo
             </p>
-            <Button size="lg" className="bg-white text-gray-900 hover:bg-gray-100 font-semibold">
+            <Button
+              size="lg"
+              className="bg-white text-gray-900 hover:bg-gray-100 font-semibold"
+            >
               Khám phá ngay
             </Button>
           </div>

@@ -1,16 +1,16 @@
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Search, X, BookOpen, ShoppingBag, FileText, Clock, ArrowRight, Loader2 } from "lucide-react";
-import { useSearch } from "@/lib/hooks/api-hooks";
-import { useAppStore } from "@/lib/stores/app-store";
+import { useSearch } from "../../lib/hooks/api-hooks";
+import { useAppStore } from "../../lib/stores/app-store";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Badge } from "../../components/ui/badge";
+import { Card, CardContent } from "../../components/ui/card";
+import { Separator } from "../../components/ui/separator";
 import {
   Command,
   CommandEmpty,
@@ -18,12 +18,12 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
+} from "../../components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "../../components/ui/popover";
 
 interface SearchResult {
   id: string;
@@ -82,6 +82,28 @@ export function GlobalSearch({
     }
   }, []);
 
+  const saveRecentSearch = useCallback((searchTerm: string) => {
+    const updated = [searchTerm, ...recentSearches.filter(s => s !== searchTerm)].slice(0, 5);
+    setRecentSearches(updated);
+    localStorage.setItem('nam-long-center-recent-searches', JSON.stringify(updated));
+  }, [recentSearches]);
+
+  const handleResultClick = useCallback((result: SearchResult) => {
+    saveRecentSearch(query);
+    setIsOpen(false);
+    setQuery("");
+    
+    // Navigate to result
+    const baseUrls = {
+      course: '/khoa-hoc',
+      product: '/san-pham',
+      post: '/blog',
+      resource: '/tai-nguyen'
+    };
+    
+    window.location.href = `${baseUrls[result.type]}/${result.id}`;
+  }, [query, saveRecentSearch]);
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -126,7 +148,7 @@ export function GlobalSearch({
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, selectedIndex, searchResults]);
+  }, [isOpen, selectedIndex, searchResults, handleResultClick]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
@@ -177,28 +199,6 @@ export function GlobalSearch({
       default:
         return 'bg-gray-100 text-gray-800';
     }
-  };
-
-  const saveRecentSearch = (searchTerm: string) => {
-    const updated = [searchTerm, ...recentSearches.filter(s => s !== searchTerm)].slice(0, 5);
-    setRecentSearches(updated);
-    localStorage.setItem('nam-long-center-recent-searches', JSON.stringify(updated));
-  };
-
-  const handleResultClick = (result: SearchResult) => {
-    saveRecentSearch(query);
-    setIsOpen(false);
-    setQuery("");
-    
-    // Navigate to result
-    const baseUrls = {
-      course: '/khoa-hoc',
-      product: '/san-pham',
-      post: '/blog',
-      resource: '/tai-nguyen'
-    };
-    
-    window.location.href = `${baseUrls[result.type]}/${result.id}`;
   };
 
   const handleRecentSearchClick = (searchTerm: string) => {

@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { Search, X, Command } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Badge } from "../ui/badge";
+import { cn } from "../../lib/utils";
 
 interface SearchBarProps {
   variant?: "default" | "minimal" | "expanded";
@@ -14,12 +13,12 @@ interface SearchBarProps {
   showIcon?: boolean;
 }
 
-export function SearchBar({ 
-  variant = "default", 
+export function SearchBar({
+  variant = "default",
   placeholder = "Tìm kiếm khóa học, sản phẩm...",
   className,
   onSearch,
-  showIcon = false
+  showIcon = false,
 }: SearchBarProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [query, setQuery] = useState("");
@@ -92,11 +91,11 @@ export function SearchBar({
     return (
       <>
         {/* Backdrop */}
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
           onClick={() => setIsExpanded(false)}
         />
-        
+
         {/* Search Modal */}
         <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-2xl mx-4">
           <div className="bg-background border rounded-lg shadow-2xl">
@@ -123,7 +122,7 @@ export function SearchBar({
                   <X className="h-4 w-4" />
                 </Button>
               </div>
-              
+
               {/* Search suggestions */}
               {isFocused && (
                 <div className="border-t p-4 space-y-3">
@@ -134,7 +133,12 @@ export function SearchBar({
                     </Badge>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
-                    {["BIM Automation", "AutoCAD", "Kỹ sư xây dựng", "Phần mềm thiết kế"].map((suggestion) => (
+                    {[
+                      "BIM Automation",
+                      "AutoCAD",
+                      "Kỹ sư xây dựng",
+                      "Phần mềm thiết kế",
+                    ].map((suggestion) => (
                       <button
                         key={suggestion}
                         type="button"
@@ -185,10 +189,11 @@ export function SearchBar({
           </Button>
         )}
       </div>
-      
+
       {/* Keyboard shortcut hint */}
       <div className="absolute -bottom-6 left-0 text-xs text-muted-foreground">
-        Nhấn <kbd className="px-1 py-0.5 bg-muted rounded text-xs">⌘K</kbd> để tìm kiếm nhanh
+        Nhấn <kbd className="px-1 py-0.5 bg-muted rounded text-xs">⌘K</kbd> để
+        tìm kiếm nhanh
       </div>
     </form>
   );

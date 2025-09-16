@@ -1,11 +1,4 @@
-import { FloatingNavigation } from "./navigation/floating-navigation";
-import EnhancedFloatingGuide from "./guide/EnhancedFloatingGuide";
-
+// Client-side only components wrapper
 export function ClientWrapper() {
-  return (
-    <>
-      <FloatingNavigation />
-      <EnhancedFloatingGuide />
-    </>
-  );
+  return null; // No client-side only components needed for now
 }

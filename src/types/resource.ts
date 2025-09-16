@@ -2,9 +2,10 @@ export type Resource = {
   id: string;
   slug: string;
   title: string;
+  description: string;
   type: "pdf" | "doc" | "guide" | "project";
-  access: "free" | "member" | "paid";
-  domain: string;
+  field: string;
+  accessLevel: "free" | "member" | "premium";
   year: number;
   tags: string[];
   thumbnail?: string;

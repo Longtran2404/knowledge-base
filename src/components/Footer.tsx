@@ -1,85 +1,112 @@
-
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { 
-  MapPin, 
-  Phone, 
-  Mail, 
-  Clock, 
-  Facebook, 
-  Youtube, 
+import React from "react";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import {
+  MapPin,
+  Phone,
+  Mail,
+  Clock,
+  Facebook,
+  Youtube,
   Linkedin,
   Send,
   ArrowUp,
   BookOpen,
   Users,
-  Award
-} from 'lucide-react';
+  Award,
+} from "lucide-react";
 
 const Footer = () => {
   const quickLinks = [
-    { label: 'Trang chủ', href: '/' },
-    { label: 'Giới thiệu', href: '/about' },
-    { label: 'Khóa học', href: '/courses' },
-    { label: 'Thư viện', href: '/resources' },
-    { label: 'Blog', href: '/blog' }
+    { label: "Trang chủ", href: "/" },
+    { label: "Giới thiệu", href: "/about" },
+    { label: "Khóa học", href: "/courses" },
+    { label: "Thư viện", href: "/resources" },
+    { label: "Blog", href: "/blog" },
   ];
 
   const services = [
-    { label: 'Đào tạo trực tuyến', href: '/courses' },
-    { label: 'Tư vấn dự án', href: '/consulting' },
-    { label: 'Thiết kế BIM', href: '/bim-services' },
-    { label: 'Quản lý dự án', href: '/project-management' },
-    { label: 'Marketplace', href: '/marketplace' }
+    { label: "Đào tạo trực tuyến", href: "/courses" },
+    { label: "Tư vấn dự án", href: "/consulting" },
+    { label: "Thiết kế BIM", href: "/bim-services" },
+    { label: "Quản lý dự án", href: "/project-management" },
+    { label: "Marketplace", href: "/marketplace" },
   ];
 
   const support = [
-    { label: 'Liên hệ', href: '/contact' },
-    { label: 'FAQ', href: '/faq' },
-    { label: 'Hỗ trợ', href: '/support' },
-    { label: 'Chính sách bảo mật', href: '/privacy' },
-    { label: 'Điều khoản sử dụng', href: '/terms' }
+    { label: "Liên hệ", href: "/contact" },
+    { label: "FAQ", href: "/faq" },
+    { label: "Hỗ trợ", href: "/support" },
+    { label: "Chính sách bảo mật", href: "/privacy" },
+    { label: "Điều khoản sử dụng", href: "/terms" },
   ];
 
   const socialLinks = [
-    { icon: Facebook, href: '#', color: 'hover:text-blue-600', label: 'Facebook' },
-    { icon: Youtube, href: '#', color: 'hover:text-red-600', label: 'YouTube' },
-    { icon: Linkedin, href: '#', color: 'hover:text-blue-700', label: 'LinkedIn' }
+    {
+      icon: Facebook,
+      href: "#",
+      color: "hover:text-blue-600",
+      label: "Facebook",
+    },
+    { icon: Youtube, href: "#", color: "hover:text-red-600", label: "YouTube" },
+    {
+      icon: Linkedin,
+      href: "#",
+      color: "hover:text-blue-700",
+      label: "LinkedIn",
+    },
   ];
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
-    <footer className="bg-gray-900 text-white relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white relative overflow-hidden">
+      {/* Background pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.3) 1px, transparent 0)`,
+            backgroundSize: "20px 20px",
+          }}
+        ></div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         {/* Main Footer Content */}
-        <div className="py-16">
+        <div className="py-20">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:gap-12">
-            {/* Company Info */}
+            {/* Enhanced Company Info */}
             <div className="lg:col-span-1">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-xl">NL</span>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-glow">
+                  <span className="text-white font-bold text-2xl">NL</span>
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold">Nam Long Center</h3>
-                  <p className="text-sm text-gray-400">Xây dựng tương lai</p>
+                  <h3 className="text-2xl font-bold text-white">
+                    Nam Long Center
+                  </h3>
+                  <p className="text-sm text-gray-400 font-medium">
+                    Xây dựng tương lai
+                  </p>
                 </div>
               </div>
-              
+
               <p className="text-gray-300 mb-6 leading-relaxed">
-                Nền tảng giáo dục và thương mại hàng đầu cho ngành xây dựng Việt Nam. 
-                Chúng tôi cam kết mang đến những giá trị tốt nhất cho cộng đồng.
+                Nền tảng giáo dục và thương mại hàng đầu cho ngành xây dựng Việt
+                Nam. Chúng tôi cam kết mang đến những giá trị tốt nhất cho cộng
+                đồng.
               </p>
 
               {/* Contact Info */}
               <div className="space-y-3">
                 <div className="flex items-center gap-3 text-sm">
                   <MapPin className="w-4 h-4 text-blue-400 flex-shrink-0" />
-                  <span className="text-gray-300">123 Đường ABC, Quận 1, TP.HCM</span>
+                  <span className="text-gray-300">
+                    123 Đường ABC, Quận 1, TP.HCM
+                  </span>
                 </div>
                 <div className="flex items-center gap-3 text-sm">
                   <Phone className="w-4 h-4 text-blue-400 flex-shrink-0" />
@@ -98,11 +125,13 @@ const Footer = () => {
 
             {/* Quick Links */}
             <div>
-              <h4 className="text-lg font-semibold mb-6 text-white">Liên kết nhanh</h4>
+              <h4 className="text-lg font-semibold mb-6 text-white">
+                Liên kết nhanh
+              </h4>
               <ul className="space-y-3">
                 {quickLinks.map((link, index) => (
                   <li key={index}>
-                    <a 
+                    <a
                       href={link.href}
                       className="text-gray-300 hover:text-blue-400 transition-colors text-sm"
                     >
@@ -119,7 +148,7 @@ const Footer = () => {
               <ul className="space-y-3">
                 {services.map((service, index) => (
                   <li key={index}>
-                    <a 
+                    <a
                       href={service.href}
                       className="text-gray-300 hover:text-blue-400 transition-colors text-sm"
                     >
@@ -132,8 +161,10 @@ const Footer = () => {
 
             {/* Newsletter & Support */}
             <div>
-              <h4 className="text-lg font-semibold mb-6 text-white">Hỗ trợ & Cập nhật</h4>
-              
+              <h4 className="text-lg font-semibold mb-6 text-white">
+                Hỗ trợ & Cập nhật
+              </h4>
+
               {/* Newsletter */}
               <div className="mb-8">
                 <p className="text-gray-300 text-sm mb-4">
@@ -155,7 +186,7 @@ const Footer = () => {
               <ul className="space-y-3 mb-8">
                 {support.map((item, index) => (
                   <li key={index}>
-                    <a 
+                    <a
                       href={item.href}
                       className="text-gray-300 hover:text-blue-400 transition-colors text-sm"
                     >
@@ -167,7 +198,9 @@ const Footer = () => {
 
               {/* Social Media */}
               <div>
-                <p className="text-sm text-gray-400 mb-3">Kết nối với chúng tôi</p>
+                <p className="text-sm text-gray-400 mb-3">
+                  Kết nối với chúng tôi
+                </p>
                 <div className="flex gap-3">
                   {socialLinks.map((social, index) => {
                     const IconComponent = social.icon;
@@ -225,9 +258,10 @@ const Footer = () => {
         <div className="py-6 border-t border-gray-800">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="text-sm text-gray-400 text-center md:text-left">
-              © {new Date().getFullYear()} Nam Long Center. Tất cả quyền được bảo lưu.
+              © {new Date().getFullYear()} Nam Long Center. Tất cả quyền được
+              bảo lưu.
             </div>
-            
+
             <div className="flex items-center gap-6">
               <div className="text-xs text-gray-500">
                 Được phát triển với ❤️ tại Việt Nam

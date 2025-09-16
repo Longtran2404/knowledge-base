@@ -22,7 +22,7 @@ export const JWT_CONFIG = {
 
 // App Configuration
 export const APP_CONFIG = {
-  url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+  url: process.env.REACT_APP_APP_URL || "http://localhost:3000",
   name: "Nam Long Center",
   supportEmail: "info@namlongcenter.com",
   supportPhone: "0123 456 789",

@@ -1,12 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Building2, Users, Target, Award, Globe, BookOpen, Zap, Heart, Star, CheckCircle, ArrowRight, Mail, Phone, MapPin, Linkedin, Youtube, Facebook, Home, Clock, Trophy, Play } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { AnimeScrollObserver } from "@/components/animations/anime-scroll-effects";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "../components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Separator } from "../components/ui/separator";
+import { AnimeScrollObserver } from "../components/animations/anime-scroll-effects";
+import { Avatar, AvatarFallback } from "../components/ui/avatar";
 
 // Metadata moved to App.js or individual page titles
 

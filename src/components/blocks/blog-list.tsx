@@ -4,14 +4,14 @@ import { Link } from "react-router-dom";
 
 import { ArrowRight, Calendar, Clock } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "../../components/ui/button";
+import { Card, CardContent } from "../../components/ui/card";
+import { Badge } from "../../components/ui/badge";
+import { Input } from "../../components/ui/input";
+import { Skeleton } from "../../components/ui/skeleton";
 
-import { Post } from "@/types/post";
-import { formatDate } from "@/lib/spotlight";
+import { Post } from "../../types/post";
+import { formatDate } from "../../lib/shared";
 
 interface BlogListProps {
   className?: string;

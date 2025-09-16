@@ -1,16 +1,16 @@
 import React from "react";
 
 import { Search, Filter, Star, Users, Clock, ArrowRight, BookOpen, Zap, Target } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Separator } from "../components/ui/separator";
 import { coursesData } from "../data/courses";
-import { AnimeScrollEffects, StaggerAnimation } from "@/components/animations/anime-scroll-effects";
+import { AnimeScrollEffects, StaggerAnimation } from "../components/animations/anime-scroll-effects";
 
-import { AppProviders } from "@/lib/providers/app-providers";
-import { FilterWrapper } from "@/components/filters/filter-wrapper";
+import { AppProviders } from "../lib/providers/app-providers";
+import { FilterWrapper } from "../components/filters/filter-wrapper";
 
 
 export default function CoursesPage() {

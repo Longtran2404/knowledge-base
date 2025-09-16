@@ -3,6 +3,7 @@ export type Post = {
   slug: string;
   title: string;
   excerpt: string;
+  category: string;
   thumbnail?: string;
   tags?: string[];
   createdAt: string;

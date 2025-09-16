@@ -1,19 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useEmailAuth } from '../contexts/EmailAuthContext';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { Alert, AlertDescription } from './ui/alert';
-import FileUpload from '../components/FileUpload';
-import { 
-  ArrowLeft, 
-  User, 
-  Settings, 
-  FileText, 
-  Upload, 
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import { useEmailAuth } from "../contexts/EmailAuthContext";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
+import { Alert, AlertDescription } from "../components/ui/alert";
+import FileUpload from "../components/FileUpload";
+import {
+  ArrowLeft,
+  User,
+  Settings,
+  FileText,
+  Upload,
   Download,
   Trash2,
   Eye,
@@ -21,50 +32,55 @@ import {
   Save,
   X,
   CheckCircle,
-  AlertCircle
-} from 'lucide-react';
-import { toast } from 'sonner';
-import { getUserFiles, FileUpload as FileUploadType, formatFileSize, getFileIcon } from '../lib/file-service';
+  AlertCircle,
+} from "lucide-react";
+import { toast } from "sonner";
+import {
+  getUserFiles,
+  FileUpload as FileUploadType,
+  formatFileSize,
+  getFileIcon,
+} from "../lib/file-service";
 
 export default function AccountManagementPage() {
   const navigate = useNavigate();
   const { user, updateProfile, loading } = useEmailAuth();
-  
+
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
-    full_name: '',
-    phone: '',
-    address: '',
-    bio: ''
+    full_name: "",
+    phone: "",
+    address: "",
+    bio: "",
   });
   const [personalFiles, setPersonalFiles] = useState<FileUploadType[]>([]);
   const [loadingFiles, setLoadingFiles] = useState(false);
 
-  useEffect(() => {
-    if (user) {
-      setEditForm({
-        full_name: user.full_name || '',
-        phone: user.phone || '',
-        address: user.address || '',
-        bio: user.bio || ''
-      });
-      loadPersonalFiles();
-    }
-  }, [user]);
-
-  const loadPersonalFiles = async () => {
+  const loadPersonalFiles = useCallback(async () => {
     if (!user) return;
-    
+
     setLoadingFiles(true);
     try {
       const files = await getUserFiles(user.id);
       setPersonalFiles(files);
     } catch (error) {
-      toast.error('Không thể tải danh sách file');
+      toast.error("Không thể tải danh sách file");
     } finally {
       setLoadingFiles(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      setEditForm({
+        full_name: user.full_name || "",
+        phone: user.phone || "",
+        address: user.address || "",
+        bio: user.bio || "",
+      });
+      loadPersonalFiles();
+    }
+  }, [user, loadPersonalFiles]);
 
   const handleSaveProfile = async () => {
     if (!user) return;
@@ -72,34 +88,34 @@ export default function AccountManagementPage() {
     try {
       const result = await updateProfile(editForm);
       if (result.success) {
-        toast.success('Cập nhật thông tin thành công');
+        toast.success("Cập nhật thông tin thành công");
         setIsEditing(false);
       } else {
-        toast.error(result.error || 'Có lỗi xảy ra');
+        toast.error(result.error || "Có lỗi xảy ra");
       }
     } catch (error) {
-      toast.error('Có lỗi xảy ra khi cập nhật thông tin');
+      toast.error("Có lỗi xảy ra khi cập nhật thông tin");
     }
   };
 
   const handleCancelEdit = () => {
     if (user) {
       setEditForm({
-        full_name: user.full_name || '',
-        phone: user.phone || '',
-        address: user.address || '',
-        bio: user.bio || ''
+        full_name: user.full_name || "",
+        phone: user.phone || "",
+        address: user.address || "",
+        bio: user.bio || "",
       });
     }
     setIsEditing(false);
   };
 
   const handleFileUpload = (file: FileUploadType) => {
-    setPersonalFiles(prev => [file, ...prev]);
+    setPersonalFiles((prev) => [file, ...prev]);
   };
 
   const handleFileDelete = (fileId: string) => {
-    setPersonalFiles(prev => prev.filter(file => file.id !== fileId));
+    setPersonalFiles((prev) => prev.filter((file) => file.id !== fileId));
   };
 
   if (!user) {
@@ -108,9 +124,13 @@ export default function AccountManagementPage() {
         <Card className="w-full max-w-md">
           <CardContent className="text-center py-8">
             <AlertCircle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">Cần đăng nhập</h2>
-            <p className="text-gray-600 mb-4">Vui lòng đăng nhập để quản lý tài khoản</p>
-            <Button onClick={() => navigate('/auth')} className="w-full">
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              Cần đăng nhập
+            </h2>
+            <p className="text-gray-600 mb-4">
+              Vui lòng đăng nhập để quản lý tài khoản
+            </p>
+            <Button onClick={() => navigate("/auth")} className="w-full">
               Đăng nhập ngay
             </Button>
           </CardContent>
@@ -132,14 +152,18 @@ export default function AccountManagementPage() {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Quay lại
           </Button>
-          
+
           <div className="flex items-center gap-4 mb-4">
             <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
               <User className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Quản lý tài khoản</h1>
-              <p className="text-gray-600">Quản lý thông tin cá nhân và tài liệu của bạn</p>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Quản lý tài khoản
+              </h1>
+              <p className="text-gray-600">
+                Quản lý thông tin cá nhân và tài liệu của bạn
+              </p>
             </div>
           </div>
         </div>
@@ -182,7 +206,12 @@ export default function AccountManagementPage() {
                         <Input
                           id="full_name"
                           value={editForm.full_name}
-                          onChange={(e) => setEditForm(prev => ({ ...prev, full_name: e.target.value }))}
+                          onChange={(e) =>
+                            setEditForm((prev) => ({
+                              ...prev,
+                              full_name: e.target.value,
+                            }))
+                          }
                         />
                       </div>
                       <div className="space-y-2">
@@ -190,20 +219,30 @@ export default function AccountManagementPage() {
                         <Input
                           id="phone"
                           value={editForm.phone}
-                          onChange={(e) => setEditForm(prev => ({ ...prev, phone: e.target.value }))}
+                          onChange={(e) =>
+                            setEditForm((prev) => ({
+                              ...prev,
+                              phone: e.target.value,
+                            }))
+                          }
                         />
                       </div>
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="address">Địa chỉ</Label>
                       <Input
                         id="address"
                         value={editForm.address}
-                        onChange={(e) => setEditForm(prev => ({ ...prev, address: e.target.value }))}
+                        onChange={(e) =>
+                          setEditForm((prev) => ({
+                            ...prev,
+                            address: e.target.value,
+                          }))
+                        }
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="bio">Giới thiệu bản thân</Label>
                       <textarea
@@ -211,11 +250,16 @@ export default function AccountManagementPage() {
                         className="w-full p-3 border border-gray-300 rounded-md resize-none"
                         rows={4}
                         value={editForm.bio}
-                        onChange={(e) => setEditForm(prev => ({ ...prev, bio: e.target.value }))}
+                        onChange={(e) =>
+                          setEditForm((prev) => ({
+                            ...prev,
+                            bio: e.target.value,
+                          }))
+                        }
                         placeholder="Viết vài dòng về bản thân..."
                       />
                     </div>
-                    
+
                     <div className="flex gap-2">
                       <Button onClick={handleSaveProfile}>
                         <Save className="h-4 w-4 mr-2" />
@@ -231,37 +275,58 @@ export default function AccountManagementPage() {
                   <div className="space-y-4">
                     <div className="grid md:grid-cols-2 gap-4">
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">Họ và tên</Label>
-                        <p className="text-gray-900">{user.full_name || 'Chưa cập nhật'}</p>
+                        <Label className="text-sm font-medium text-gray-700">
+                          Họ và tên
+                        </Label>
+                        <p className="text-gray-900">
+                          {user.full_name || "Chưa cập nhật"}
+                        </p>
                       </div>
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">Email</Label>
+                        <Label className="text-sm font-medium text-gray-700">
+                          Email
+                        </Label>
                         <p className="text-gray-900">{user.email}</p>
                       </div>
                     </div>
-                    
+
                     <div className="grid md:grid-cols-2 gap-4">
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">Số điện thoại</Label>
-                        <p className="text-gray-900">{user.phone || 'Chưa cập nhật'}</p>
+                        <Label className="text-sm font-medium text-gray-700">
+                          Số điện thoại
+                        </Label>
+                        <p className="text-gray-900">
+                          {user.phone || "Chưa cập nhật"}
+                        </p>
                       </div>
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">Vai trò</Label>
+                        <Label className="text-sm font-medium text-gray-700">
+                          Vai trò
+                        </Label>
                         <p className="text-gray-900">
-                          {user.role === 'student' ? 'Học viên' : 
-                           user.role === 'instructor' ? 'Giảng viên' : 'Quản trị viên'}
+                          {user.role === "student"
+                            ? "Học viên"
+                            : user.role === "instructor"
+                            ? "Giảng viên"
+                            : "Quản trị viên"}
                         </p>
                       </div>
                     </div>
-                    
+
                     <div>
-                      <Label className="text-sm font-medium text-gray-700">Địa chỉ</Label>
-                      <p className="text-gray-900">{user.address || 'Chưa cập nhật'}</p>
+                      <Label className="text-sm font-medium text-gray-700">
+                        Địa chỉ
+                      </Label>
+                      <p className="text-gray-900">
+                        {user.address || "Chưa cập nhật"}
+                      </p>
                     </div>
-                    
+
                     {user.bio && (
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">Giới thiệu</Label>
+                        <Label className="text-sm font-medium text-gray-700">
+                          Giới thiệu
+                        </Label>
                         <p className="text-gray-900">{user.bio}</p>
                       </div>
                     )}
@@ -290,7 +355,7 @@ export default function AccountManagementPage() {
                     onUploadComplete={handleFileUpload}
                     onFileDelete={handleFileDelete}
                     maxFileSize={50}
-                    acceptedTypes={['*']}
+                    acceptedTypes={["*"]}
                   />
                 </CardContent>
               </Card>
@@ -324,21 +389,33 @@ export default function AccountManagementPage() {
                           className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50"
                         >
                           <div className="flex items-center gap-3">
-                            <span className="text-2xl">{getFileIcon(file.mime_type)}</span>
+                            <span className="text-2xl">
+                              {getFileIcon(file.mime_type)}
+                            </span>
                             <div>
-                              <p className="font-medium text-sm">{file.original_filename}</p>
+                              <p className="font-medium text-sm">
+                                {file.original_filename}
+                              </p>
                               <p className="text-xs text-gray-500">
-                                {formatFileSize(file.file_size)} • {file.download_count} lượt tải • 
-                                {new Date(file.created_at).toLocaleDateString('vi-VN')}
+                                {formatFileSize(file.file_size)} •{" "}
+                                {file.download_count} lượt tải •
+                                {new Date(file.created_at).toLocaleDateString(
+                                  "vi-VN"
+                                )}
                               </p>
                             </div>
                           </div>
-                          
+
                           <div className="flex items-center gap-2">
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => window.open(`/api/files/${file.id}/download`, '_blank')}
+                              onClick={() =>
+                                window.open(
+                                  `/api/files/${file.id}/download`,
+                                  "_blank"
+                                )
+                              }
                             >
                               <Download className="h-4 w-4" />
                             </Button>
@@ -377,21 +454,26 @@ export default function AccountManagementPage() {
                   <div className="flex items-center justify-between p-4 border rounded-lg">
                     <div>
                       <h3 className="font-medium">Thay đổi mật khẩu</h3>
-                      <p className="text-sm text-gray-600">Cập nhật mật khẩu để bảo mật tài khoản</p>
+                      <p className="text-sm text-gray-600">
+                        Cập nhật mật khẩu để bảo mật tài khoản
+                      </p>
                     </div>
-                    <Button variant="outline" onClick={() => navigate('/security')}>
+                    <Button
+                      variant="outline"
+                      onClick={() => navigate("/security")}
+                    >
                       Thay đổi
                     </Button>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-4 border rounded-lg">
                     <div>
                       <h3 className="font-medium">Xóa tài khoản</h3>
-                      <p className="text-sm text-gray-600">Xóa vĩnh viễn tài khoản và dữ liệu</p>
+                      <p className="text-sm text-gray-600">
+                        Xóa vĩnh viễn tài khoản và dữ liệu
+                      </p>
                     </div>
-                    <Button variant="destructive">
-                      Xóa tài khoản
-                    </Button>
+                    <Button variant="destructive">Xóa tài khoản</Button>
                   </div>
                 </div>
               </CardContent>

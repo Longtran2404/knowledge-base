@@ -239,10 +239,10 @@ const TourGuide: React.FC<TourGuideProps> = ({
   };
 
   useEffect(() => {
-    if (isActive && autoStart) {
-      startTour();
+    if (isActive && autoStart && steps.length > 0) {
+      // Tour is already started, no need to call startTour again
     }
-  }, [isActive, autoStart]);
+  }, [isActive, autoStart, steps]);
 
   useEffect(() => {
     if (isVisible && currentStepData) {

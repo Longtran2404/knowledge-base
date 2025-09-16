@@ -3,8 +3,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Users, BookOpen, Briefcase, Heart, Star, Mail, Phone, Clock } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "../../components/ui/button";
+import { Card, CardContent } from "../../components/ui/card";
 
 interface CollabCTAProps {
   className?: string;

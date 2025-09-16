@@ -1,0 +1,21 @@
+{
+  "name": "Nam Long Center",
+  "short_name": "Nam Long Center",
+  "description": "Trung tâm đào tạo và phát triển kỹ năng",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/next.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "training", "business"],
+  "lang": "vi",
+  "dir": "ltr"
+}

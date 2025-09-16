@@ -1,24 +1,37 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { Button } from './ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Progress } from './ui/progress';
-import { Alert, AlertDescription } from './ui/alert';
-import { 
-  Upload, 
-  File, 
-  X, 
-  Download, 
-  Trash2, 
+import React, { useState, useRef, useCallback } from "react";
+import { Button } from "./ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import { Progress } from "./ui/progress";
+import { Alert, AlertDescription } from "./ui/alert";
+import {
+  Upload,
+  File,
+  X,
+  Download,
+  Trash2,
   Eye,
   CheckCircle,
   AlertCircle,
-  Loader2
-} from 'lucide-react';
-import { toast } from 'sonner';
-import { uploadFile, deleteFile, downloadFile, formatFileSize, getFileIcon, FileUpload as FileUploadType } from '../lib/file-service';
+  Loader2,
+} from "lucide-react";
+import { toast } from "sonner";
+import {
+  uploadFile,
+  deleteFile,
+  downloadFile,
+  formatFileSize,
+  getFileIcon,
+  FileUpload as FileUploadType,
+} from "../lib/file-service";
 
 interface FileUploadProps {
-  fileType: 'personal' | 'public' | 'course_material';
+  fileType: "personal" | "public" | "course_material";
   courseId?: string;
   onUploadComplete?: (file: FileUploadType) => void;
   onFileDelete?: (fileId: string) => void;
@@ -33,8 +46,8 @@ export default function FileUpload({
   onUploadComplete,
   onFileDelete,
   maxFileSize = 10, // 10MB default
-  acceptedTypes = ['*'],
-  className = ''
+  acceptedTypes = ["*"],
+  className = "",
 }: FileUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -52,72 +65,91 @@ export default function FileUpload({
     setIsDragging(false);
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    
-    const files = Array.from(e.dataTransfer.files);
-    handleFiles(files);
-  }, []);
+  const handleFiles = useCallback(
+    async (files: File[]) => {
+      if (files.length === 0) return;
 
-  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    handleFiles(files);
-  }, []);
-
-  const handleFiles = async (files: File[]) => {
-    if (files.length === 0) return;
-
-    // Validate files
-    for (const file of files) {
-      if (file.size > maxFileSize * 1024 * 1024) {
-        toast.error(`File ${file.name} quá lớn. Kích thước tối đa: ${maxFileSize}MB`);
-        return;
-      }
-
-      if (acceptedTypes[0] !== '*' && !acceptedTypes.some(type => file.type.includes(type))) {
-        toast.error(`File ${file.name} không được hỗ trợ`);
-        return;
-      }
-    }
-
-    setUploading(true);
-    setUploadProgress(0);
-
-    try {
+      // Validate files
       for (const file of files) {
-        const result = await uploadFile(file, fileType, courseId, (progress) => {
-          setUploadProgress(progress.percentage);
-        });
+        if (file.size > maxFileSize * 1024 * 1024) {
+          toast.error(
+            `File ${file.name} quá lớn. Kích thước tối đa: ${maxFileSize}MB`
+          );
+          return;
+        }
 
-        if (result.success && result.data) {
-          setUploadedFiles(prev => [result.data!, ...prev]);
-          onUploadComplete?.(result.data);
-          toast.success(`Upload ${file.name} thành công`);
-        } else {
-          toast.error(`Upload ${file.name} thất bại: ${result.error}`);
+        if (
+          acceptedTypes[0] !== "*" &&
+          !acceptedTypes.some((type) => file.type.includes(type))
+        ) {
+          toast.error(`File ${file.name} không được hỗ trợ`);
+          return;
         }
       }
-    } catch (error) {
-      toast.error('Có lỗi xảy ra khi upload file');
-    } finally {
-      setUploading(false);
+
+      setUploading(true);
       setUploadProgress(0);
-    }
-  };
+
+      try {
+        for (const file of files) {
+          const result = await uploadFile(
+            file,
+            fileType,
+            courseId,
+            (progress) => {
+              setUploadProgress(progress.percentage);
+            }
+          );
+
+          if (result.success && result.data) {
+            setUploadedFiles((prev) => [result.data!, ...prev]);
+            onUploadComplete?.(result.data);
+            toast.success(`Upload ${file.name} thành công`);
+          } else {
+            toast.error(`Upload ${file.name} thất bại: ${result.error}`);
+          }
+        }
+      } catch (error) {
+        toast.error("Có lỗi xảy ra khi upload file");
+      } finally {
+        setUploading(false);
+        setUploadProgress(0);
+      }
+    },
+    [maxFileSize, acceptedTypes, onUploadComplete, courseId, fileType]
+  );
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      setIsDragging(false);
+
+      const files = Array.from(e.dataTransfer.files);
+      handleFiles(files);
+    },
+    [handleFiles]
+  );
+
+  const handleFileSelect = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = Array.from(e.target.files || []);
+      handleFiles(files);
+    },
+    [handleFiles]
+  );
 
   const handleDelete = async (fileId: string) => {
     try {
       const result = await deleteFile(fileId);
       if (result.success) {
-        setUploadedFiles(prev => prev.filter(file => file.id !== fileId));
+        setUploadedFiles((prev) => prev.filter((file) => file.id !== fileId));
         onFileDelete?.(fileId);
-        toast.success('Xóa file thành công');
+        toast.success("Xóa file thành công");
       } else {
         toast.error(`Xóa file thất bại: ${result.error}`);
       }
     } catch (error) {
-      toast.error('Có lỗi xảy ra khi xóa file');
+      toast.error("Có lỗi xảy ra khi xóa file");
     }
   };
 
@@ -125,12 +157,12 @@ export default function FileUpload({
     try {
       const result = await downloadFile(fileId);
       if (result.success && result.url) {
-        window.open(result.url, '_blank');
+        window.open(result.url, "_blank");
       } else {
         toast.error(`Tải file thất bại: ${result.error}`);
       }
     } catch (error) {
-      toast.error('Có lỗi xảy ra khi tải file');
+      toast.error("Có lỗi xảy ra khi tải file");
     }
   };
 
@@ -153,8 +185,8 @@ export default function FileUpload({
           <div
             className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
               isDragging
-                ? 'border-blue-500 bg-blue-50'
-                : 'border-gray-300 hover:border-gray-400'
+                ? "border-blue-500 bg-blue-50"
+                : "border-gray-300 hover:border-gray-400"
             }`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -164,22 +196,22 @@ export default function FileUpload({
               ref={fileInputRef}
               type="file"
               multiple
-              accept={acceptedTypes.join(',')}
+              accept={acceptedTypes.join(",")}
               onChange={handleFileSelect}
               className="hidden"
             />
-            
+
             <div className="space-y-4">
               <div className="mx-auto w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
                 <Upload className="h-6 w-6 text-gray-600" />
               </div>
-              
+
               <div>
                 <p className="text-lg font-medium text-gray-900">
                   Kéo thả file vào đây
                 </p>
                 <p className="text-sm text-gray-500">
-                  hoặc{' '}
+                  hoặc{" "}
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
@@ -220,15 +252,20 @@ export default function FileUpload({
                   className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-2xl">{getFileIcon(file.mime_type)}</span>
+                    <span className="text-2xl">
+                      {getFileIcon(file.mime_type)}
+                    </span>
                     <div>
-                      <p className="font-medium text-sm">{file.original_filename}</p>
+                      <p className="font-medium text-sm">
+                        {file.original_filename}
+                      </p>
                       <p className="text-xs text-gray-500">
-                        {formatFileSize(file.file_size)} • {file.download_count} lượt tải
+                        {formatFileSize(file.file_size)} • {file.download_count}{" "}
+                        lượt tải
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-2">
                     <Button
                       variant="ghost"
