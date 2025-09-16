@@ -5,10 +5,23 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
 import {
   Check,
   X,
@@ -54,10 +67,11 @@ interface UploadedDocument {
 }
 
 export function DocumentApproval() {
-  const { user } = useSimpleAuth();
+  const { user } = useAuth();
   const [documents, setDocuments] = useState<UploadedDocument[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedDocument, setSelectedDocument] = useState<UploadedDocument | null>(null);
+  const [selectedDocument, setSelectedDocument] =
+    useState<UploadedDocument | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
@@ -92,7 +106,7 @@ export function DocumentApproval() {
     }
 
     try {
-      const updatedDocs = documents.map(doc =>
+      const updatedDocs = documents.map((doc) =>
         doc.id === documentId
           ? {
               ...doc,
@@ -104,7 +118,10 @@ export function DocumentApproval() {
       );
 
       setDocuments(updatedDocs);
-      localStorage.setItem("nlc_uploaded_documents", JSON.stringify(updatedDocs));
+      localStorage.setItem(
+        "nlc_uploaded_documents",
+        JSON.stringify(updatedDocs)
+      );
 
       toast.success("Đã duyệt tài liệu thành công!");
       setSelectedDocument(null);
@@ -125,7 +142,7 @@ export function DocumentApproval() {
     }
 
     try {
-      const updatedDocs = documents.map(doc =>
+      const updatedDocs = documents.map((doc) =>
         doc.id === documentId
           ? {
               ...doc,
@@ -138,7 +155,10 @@ export function DocumentApproval() {
       );
 
       setDocuments(updatedDocs);
-      localStorage.setItem("nlc_uploaded_documents", JSON.stringify(updatedDocs));
+      localStorage.setItem(
+        "nlc_uploaded_documents",
+        JSON.stringify(updatedDocs)
+      );
 
       toast.success("Đã từ chối tài liệu");
       setSelectedDocument(null);
@@ -152,29 +172,45 @@ export function DocumentApproval() {
     if (fileType.startsWith("image/")) return <Image className="w-5 h-5" />;
     if (fileType.startsWith("video/")) return <Video className="w-5 h-5" />;
     if (fileType.startsWith("audio/")) return <Music className="w-5 h-5" />;
-    if (fileType.includes("zip") || fileType.includes("rar")) return <Archive className="w-5 h-5" />;
+    if (fileType.includes("zip") || fileType.includes("rar"))
+      return <Archive className="w-5 h-5" />;
     return <FileText className="w-5 h-5" />;
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "pending_approval":
-        return <Badge className="bg-yellow-100 text-yellow-800"><Clock className="w-3 h-3 mr-1" />Chờ duyệt</Badge>;
+        return (
+          <Badge className="bg-yellow-100 text-yellow-800">
+            <Clock className="w-3 h-3 mr-1" />
+            Chờ duyệt
+          </Badge>
+        );
       case "approved":
-        return <Badge className="bg-green-100 text-green-800"><Check className="w-3 h-3 mr-1" />Đã duyệt</Badge>;
+        return (
+          <Badge className="bg-green-100 text-green-800">
+            <Check className="w-3 h-3 mr-1" />
+            Đã duyệt
+          </Badge>
+        );
       case "rejected":
-        return <Badge className="bg-red-100 text-red-800"><X className="w-3 h-3 mr-1" />Từ chối</Badge>;
+        return (
+          <Badge className="bg-red-100 text-red-800">
+            <X className="w-3 h-3 mr-1" />
+            Từ chối
+          </Badge>
+        );
       default:
         return <Badge variant="secondary">Không xác định</Badge>;
     }
   };
 
   const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
   const formatPrice = (price: number) => {
@@ -187,10 +223,12 @@ export function DocumentApproval() {
 
   // Filter and sort documents
   const filteredDocuments = documents
-    .filter(doc => {
-      const matchesSearch = doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           doc.category.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesStatus = filterStatus === "all" || doc.status === filterStatus;
+    .filter((doc) => {
+      const matchesSearch =
+        doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        doc.category.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus =
+        filterStatus === "all" || doc.status === filterStatus;
       return matchesSearch && matchesStatus;
     })
     .sort((a, b) => {
@@ -204,23 +242,34 @@ export function DocumentApproval() {
           break;
         case "date":
         default:
-          comparison = new Date(a.uploadedAt).getTime() - new Date(b.uploadedAt).getTime();
+          comparison =
+            new Date(a.uploadedAt).getTime() - new Date(b.uploadedAt).getTime();
           break;
       }
       return sortOrder === "asc" ? comparison : -comparison;
     });
 
-  const pendingCount = documents.filter(doc => doc.status === "pending_approval").length;
-  const approvedCount = documents.filter(doc => doc.status === "approved").length;
-  const rejectedCount = documents.filter(doc => doc.status === "rejected").length;
+  const pendingCount = documents.filter(
+    (doc) => doc.status === "pending_approval"
+  ).length;
+  const approvedCount = documents.filter(
+    (doc) => doc.status === "approved"
+  ).length;
+  const rejectedCount = documents.filter(
+    (doc) => doc.status === "rejected"
+  ).length;
 
   if (!canApprove) {
     return (
       <Card>
         <CardContent className="text-center p-8">
           <AlertTriangle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">Không có quyền truy cập</h3>
-          <p className="text-gray-500">Bạn cần quyền quản trị để duyệt tài liệu</p>
+          <h3 className="text-lg font-semibold mb-2">
+            Không có quyền truy cập
+          </h3>
+          <p className="text-gray-500">
+            Bạn cần quyền quản trị để duyệt tài liệu
+          </p>
         </CardContent>
       </Card>
     );
@@ -277,7 +326,9 @@ export function DocumentApproval() {
                 <Clock className="w-4 h-4 text-yellow-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-yellow-600">{pendingCount}</p>
+                <p className="text-2xl font-bold text-yellow-600">
+                  {pendingCount}
+                </p>
                 <p className="text-sm text-gray-500">Chờ duyệt</p>
               </div>
             </div>
@@ -291,7 +342,9 @@ export function DocumentApproval() {
                 <Check className="w-4 h-4 text-green-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-green-600">{approvedCount}</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {approvedCount}
+                </p>
                 <p className="text-sm text-gray-500">Đã duyệt</p>
               </div>
             </div>
@@ -305,7 +358,9 @@ export function DocumentApproval() {
                 <X className="w-4 h-4 text-red-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-red-600">{rejectedCount}</p>
+                <p className="text-2xl font-bold text-red-600">
+                  {rejectedCount}
+                </p>
                 <p className="text-sm text-gray-500">Từ chối</p>
               </div>
             </div>
@@ -362,9 +417,15 @@ export function DocumentApproval() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+                  onClick={() =>
+                    setSortOrder(sortOrder === "asc" ? "desc" : "asc")
+                  }
                 >
-                  {sortOrder === "asc" ? <SortAsc className="w-4 h-4" /> : <SortDesc className="w-4 h-4" />}
+                  {sortOrder === "asc" ? (
+                    <SortAsc className="w-4 h-4" />
+                  ) : (
+                    <SortDesc className="w-4 h-4" />
+                  )}
                 </Button>
               </div>
             </div>
@@ -396,8 +457,12 @@ export function DocumentApproval() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-lg line-clamp-1">{doc.title}</h3>
-                          <p className="text-gray-600 text-sm line-clamp-2">{doc.description}</p>
+                          <h3 className="font-semibold text-lg line-clamp-1">
+                            {doc.title}
+                          </h3>
+                          <p className="text-gray-600 text-sm line-clamp-2">
+                            {doc.description}
+                          </p>
                         </div>
                         <div className="ml-4 flex items-center gap-2">
                           {getStatusBadge(doc.status)}
@@ -447,7 +512,9 @@ export function DocumentApproval() {
                             <AlertTriangle className="w-4 h-4" />
                             <span className="font-medium">Lý do từ chối:</span>
                           </div>
-                          <p className="text-red-600 text-sm mt-1">{doc.rejectionReason}</p>
+                          <p className="text-red-600 text-sm mt-1">
+                            {doc.rejectionReason}
+                          </p>
                         </div>
                       )}
 
@@ -483,20 +550,22 @@ export function DocumentApproval() {
                               <div className="space-y-4">
                                 <Textarea
                                   value={rejectionReason}
-                                  onChange={(e) => setRejectionReason(e.target.value)}
+                                  onChange={(e) =>
+                                    setRejectionReason(e.target.value)
+                                  }
                                   placeholder="Nhập lý do từ chối..."
                                   rows={4}
                                 />
                                 <div className="flex gap-2">
                                   <Button
-                                    onClick={() => rejectDocument(doc.id, rejectionReason)}
+                                    onClick={() =>
+                                      rejectDocument(doc.id, rejectionReason)
+                                    }
                                     className="bg-red-600 hover:bg-red-700 text-white"
                                   >
                                     Xác nhận từ chối
                                   </Button>
-                                  <Button variant="outline">
-                                    Hủy
-                                  </Button>
+                                  <Button variant="outline">Hủy</Button>
                                 </div>
                               </div>
                             </DialogContent>
@@ -521,8 +590,7 @@ export function DocumentApproval() {
               <p className="text-gray-500">
                 {searchTerm || filterStatus !== "all"
                   ? "Không tìm thấy tài liệu phù hợp với bộ lọc"
-                  : "Chưa có tài liệu nào được tải lên"
-                }
+                  : "Chưa có tài liệu nào được tải lên"}
               </p>
             </CardContent>
           </Card>
@@ -572,7 +640,9 @@ function DocumentDetailModal({
           </div>
           <div>
             <span className="font-medium">Kích thước:</span>
-            <p className="text-gray-600">{(document.fileSize / (1024 * 1024)).toFixed(2)} MB</p>
+            <p className="text-gray-600">
+              {(document.fileSize / (1024 * 1024)).toFixed(2)} MB
+            </p>
           </div>
           <div>
             <span className="font-medium">Danh mục:</span>
@@ -581,7 +651,9 @@ function DocumentDetailModal({
           <div>
             <span className="font-medium">Giá:</span>
             <p className="text-gray-600">
-              {document.price === 0 ? "Miễn phí" : `${document.price.toLocaleString()} VND`}
+              {document.price === 0
+                ? "Miễn phí"
+                : `${document.price.toLocaleString()} VND`}
             </p>
           </div>
         </div>
@@ -592,7 +664,9 @@ function DocumentDetailModal({
             <span className="font-medium block mb-2">Tags:</span>
             <div className="flex flex-wrap gap-2">
               {document.tags.map((tag, index) => (
-                <Badge key={index} variant="secondary">{tag}</Badge>
+                <Badge key={index} variant="secondary">
+                  {tag}
+                </Badge>
               ))}
             </div>
           </div>
@@ -604,7 +678,9 @@ function DocumentDetailModal({
             <div>
               <span className="font-medium">Trạng thái: </span>
               {document.status === "pending_approval" && (
-                <Badge className="bg-yellow-100 text-yellow-800">Chờ duyệt</Badge>
+                <Badge className="bg-yellow-100 text-yellow-800">
+                  Chờ duyệt
+                </Badge>
               )}
               {document.status === "approved" && (
                 <Badge className="bg-green-100 text-green-800">Đã duyệt</Badge>

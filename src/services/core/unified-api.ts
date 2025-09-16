@@ -65,13 +65,13 @@ class UnifiedApiService {
     this.api.interceptors.request.use(
       (config) => {
         // Add auth token if available
-        const token = TokenManager.getAccessToken();
+        const token = TokenManager.getSessionToken();
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
 
         // Add request timestamp for monitoring
-        config.metadata = { startTime: Date.now() };
+        (config as any).metadata = { startTime: Date.now() };
 
         return config;
       },
@@ -84,7 +84,7 @@ class UnifiedApiService {
     this.api.interceptors.response.use(
       (response: AxiosResponse) => {
         // Log request duration for monitoring
-        const duration = Date.now() - (response.config.metadata?.startTime || 0);
+        const duration = Date.now() - ((response.config as any).metadata?.startTime || 0);
         console.debug(`API Request: ${response.config.method?.toUpperCase()} ${response.config.url} - ${duration}ms`);
 
         return response;
@@ -98,7 +98,7 @@ class UnifiedApiService {
 
           try {
             await this.refreshToken();
-            const newToken = TokenManager.getAccessToken();
+            const newToken = TokenManager.getSessionToken();
             if (newToken) {
               originalRequest.headers.Authorization = `Bearer ${newToken}`;
               return this.api(originalRequest);
@@ -147,9 +147,10 @@ class UnifiedApiService {
       refresh_token: refreshToken
     });
 
-    TokenManager.setTokens(
+    TokenManager.setSessionTokens(
       response.data.access_token,
-      response.data.refresh_token
+      response.data.refresh_token,
+      response.data.expires_in || 3600
     );
   }
 

@@ -3,12 +3,12 @@
  * Shows order status and payment confirmation
  */
 
-import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { Button } from '../ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Badge } from '../ui/badge';
-import { Separator } from '../ui/separator';
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Badge } from "../ui/badge";
+import { Separator } from "../ui/separator";
 import {
   CheckCircle,
   XCircle,
@@ -18,29 +18,32 @@ import {
   Package,
   CreditCard,
   Clock,
-  Loader2
-} from 'lucide-react';
-import { orderManager } from '../../lib/order/order-manager';
-import { invoiceGenerator } from '../../lib/invoice/invoice-generator';
-import { formatPrice, formatDate } from '../../lib/shared/formatters';
-import type { Order } from '../../lib/order/order-manager';
+  Loader2,
+} from "lucide-react";
+import { orderManager } from "../../lib/order/order-manager";
+import { invoiceGenerator } from "../../lib/invoice/invoice-generator";
+import { formatPrice, formatDate } from "../../lib/shared/formatters";
+import type { Order } from "../../lib/order/order-manager";
 
 interface OrderConfirmationProps {
   orderId?: string;
   className?: string;
 }
 
-export function OrderConfirmation({ orderId, className = '' }: OrderConfirmationProps) {
+export function OrderConfirmation({
+  orderId,
+  className = "",
+}: OrderConfirmationProps) {
   const [searchParams] = useSearchParams();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [downloadingInvoice, setDownloadingInvoice] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   // Get order ID from props or URL params
-  const finalOrderId = orderId || searchParams.get('orderId');
-  const paymentStatus = searchParams.get('status');
-  const paymentMessage = searchParams.get('message');
+  const finalOrderId = orderId || searchParams.get("orderId");
+  const paymentStatus = searchParams.get("status");
+  const paymentMessage = searchParams.get("message");
 
   useEffect(() => {
     if (finalOrderId) {
@@ -53,12 +56,14 @@ export function OrderConfirmation({ orderId, className = '' }: OrderConfirmation
       setLoading(true);
       const orderData = await orderManager.getOrder(id);
       if (!orderData) {
-        setError('Không tìm thấy đơn hàng');
+        setError("Không tìm thấy đơn hàng");
         return;
       }
       setOrder(orderData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Lỗi tải thông tin đơn hàng');
+      setError(
+        err instanceof Error ? err.message : "Lỗi tải thông tin đơn hàng"
+      );
     } finally {
       setLoading(false);
     }
@@ -72,18 +77,17 @@ export function OrderConfirmation({ orderId, className = '' }: OrderConfirmation
 
       // Create invoice from order
       const invoice = invoiceGenerator.createInvoiceFromOrder(order, {
-        name: order.shippingInfo?.recipientName || 'Khách hàng',
-        email: order.shippingInfo?.email || '',
+        name: order.shippingInfo?.recipientName || "Khách hàng",
+        email: order.shippingInfo?.email || "",
         phone: order.shippingInfo?.phone,
         address: order.shippingInfo?.address,
       });
 
       // Download PDF
       await invoiceGenerator.downloadPDF(invoice);
-
     } catch (err) {
-      console.error('Failed to download invoice:', err);
-      alert('Lỗi tải hóa đơn. Vui lòng thử lại sau.');
+      console.error("Failed to download invoice:", err);
+      alert("Lỗi tải hóa đơn. Vui lòng thử lại sau.");
     } finally {
       setDownloadingInvoice(false);
     }
@@ -95,53 +99,56 @@ export function OrderConfirmation({ orderId, className = '' }: OrderConfirmation
     try {
       // Create invoice from order
       const invoice = invoiceGenerator.createInvoiceFromOrder(order, {
-        name: order.shippingInfo?.recipientName || 'Khách hàng',
-        email: order.shippingInfo?.email || '',
+        name: order.shippingInfo?.recipientName || "Khách hàng",
+        email: order.shippingInfo?.email || "",
         phone: order.shippingInfo?.phone,
         address: order.shippingInfo?.address,
       });
 
       // Print invoice
       invoiceGenerator.printInvoice(invoice);
-
     } catch (err) {
-      console.error('Failed to print invoice:', err);
-      alert('Lỗi in hóa đơn. Vui lòng thử lại sau.');
+      console.error("Failed to print invoice:", err);
+      alert("Lỗi in hóa đơn. Vui lòng thử lại sau.");
     }
   };
 
   const getStatusConfig = () => {
-    if (paymentStatus === 'success' || order?.status === 'paid' || order?.status === 'completed') {
+    if (
+      paymentStatus === "success" ||
+      order?.status === "paid" ||
+      order?.status === "completed"
+    ) {
       return {
         icon: CheckCircle,
-        color: 'text-green-600',
-        bgColor: 'bg-green-100',
-        title: 'Thanh toán thành công!',
-        message: 'Đơn hàng của bạn đã được thanh toán thành công.',
+        color: "text-green-600",
+        bgColor: "bg-green-100",
+        title: "Thanh toán thành công!",
+        message: "Đơn hàng của bạn đã được thanh toán thành công.",
       };
-    } else if (paymentStatus === 'failed' || order?.status === 'failed') {
+    } else if (paymentStatus === "failed" || order?.status === "failed") {
       return {
         icon: XCircle,
-        color: 'text-red-600',
-        bgColor: 'bg-red-100',
-        title: 'Thanh toán thất bại',
-        message: paymentMessage || 'Có lỗi xảy ra trong quá trình thanh toán.',
+        color: "text-red-600",
+        bgColor: "bg-red-100",
+        title: "Thanh toán thất bại",
+        message: paymentMessage || "Có lỗi xảy ra trong quá trình thanh toán.",
       };
-    } else if (order?.status === 'pending') {
+    } else if (order?.status === "pending") {
       return {
         icon: Clock,
-        color: 'text-yellow-600',
-        bgColor: 'bg-yellow-100',
-        title: 'Chờ thanh toán',
-        message: 'Đơn hàng đang chờ được thanh toán.',
+        color: "text-yellow-600",
+        bgColor: "bg-yellow-100",
+        title: "Chờ thanh toán",
+        message: "Đơn hàng đang chờ được thanh toán.",
       };
     } else {
       return {
         icon: Package,
-        color: 'text-blue-600',
-        bgColor: 'bg-blue-100',
-        title: 'Đang xử lý',
-        message: 'Đơn hàng đang được xử lý.',
+        color: "text-blue-600",
+        bgColor: "bg-blue-100",
+        title: "Đang xử lý",
+        message: "Đơn hàng đang được xử lý.",
       };
     }
   };
@@ -162,7 +169,9 @@ export function OrderConfirmation({ orderId, className = '' }: OrderConfirmation
           <div className="text-center py-8">
             <XCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">Có lỗi xảy ra</h3>
-            <p className="text-gray-600">{error || 'Không tìm thấy đơn hàng'}</p>
+            <p className="text-gray-600">
+              {error || "Không tìm thấy đơn hàng"}
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -178,15 +187,19 @@ export function OrderConfirmation({ orderId, className = '' }: OrderConfirmation
       <Card>
         <CardContent className="pt-6">
           <div className="text-center">
-            <div className={`inline-flex p-4 rounded-full ${statusConfig.bgColor} mb-4`}>
+            <div
+              className={`inline-flex p-4 rounded-full ${statusConfig.bgColor} mb-4`}
+            >
               <StatusIcon className={`h-8 w-8 ${statusConfig.color}`} />
             </div>
             <h1 className="text-2xl font-bold mb-2">{statusConfig.title}</h1>
             <p className="text-gray-600 mb-4">{statusConfig.message}</p>
 
             <div className="flex justify-center items-center space-x-4 text-sm text-gray-500">
-              <span>Mã đơn hàng: <strong>{order.orderNumber}</strong></span>
-              <Separator orientation="vertical" className="h-4" />
+              <span>
+                Mã đơn hàng: <strong>{order.orderNumber}</strong>
+              </span>
+              <div className="w-px h-4 bg-gray-300" />
               <span>Ngày tạo: {formatDate(order.createdAt)}</span>
             </div>
           </div>
@@ -207,17 +220,25 @@ export function OrderConfirmation({ orderId, className = '' }: OrderConfirmation
             <CardContent>
               <div className="space-y-4">
                 {order.items.map((item, index) => (
-                  <div key={index} className="flex justify-between items-start pb-4 border-b last:border-0">
+                  <div
+                    key={index}
+                    className="flex justify-between items-start pb-4 border-b last:border-0"
+                  >
                     <div className="flex-1">
                       <h4 className="font-semibold">{item.title}</h4>
                       {item.description && (
-                        <p className="text-sm text-gray-600 mt-1">{item.description}</p>
+                        <p className="text-sm text-gray-600 mt-1">
+                          {item.description}
+                        </p>
                       )}
                       <div className="text-sm text-gray-500 mt-2">
                         <span className="inline-flex items-center">
                           <Badge variant="outline" className="mr-2">
-                            {item.type === 'course' ? 'Khóa học' :
-                             item.type === 'product' ? 'Sản phẩm' : 'Dịch vụ'}
+                            {item.type === "course"
+                              ? "Khóa học"
+                              : item.type === "product"
+                              ? "Sản phẩm"
+                              : "Dịch vụ"}
                           </Badge>
                           {formatPrice(item.price)} × {item.quantity}
                         </span>
@@ -247,17 +268,29 @@ export function OrderConfirmation({ orderId, className = '' }: OrderConfirmation
               </CardHeader>
               <CardContent>
                 <div className="space-y-2 text-sm">
-                  <div><strong>Người nhận:</strong> {order.shippingInfo.recipientName}</div>
-                  <div><strong>Điện thoại:</strong> {order.shippingInfo.phone}</div>
-                  {order.shippingInfo.email && (
-                    <div><strong>Email:</strong> {order.shippingInfo.email}</div>
-                  )}
-                  <div><strong>Địa chỉ:</strong> {order.shippingInfo.address}</div>
                   <div>
-                    {order.shippingInfo.ward}, {order.shippingInfo.district}, {order.shippingInfo.city}
+                    <strong>Người nhận:</strong>{" "}
+                    {order.shippingInfo.recipientName}
+                  </div>
+                  <div>
+                    <strong>Điện thoại:</strong> {order.shippingInfo.phone}
+                  </div>
+                  {order.shippingInfo.email && (
+                    <div>
+                      <strong>Email:</strong> {order.shippingInfo.email}
+                    </div>
+                  )}
+                  <div>
+                    <strong>Địa chỉ:</strong> {order.shippingInfo.address}
+                  </div>
+                  <div>
+                    {order.shippingInfo.ward}, {order.shippingInfo.district},{" "}
+                    {order.shippingInfo.city}
                   </div>
                   {order.shippingInfo.notes && (
-                    <div><strong>Ghi chú:</strong> {order.shippingInfo.notes}</div>
+                    <div>
+                      <strong>Ghi chú:</strong> {order.shippingInfo.notes}
+                    </div>
                   )}
                 </div>
               </CardContent>
@@ -303,7 +336,9 @@ export function OrderConfirmation({ orderId, className = '' }: OrderConfirmation
 
                 <div className="flex justify-between text-lg font-bold">
                   <span>Tổng cộng:</span>
-                  <span className="text-blue-600">{formatPrice(order.total)}</span>
+                  <span className="text-blue-600">
+                    {formatPrice(order.total)}
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -322,30 +357,45 @@ export function OrderConfirmation({ orderId, className = '' }: OrderConfirmation
                 <div className="flex justify-between">
                   <span>Phương thức:</span>
                   <Badge variant="outline">
-                    {order.paymentMethod === 'vnpay' ? 'VNPay' :
-                     order.paymentMethod === 'momo' ? 'MoMo' :
-                     order.paymentMethod || 'Chưa chọn'}
+                    {order.paymentMethod === "vnpay"
+                      ? "VNPay"
+                      : order.paymentMethod === "momo"
+                      ? "MoMo"
+                      : order.paymentMethod || "Chưa chọn"}
                   </Badge>
                 </div>
 
                 <div className="flex justify-between">
                   <span>Trạng thái:</span>
-                  <Badge variant={
-                    order.paymentStatus === 'completed' ? 'default' :
-                    order.paymentStatus === 'pending' ? 'secondary' :
-                    order.paymentStatus === 'failed' ? 'destructive' : 'secondary'
-                  }>
-                    {order.paymentStatus === 'completed' ? 'Đã thanh toán' :
-                     order.paymentStatus === 'pending' ? 'Chờ thanh toán' :
-                     order.paymentStatus === 'failed' ? 'Thất bại' :
-                     order.paymentStatus === 'processing' ? 'Đang xử lý' : order.paymentStatus}
+                  <Badge
+                    variant={
+                      order.paymentStatus === "completed"
+                        ? "default"
+                        : order.paymentStatus === "pending"
+                        ? "secondary"
+                        : order.paymentStatus === "failed"
+                        ? "destructive"
+                        : "secondary"
+                    }
+                  >
+                    {order.paymentStatus === "completed"
+                      ? "Đã thanh toán"
+                      : order.paymentStatus === "pending"
+                      ? "Chờ thanh toán"
+                      : order.paymentStatus === "failed"
+                      ? "Thất bại"
+                      : order.paymentStatus === "processing"
+                      ? "Đang xử lý"
+                      : order.paymentStatus}
                   </Badge>
                 </div>
 
                 {order.transactionId && (
                   <div className="flex justify-between">
                     <span>Mã giao dịch:</span>
-                    <span className="font-mono text-xs">{order.transactionId}</span>
+                    <span className="font-mono text-xs">
+                      {order.transactionId}
+                    </span>
                   </div>
                 )}
 
@@ -360,7 +410,7 @@ export function OrderConfirmation({ orderId, className = '' }: OrderConfirmation
           </Card>
 
           {/* Actions */}
-          {(order.status === 'paid' || order.status === 'completed') && (
+          {(order.status === "paid" || order.status === "completed") && (
             <Card>
               <CardHeader>
                 <CardTitle>Hành động</CardTitle>

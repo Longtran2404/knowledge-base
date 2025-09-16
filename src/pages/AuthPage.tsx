@@ -112,12 +112,12 @@ export default function AuthPage() {
     }
 
     try {
-      const { user, error } = await signIn(loginForm.email, loginForm.password);
-      if (user) {
+      const result = await signIn(loginForm.email, loginForm.password);
+      if (result?.success) {
         toast.success("Đăng nhập thành công!");
         navigate(from, { replace: true });
       } else {
-        toast.error(error || "Đăng nhập thất bại");
+        toast.error(result?.error || "Đăng nhập thất bại");
       }
     } catch (error: any) {
       toast.error(error.message || "Đăng nhập thất bại");
@@ -153,18 +153,18 @@ export default function AuthPage() {
     }
 
     try {
-      const { user, error } = await signUp(
+      const result = await signUp(
         registerForm.email,
         registerForm.password,
         registerForm.fullName,
         registerForm.role
       );
 
-      if (user) {
+      if (result?.success) {
         toast.success("Đăng ký thành công!");
         navigate(from, { replace: true });
       } else {
-        toast.error(error || "Đăng ký thất bại");
+        toast.error(result?.error || "Đăng ký thất bại");
       }
     } catch (error: any) {
       toast.error(error.message || "Đăng ký thất bại");

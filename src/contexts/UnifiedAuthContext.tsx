@@ -14,7 +14,7 @@ export interface UserProfile {
   email: string;
   full_name?: string;
   avatar_url?: string;
-  role?: string;
+  role?: "student" | "instructor" | "admin";
   plan?: string;
   is_active?: boolean;
   created_at: string;
@@ -112,7 +112,8 @@ export function UnifiedAuthProvider({
         await loadUserProfile(session.user.id);
 
         // Store username for legacy compatibility
-        const name = session.user.user_metadata?.full_name || session.user.email || "";
+        const name =
+          session.user.user_metadata?.full_name || session.user.email || "";
         if (name) localStorage.setItem("nlc_username", name);
       } else if (event === "SIGNED_OUT") {
         setUser(null);

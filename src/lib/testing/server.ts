@@ -63,7 +63,7 @@ export const handlers = [
     const orderData = await request.json();
     return HttpResponse.json({
       ...mockOrder,
-      ...orderData,
+      ...(typeof orderData === 'object' && orderData !== null ? orderData : {}),
       id: 'new-order-' + Date.now(),
       orderNumber: 'NLC' + Date.now(),
     });
@@ -87,7 +87,7 @@ export const handlers = [
     const updates = await request.json();
     return HttpResponse.json({
       ...mockOrder,
-      ...updates,
+      ...(typeof updates === 'object' && updates !== null ? updates : {}),
       id: params.orderId,
       updatedAt: new Date().toISOString(),
     });
@@ -95,7 +95,7 @@ export const handlers = [
 
   // Payment Processing
   http.post('/api/payment/create', async ({ request }) => {
-    const paymentRequest = await request.json();
+    const paymentRequest = await request.json() as any;
     const { paymentMethod } = paymentRequest;
 
     if (paymentMethod === 'vnpay') {

@@ -346,7 +346,6 @@ export function VerticalTabs({
       items={items}
       defaultActiveTab={defaultActiveTab}
       onTabChange={onTabChange}
-      orientation="vertical"
       className={cn("flex", className)}
       tabListClassName={cn(tabListWidth, "flex-shrink-0")}
     />

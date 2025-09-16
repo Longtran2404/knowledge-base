@@ -81,18 +81,22 @@ export function SuccessNotification({
         opacity: 0,
         y: 20,
         x: Math.random() * 400 - 200,
-        rotate: 0
+        rotate: 0,
       }}
-      animate={show ? {
-        opacity: [0, 1, 1, 0],
-        y: [20, -100, -200, -300],
-        x: Math.random() * 200 - 100,
-        rotate: 360,
-      } : {}}
+      animate={
+        show
+          ? {
+              opacity: [0, 1, 1, 0],
+              y: [20, -100, -200, -300],
+              x: Math.random() * 200 - 100,
+              rotate: 360,
+            }
+          : {}
+      }
       transition={{
         duration: 3,
         delay: Math.random() * 0.5,
-        ease: "easeOut"
+        ease: "easeOut",
       }}
       style={{
         left: `${50 + Math.random() * 200 - 100}%`,
@@ -134,7 +138,9 @@ export function SuccessNotification({
           >
             <Card className="relative overflow-hidden border-0 shadow-2xl bg-white/95 backdrop-blur-md">
               {/* Animated background gradient */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${getGradient()} opacity-10`}>
+              <div
+                className={`absolute inset-0 bg-gradient-to-br ${getGradient()} opacity-10`}
+              >
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"
                   animate={{
@@ -142,7 +148,7 @@ export function SuccessNotification({
                       "linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 100%)",
                       "linear-gradient(225deg, rgba(255,255,255,0.1) 0%, transparent 100%)",
                       "linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 100%)",
-                    ]
+                    ],
                   }}
                   transition={{ duration: 3, repeat: Infinity }}
                 />
@@ -177,7 +183,7 @@ export function SuccessNotification({
                     transition={{
                       duration: 2,
                       repeat: Infinity,
-                      ease: "easeInOut"
+                      ease: "easeInOut",
                     }}
                   >
                     {getIcon()}
@@ -187,12 +193,12 @@ export function SuccessNotification({
                       className="absolute -top-2 -right-2"
                       animate={{
                         rotate: [0, 360],
-                        scale: [0.8, 1.2, 0.8]
+                        scale: [0.8, 1.2, 0.8],
                       }}
                       transition={{
                         duration: 3,
                         repeat: Infinity,
-                        ease: "easeInOut"
+                        ease: "easeInOut",
                       }}
                     >
                       <Sparkles className="w-4 h-4 text-yellow-400" />
@@ -302,7 +308,7 @@ export function useSuccessNotification() {
     isVisible: false,
     title: "",
     message: "",
-    type: "success" as const,
+    type: "success" as "registration" | "success" | "welcome" | "achievement",
   });
 
   const showNotification = (config: {
@@ -319,7 +325,7 @@ export function useSuccessNotification() {
   };
 
   const hideNotification = () => {
-    setNotification(prev => ({ ...prev, isVisible: false }));
+    setNotification((prev) => ({ ...prev, isVisible: false }));
   };
 
   return {

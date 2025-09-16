@@ -4,12 +4,12 @@
  * Can be used with backend framework or serverless functions
  */
 
-import { webhookHandler } from '../payment/webhook-handler';
+import { webhookHandler } from "../payment/webhook-handler";
 import type {
   VNPayWebhookData,
   MoMoWebhookData,
-  WebhookResponse
-} from '../payment/webhook-handler';
+  WebhookResponse,
+} from "../payment/webhook-handler";
 
 // Types for request/response handling
 export interface WebhookRequest {
@@ -30,48 +30,50 @@ export interface WebhookAPIResponse {
  * VNPay IPN (Instant Payment Notification) handler
  * POST /api/payment/vnpay/notify
  */
-export async function handleVNPayIPN(req: WebhookRequest): Promise<WebhookAPIResponse> {
+export async function handleVNPayIPN(
+  req: WebhookRequest
+): Promise<WebhookAPIResponse> {
   try {
     // Verify request method
-    if (req.method !== 'POST') {
+    if (req.method !== "POST") {
       return {
         status: 405,
-        data: { error: 'Method not allowed' }
+        data: { error: "Method not allowed" },
       };
     }
 
     // Verify webhook origin for security
-    const origin = req.headers['origin'] || req.headers['referer'] || '';
-    if (!webhookHandler.verifyWebhookOrigin(origin, 'vnpay')) {
-      await webhookHandler.logWebhookActivity('vnpay', 'unknown', 'invalid', {
+    const origin = req.headers["origin"] || req.headers["referer"] || "";
+    if (!webhookHandler.verifyWebhookOrigin(origin, "vnpay")) {
+      await webhookHandler.logWebhookActivity("vnpay", "unknown", "invalid", {
         origin,
         headers: req.headers,
       });
 
       return {
         status: 403,
-        data: { error: 'Forbidden' }
+        data: { error: "Forbidden" },
       };
     }
 
-    const webhookData: VNPayWebhookData = req.query || req.body;
+    const webhookData = (req.query || req.body) as Partial<VNPayWebhookData>;
 
     // Validate required fields
     if (!webhookData.vnp_TxnRef || !webhookData.vnp_SecureHash) {
       return {
         status: 400,
-        data: { error: 'Missing required webhook data' }
+        data: { error: "Missing required webhook data" },
       };
     }
 
     // Process the webhook
-    const result = await webhookHandler.handleVNPayWebhook(webhookData);
+    const result = await webhookHandler.handleVNPayWebhook(webhookData as VNPayWebhookData);
 
     // Log webhook activity
     await webhookHandler.logWebhookActivity(
-      'vnpay',
-      result.orderId || 'unknown',
-      result.success ? 'success' : 'failed',
+      "vnpay",
+      result.orderId || "unknown",
+      result.success ? "success" : "failed",
       webhookData
     );
 
@@ -79,29 +81,26 @@ export async function handleVNPayIPN(req: WebhookRequest): Promise<WebhookAPIRes
     if (result.success) {
       return {
         status: 200,
-        data: { RspCode: '00', Message: 'Success' }
+        data: { RspCode: "00", Message: "Success" },
       };
     } else {
       return {
         status: 200, // Still return 200 to VNPay but with error code
-        data: { RspCode: '01', Message: result.message }
+        data: { RspCode: "01", Message: result.message },
       };
     }
-
   } catch (error) {
-    console.error('VNPay IPN handler error:', error);
+    console.error("VNPay IPN handler error:", error);
 
     // Log the error
-    await webhookHandler.logWebhookActivity(
-      'vnpay',
-      'unknown',
-      'failed',
-      { error: String(error), body: req.body }
-    );
+    await webhookHandler.logWebhookActivity("vnpay", "unknown", "failed", {
+      error: String(error),
+      body: req.body,
+    });
 
     return {
       status: 200, // Return 200 to prevent VNPay retries
-      data: { RspCode: '99', Message: 'System error' }
+      data: { RspCode: "99", Message: "System error" },
     };
   }
 }
@@ -110,18 +109,23 @@ export async function handleVNPayIPN(req: WebhookRequest): Promise<WebhookAPIRes
  * VNPay return URL handler (user redirect after payment)
  * GET /payment/vnpay/return
  */
-export async function handleVNPayReturn(req: WebhookRequest): Promise<WebhookAPIResponse> {
+export async function handleVNPayReturn(
+  req: WebhookRequest
+): Promise<WebhookAPIResponse> {
   try {
-    const returnData: VNPayWebhookData = req.query || {};
+    const returnData = req.query || ({} as Partial<VNPayWebhookData>);
 
     if (!returnData.vnp_TxnRef) {
       return {
         status: 400,
-        data: { error: 'Invalid return data' }
+        data: { error: "Invalid return data" },
       };
     }
 
-    const result = await webhookHandler.handlePaymentReturn('vnpay', returnData);
+    const result = await webhookHandler.handlePaymentReturn(
+      "vnpay",
+      returnData
+    );
 
     // Return data for frontend to handle
     return {
@@ -131,19 +135,18 @@ export async function handleVNPayReturn(req: WebhookRequest): Promise<WebhookAPI
         message: result.message,
         orderId: result.orderId,
         transactionId: result.transactionId,
-        paymentGateway: 'vnpay'
-      }
+        paymentGateway: "vnpay",
+      },
     };
-
   } catch (error) {
-    console.error('VNPay return handler error:', error);
+    console.error("VNPay return handler error:", error);
     return {
       status: 500,
       data: {
         success: false,
-        message: 'Lỗi xử lý kết quả thanh toán',
-        error: String(error)
-      }
+        message: "Lỗi xử lý kết quả thanh toán",
+        error: String(error),
+      },
     };
   }
 }
@@ -152,26 +155,28 @@ export async function handleVNPayReturn(req: WebhookRequest): Promise<WebhookAPI
  * MoMo IPN (Instant Payment Notification) handler
  * POST /api/payment/momo/notify
  */
-export async function handleMoMoIPN(req: WebhookRequest): Promise<WebhookAPIResponse> {
+export async function handleMoMoIPN(
+  req: WebhookRequest
+): Promise<WebhookAPIResponse> {
   try {
-    if (req.method !== 'POST') {
+    if (req.method !== "POST") {
       return {
         status: 405,
-        data: { error: 'Method not allowed' }
+        data: { error: "Method not allowed" },
       };
     }
 
     // Verify webhook origin for security
-    const origin = req.headers['origin'] || req.headers['referer'] || '';
-    if (!webhookHandler.verifyWebhookOrigin(origin, 'momo')) {
-      await webhookHandler.logWebhookActivity('momo', 'unknown', 'invalid', {
+    const origin = req.headers["origin"] || req.headers["referer"] || "";
+    if (!webhookHandler.verifyWebhookOrigin(origin, "momo")) {
+      await webhookHandler.logWebhookActivity("momo", "unknown", "invalid", {
         origin,
         headers: req.headers,
       });
 
       return {
         status: 403,
-        data: { error: 'Forbidden' }
+        data: { error: "Forbidden" },
       };
     }
 
@@ -181,7 +186,7 @@ export async function handleMoMoIPN(req: WebhookRequest): Promise<WebhookAPIResp
     if (!webhookData.orderId || !webhookData.signature) {
       return {
         status: 400,
-        data: { error: 'Missing required webhook data' }
+        data: { error: "Missing required webhook data" },
       };
     }
 
@@ -190,32 +195,29 @@ export async function handleMoMoIPN(req: WebhookRequest): Promise<WebhookAPIResp
 
     // Log webhook activity
     await webhookHandler.logWebhookActivity(
-      'momo',
-      result.orderId || 'unknown',
-      result.success ? 'success' : 'failed',
+      "momo",
+      result.orderId || "unknown",
+      result.success ? "success" : "failed",
       webhookData
     );
 
     // MoMo expects specific response format
     return {
       status: 204, // MoMo expects 204 No Content for successful processing
-      data: null
+      data: null,
     };
-
   } catch (error) {
-    console.error('MoMo IPN handler error:', error);
+    console.error("MoMo IPN handler error:", error);
 
     // Log the error
-    await webhookHandler.logWebhookActivity(
-      'momo',
-      'unknown',
-      'failed',
-      { error: String(error), body: req.body }
-    );
+    await webhookHandler.logWebhookActivity("momo", "unknown", "failed", {
+      error: String(error),
+      body: req.body,
+    });
 
     return {
       status: 500,
-      data: { error: 'Internal server error' }
+      data: { error: "Internal server error" },
     };
   }
 }
@@ -224,20 +226,22 @@ export async function handleMoMoIPN(req: WebhookRequest): Promise<WebhookAPIResp
  * MoMo return URL handler (user redirect after payment)
  * GET /payment/momo/return
  */
-export async function handleMoMoReturn(req: WebhookRequest): Promise<WebhookAPIResponse> {
+export async function handleMoMoReturn(
+  req: WebhookRequest
+): Promise<WebhookAPIResponse> {
   try {
     const returnData = req.query || {};
 
     if (!returnData.orderId) {
       return {
         status: 400,
-        data: { error: 'Invalid return data' }
+        data: { error: "Invalid return data" },
       };
     }
 
     // For MoMo return, we might need to query the transaction status
     // since return URL doesn't always contain complete payment info
-    const result = await webhookHandler.handlePaymentReturn('momo', returnData);
+    const result = await webhookHandler.handlePaymentReturn("momo", returnData);
 
     return {
       status: 200,
@@ -246,19 +250,18 @@ export async function handleMoMoReturn(req: WebhookRequest): Promise<WebhookAPIR
         message: result.message,
         orderId: result.orderId,
         transactionId: result.transactionId,
-        paymentGateway: 'momo'
-      }
+        paymentGateway: "momo",
+      },
     };
-
   } catch (error) {
-    console.error('MoMo return handler error:', error);
+    console.error("MoMo return handler error:", error);
     return {
       status: 500,
       data: {
         success: false,
-        message: 'Lỗi xử lý kết quả thanh toán',
-        error: String(error)
-      }
+        message: "Lỗi xử lý kết quả thanh toán",
+        error: String(error),
+      },
     };
   }
 }
@@ -272,14 +275,14 @@ export async function checkPaymentStatus(
 ): Promise<WebhookAPIResponse> {
   try {
     // Import order manager to check status
-    const { orderManager } = await import('../order/order-manager');
+    const { orderManager } = await import("../order/order-manager");
 
     const order = await orderManager.getOrder(orderId);
 
     if (!order) {
       return {
         status: 404,
-        data: { error: 'Order not found' }
+        data: { error: "Order not found" },
       };
     }
 
@@ -295,14 +298,13 @@ export async function checkPaymentStatus(
         currency: order.currency,
         paidAt: order.paidAt,
         updatedAt: order.updatedAt,
-      }
+      },
     };
-
   } catch (error) {
-    console.error('Payment status check error:', error);
+    console.error("Payment status check error:", error);
     return {
       status: 500,
-      data: { error: 'Internal server error' }
+      data: { error: "Internal server error" },
     };
   }
 }

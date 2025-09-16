@@ -3,7 +3,7 @@ import { render, RenderOptions } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "../../contexts/ThemeContext";
-import { EnhancedAuthProvider } from "../../contexts/EnhancedAuthContext";
+import { UnifiedAuthProvider } from "../../contexts/UnifiedAuthContext";
 import { EmailAuthProvider } from "../../contexts/EmailAuthContext";
 import { ToastProvider } from "../../components/ui/toast";
 import { NotificationProvider } from "../../components/ui/notification";
@@ -63,13 +63,13 @@ const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
       <QueryClientProvider client={mockQueryClient}>
         <BrowserRouter>
           <ThemeProvider>
-            <EnhancedAuthProvider>
+            <UnifiedAuthProvider>
               <EmailAuthProvider>
                 <ToastProvider>
                   <NotificationProvider>{children}</NotificationProvider>
                 </ToastProvider>
               </EmailAuthProvider>
-            </EnhancedAuthProvider>
+            </UnifiedAuthProvider>
           </ThemeProvider>
         </BrowserRouter>
       </QueryClientProvider>

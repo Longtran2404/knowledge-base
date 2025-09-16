@@ -1,5 +1,5 @@
 import React from "react";
-import { useAuth } from "../../contexts/EnhancedAuthContext";
+import { useAuth } from "../../contexts/UnifiedAuthContext";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
@@ -7,9 +7,9 @@ import { Calendar, CreditCard, AlertTriangle, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export const SubscriptionStatus: React.FC = () => {
-  const { subscriptionStatus, user } = useAuth();
+  const { userProfile: user } = useAuth();
 
-  if (!subscriptionStatus) {
+  if (!user) {
     return (
       <Card>
         <CardHeader>
@@ -25,8 +25,8 @@ export const SubscriptionStatus: React.FC = () => {
     );
   }
 
-  const { isActive, plan, expiresAt, isOverdue, gracePeriodDays } =
-    subscriptionStatus;
+  const plan = user.plan || "free";
+  const isActive = user.is_active || false;
 
   const getPlanLabel = (plan: string) => {
     switch (plan) {
@@ -91,42 +91,22 @@ export const SubscriptionStatus: React.FC = () => {
             ) : (
               <>
                 <AlertTriangle className="h-4 w-4 text-orange-500" />
-                <span className="text-sm text-orange-600">
-                  {isOverdue ? "Quá hạn thanh toán" : "Tạm ngưng"}
-                </span>
+                <span className="text-sm text-orange-600">Tạm ngưng</span>
               </>
             )}
           </div>
         </div>
 
-        {/* Expiration Date */}
-        {expiresAt && (
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Hết hạn:</span>
-            <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
-              <span className="text-sm">{formatDate(expiresAt)}</span>
-            </div>
+        {/* Plan Info */}
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium">Thông tin:</span>
+          <div className="flex items-center gap-2">
+            <Calendar className="h-4 w-4" />
+            <span className="text-sm">
+              Tài khoản {plan === "free" ? "miễn phí" : "trả phí"}
+            </span>
           </div>
-        )}
-
-        {/* Grace Period Warning */}
-        {isOverdue && (
-          <div className="rounded-lg bg-orange-50 p-3 border border-orange-200">
-            <div className="flex items-start gap-2">
-              <AlertTriangle className="h-4 w-4 text-orange-600 mt-0.5" />
-              <div className="text-sm">
-                <p className="font-medium text-orange-800">
-                  Tài khoản đã quá hạn thanh toán
-                </p>
-                <p className="text-orange-600 mt-1">
-                  Bạn có {gracePeriodDays} ngày để gia hạn trước khi tài khoản
-                  bị chuyển về miễn phí.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
+        </div>
 
         {/* Upgrade Button */}
         {plan === "free" && (

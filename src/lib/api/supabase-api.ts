@@ -3,16 +3,19 @@
  * Thống nhất tất cả API calls với Supabase
  */
 
-import { supabase } from '../supabase-config';
-import type { Database } from '../supabase-config';
+import { supabase } from "../supabase-config";
+import type { Database } from "../supabase-config";
 
-type Tables = Database['public']['Tables'];
+type Tables = Database["public"]["Tables"];
 
 // User API
 export const userApi = {
   // Get current user profile
   async getCurrentUser() {
-    const { data: { user }, error } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
     if (error) throw error;
     return user;
   },
@@ -20,56 +23,59 @@ export const userApi = {
   // Get user profile from users table
   async getUserProfile(userId: string) {
     const { data, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', userId)
+      .from("users")
+      .select("*")
+      .eq("id", userId)
       .single();
-    
+
     if (error) throw error;
     return data;
   },
 
   // Update user profile
-  async updateUserProfile(userId: string, updates: Partial<Tables['users']['Update']>) {
+  async updateUserProfile(
+    userId: string,
+    updates: Partial<Tables["users"]["Update"]>
+  ) {
     const { data, error } = await supabase
-      .from('users')
+      .from("users")
       .update({ ...updates, updated_at: new Date().toISOString() })
-      .eq('id', userId)
+      .eq("id", userId)
       .select()
       .single();
-    
+
     if (error) throw error;
     return data;
   },
 
   // Upload avatar
   async uploadAvatar(file: File, userId: string) {
-    const fileExt = file.name.split('.').pop();
+    const fileExt = file.name.split(".").pop();
     const fileName = `${userId}-${Date.now()}.${fileExt}`;
     const filePath = `avatars/${fileName}`;
 
     const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('user-avatars')
+      .from("user-avatars")
       .upload(filePath, file, {
-        cacheControl: '3600',
-        upsert: true
+        cacheControl: "3600",
+        upsert: true,
       });
 
     if (uploadError) throw uploadError;
 
     const { data: urlData } = supabase.storage
-      .from('user-avatars')
+      .from("user-avatars")
       .getPublicUrl(filePath);
 
     if (!urlData?.publicUrl) {
-      throw new Error('Failed to get public URL');
+      throw new Error("Failed to get public URL");
     }
 
     // Update user profile with new avatar URL
     await this.updateUserProfile(userId, { avatar_url: urlData.publicUrl });
 
     return urlData.publicUrl;
-  }
+  },
 };
 
 // Course API
@@ -81,19 +87,19 @@ export const courseApi = {
     instructor_id?: string;
   }) {
     let query = supabase
-      .from('courses')
-      .select('*, instructor:users!instructor_id(full_name, avatar_url)')
-      .eq('is_published', true)
-      .order('created_at', { ascending: false });
+      .from("courses")
+      .select("*, instructor:users!instructor_id(full_name, avatar_url)")
+      .eq("is_published", true)
+      .order("created_at", { ascending: false });
 
     if (filters?.category) {
-      query = query.eq('category', filters.category);
+      query = query.eq("category", filters.category);
     }
     if (filters?.level) {
-      query = query.eq('level', filters.level);
+      query = query.eq("level", filters.level);
     }
     if (filters?.instructor_id) {
-      query = query.eq('instructor_id', filters.instructor_id);
+      query = query.eq("instructor_id", filters.instructor_id);
     }
 
     const { data, error } = await query;
@@ -104,12 +110,12 @@ export const courseApi = {
   // Get course by ID
   async getCourse(courseId: string) {
     const { data, error } = await supabase
-      .from('courses')
-      .select('*, instructor:users!instructor_id(full_name, avatar_url)')
-      .eq('id', courseId)
-      .eq('is_published', true)
+      .from("courses")
+      .select("*, instructor:users!instructor_id(full_name, avatar_url)")
+      .eq("id", courseId)
+      .eq("is_published", true)
       .single();
-    
+
     if (error) throw error;
     return data;
   },
@@ -117,17 +123,19 @@ export const courseApi = {
   // Get user's enrolled courses
   async getUserCourses(userId: string) {
     const { data, error } = await supabase
-      .from('user_courses')
-      .select(`
+      .from("user_courses")
+      .select(
+        `
         *,
         course:courses (
           *,
           instructor:users!instructor_id(full_name, avatar_url)
         )
-      `)
-      .eq('user_id', userId)
-      .order('started_at', { ascending: false });
-    
+      `
+      )
+      .eq("user_id", userId)
+      .order("started_at", { ascending: false });
+
     if (error) throw error;
     return data || [];
   },
@@ -135,37 +143,41 @@ export const courseApi = {
   // Enroll in course
   async enrollInCourse(userId: string, courseId: string) {
     const { data, error } = await supabase
-      .from('user_courses')
+      .from("user_courses")
       .insert({
         user_id: userId,
         course_id: courseId,
         progress: 0,
-        completed: false
+        completed: false,
       })
       .select()
       .single();
-    
+
     if (error) throw error;
     return data;
   },
 
   // Update course progress
-  async updateCourseProgress(userId: string, courseId: string, progress: number) {
+  async updateCourseProgress(
+    userId: string,
+    courseId: string,
+    progress: number
+  ) {
     const updates: any = { progress };
-    
+
     if (progress === 100) {
       updates.completed = true;
       updates.completed_at = new Date().toISOString();
     }
 
     const { data, error } = await supabase
-      .from('user_courses')
+      .from("user_courses")
       .update(updates)
-      .eq('user_id', userId)
-      .eq('course_id', courseId)
+      .eq("user_id", userId)
+      .eq("course_id", courseId)
       .select()
       .single();
-    
+
     if (error) throw error;
     return data;
   },
@@ -173,34 +185,31 @@ export const courseApi = {
   // Check if user is enrolled
   async isEnrolled(userId: string, courseId: string) {
     const { data, error } = await supabase
-      .from('user_courses')
-      .select('id')
-      .eq('user_id', userId)
-      .eq('course_id', courseId)
+      .from("user_courses")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("course_id", courseId)
       .single();
-    
+
     return !error && data;
-  }
+  },
 };
 
 // Blog API
 export const blogApi = {
   // Get all published blog posts
-  async getPosts(filters?: {
-    category?: string;
-    author_id?: string;
-  }) {
+  async getPosts(filters?: { category?: string; author_id?: string }) {
     let query = supabase
-      .from('blog_posts')
-      .select('*, author:users!author_id(full_name, avatar_url)')
-      .eq('is_published', true)
-      .order('created_at', { ascending: false });
+      .from("blog_posts")
+      .select("*, author:users!author_id(full_name, avatar_url)")
+      .eq("is_published", true)
+      .order("created_at", { ascending: false });
 
     if (filters?.category) {
-      query = query.eq('category', filters.category);
+      query = query.eq("category", filters.category);
     }
     if (filters?.author_id) {
-      query = query.eq('author_id', filters.author_id);
+      query = query.eq("author_id", filters.author_id);
     }
 
     const { data, error } = await query;
@@ -211,12 +220,12 @@ export const blogApi = {
   // Get blog post by ID
   async getPost(postId: string) {
     const { data, error } = await supabase
-      .from('blog_posts')
-      .select('*, author:users!author_id(full_name, avatar_url)')
-      .eq('id', postId)
-      .eq('is_published', true)
+      .from("blog_posts")
+      .select("*, author:users!author_id(full_name, avatar_url)")
+      .eq("id", postId)
+      .eq("is_published", true)
       .single();
-    
+
     if (error) throw error;
     return data;
   },
@@ -224,60 +233,73 @@ export const blogApi = {
   // Get related posts
   async getRelatedPosts(postId: string, limit: number = 3) {
     const { data: currentPost } = await supabase
-      .from('blog_posts')
-      .select('category, tags')
-      .eq('id', postId)
+      .from("blog_posts")
+      .select("category, tags")
+      .eq("id", postId)
       .single();
 
     if (!currentPost) return [];
 
     const { data, error } = await supabase
-      .from('blog_posts')
-      .select('*, author:users!author_id(full_name, avatar_url)')
-      .eq('is_published', true)
-      .neq('id', postId)
-      .or(`category.eq.${currentPost.category},tags.ov.{${currentPost.tags.join(',')}}`)
+      .from("blog_posts")
+      .select("*, author:users!author_id(full_name, avatar_url)")
+      .eq("is_published", true)
+      .neq("id", postId)
+      .or(
+        `category.eq.${currentPost.category},tags.ov.{${currentPost.tags.join(
+          ","
+        )}}`
+      )
       .limit(limit);
-    
+
     if (error) throw error;
     return data || [];
-  }
+  },
 };
 
 // Purchase API
 export const purchaseApi = {
   // Create purchase record
-  async createPurchase(userId: string, courseId: string, amount: number, paymentMethod: string) {
+  async createPurchase(
+    userId: string,
+    courseId: string,
+    amount: number,
+    paymentMethod: string
+  ) {
     const { data, error } = await supabase
-      .from('purchases')
+      .from("purchases")
       .insert({
         user_id: userId,
         course_id: courseId,
         amount,
-        status: 'pending',
-        payment_method: paymentMethod
+        status: "pending",
+        payment_method: paymentMethod,
       })
       .select()
       .single();
-    
+
     if (error) throw error;
     return data;
   },
 
   // Update purchase status
-  async updatePurchaseStatus(purchaseId: string, status: 'completed' | 'failed', stripePaymentIntentId?: string) {
+  async updatePurchaseStatus(
+    purchaseId: string,
+    status: "completed" | "failed",
+    stripePaymentIntentId?: string
+  ) {
     const updates: any = { status };
     if (stripePaymentIntentId) {
       updates.stripe_payment_intent_id = stripePaymentIntentId;
     }
 
     const { data, error } = await supabase
-      .from('purchases')
+      .from("purchases")
       .update(updates)
-      .eq('id', purchaseId)
+      .eq("id", purchaseId)
       .select()
       .single();
-    
+
     if (error) throw error;
     return data;
   },
@@ -285,20 +307,22 @@ export const purchaseApi = {
   // Get user purchases
   async getUserPurchases(userId: string) {
     const { data, error } = await supabase
-      .from('purchases')
-      .select(`
+      .from("purchases")
+      .select(
+        `
         *,
         course:courses (
           *,
           instructor:users!instructor_id(full_name, avatar_url)
         )
-      `)
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
-    
+      `
+      )
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
+
     if (error) throw error;
     return data || [];
-  }
+  },
 };
 
 // Auth API (using Supabase Auth)
@@ -310,24 +334,22 @@ export const authApi = {
       password,
       options: {
         data: {
-          full_name: fullName
-        }
-      }
+          full_name: fullName,
+        },
+      },
     });
-    
-    if (error) throw error;
-    return data;
+
+    return { data, error };
   },
 
   // Sign in
   async signIn(email: string, password: string) {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
-      password
+      password,
     });
-    
-    if (error) throw error;
-    return data;
+
+    return { data, error };
   },
 
   // Sign out
@@ -339,20 +361,20 @@ export const authApi = {
   // Reset password
   async resetPassword(email: string) {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`
+      redirectTo: `${window.location.origin}/reset-password`,
     });
-    
+
     if (error) throw error;
   },
 
   // Update password
   async updatePassword(newPassword: string) {
     const { error } = await supabase.auth.updateUser({
-      password: newPassword
+      password: newPassword,
     });
-    
+
     if (error) throw error;
-  }
+  },
 };
 
 // Export all APIs
@@ -361,5 +383,5 @@ export const api = {
   user: userApi,
   course: courseApi,
   blog: blogApi,
-  purchase: purchaseApi
+  purchase: purchaseApi,
 };

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useAuth } from "../contexts/EnhancedAuthContext";
+import { useAuth } from "../contexts/UnifiedAuthContext";
 import { SubscriptionMonitor } from "../services/subscription-monitor";
 
 export interface SubscriptionHook {
@@ -15,17 +15,24 @@ export interface SubscriptionHook {
  * Custom hook for managing subscription state and operations
  */
 export const useSubscription = (): SubscriptionHook => {
-  const { user, subscriptionStatus: authSubscriptionStatus } = useAuth();
-  const [subscriptionStatus, setSubscriptionStatus] = useState(
-    authSubscriptionStatus
-  );
+  const { userProfile: user } = useAuth();
+  const [subscriptionStatus, setSubscriptionStatus] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Update local state when auth context changes
   useEffect(() => {
-    setSubscriptionStatus(authSubscriptionStatus);
-  }, [authSubscriptionStatus]);
+    // Initialize subscription status based on user plan
+    if (user?.plan) {
+      setSubscriptionStatus({
+        plan: user.plan,
+        isActive: user.is_active || false,
+        expiresAt: null,
+        isOverdue: false,
+        gracePeriodDays: 0,
+      });
+    }
+  }, [user]);
 
   /**
    * Refresh subscription status

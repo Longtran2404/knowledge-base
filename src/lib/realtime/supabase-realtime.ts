@@ -159,11 +159,8 @@ class SupabaseRealtime {
           filter: `id=eq.${orderId}`,
         },
         (payload: RealtimePostgresChangesPayload<any>) => {
-          // Only trigger if payment status or status changed
-          if (
-            payload.new?.payment_status !== payload.old?.payment_status ||
-            payload.new?.status !== payload.old?.status
-          ) {
+          // Only trigger if status changed
+          if (payload.new?.status !== (payload.old as any)?.status) {
             callback({
               eventType: 'UPDATE',
               new: payload.new,
