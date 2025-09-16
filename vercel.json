@@ -21,9 +21,9 @@
     }
   ],
   "env": {
-    "REACT_APP_SUPABASE_URL": "@react_app_supabase_url",
-    "REACT_APP_SUPABASE_ANON_KEY": "@react_app_supabase_anon_key",
-    "REACT_APP_APP_URL": "@react_app_app_url"
+    "REACT_APP_SUPABASE_URL": "https://byidgbgvnrfhujprzzge.supabase.co",
+    "REACT_APP_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5aWRnYmd2bnJmaHVqcHJ6emdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI1MjQxMjAsImV4cCI6MjA1ODEwMDEyMH0.LJmu6PzY89Uc1K_5W-M7rsD18sWm-mHeMx1SeV4o_Dw",
+    "REACT_APP_APP_URL": "https://nam-long-center.vercel.app"
   },
   "buildCommand": "npm run build",
   "outputDirectory": "build",
