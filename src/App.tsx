@@ -26,7 +26,7 @@ const BlogPage = React.lazy(() => import("./pages/BlogPage"));
 const BlogPostPage = React.lazy(() => import("./pages/BlogPostPage"));
 const GioiThieuPage = React.lazy(() => import("./pages/GioiThieuPage"));
 const KhoaHocPage = React.lazy(() => import("./pages/KhoaHocPage"));
-const SanPhamPage = React.lazy(() => import("./pages/SanPhamPage"));
+const ProductsPage = React.lazy(() => import("./pages/ProductsPage"));
 const TaiNguyenPage = React.lazy(() => import("./pages/TaiNguyenPage"));
 const HopTacPage = React.lazy(() => import("./pages/HopTacPage"));
 const AuthPage = React.lazy(() => import("./pages/AuthPage"));
@@ -359,7 +359,7 @@ function App() {
                                   path="/san-pham"
                                   element={
                                     <PageTransition>
-                                      <SanPhamPage />
+                                      <ProductsPage />
                                     </PageTransition>
                                   }
                                 />

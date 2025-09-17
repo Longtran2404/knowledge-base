@@ -92,6 +92,7 @@
     "lint": "eslint src --ext .ts,.tsx --fix",
     "lint:check": "eslint src --ext .ts,.tsx",
     "setup:db": "node scripts/setup-database.js",
+    "setup:cart": "node scripts/setup-cart-database.js",
     "setup:supabase": "node scripts/setup-supabase.js",
     "test:db": "node scripts/test-database.js"
   },

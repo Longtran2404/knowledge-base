@@ -347,6 +347,79 @@ export interface Database {
           created_at?: string;
         };
       };
+      products: {
+        Row: {
+          id: string;
+          name: string;
+          description?: string;
+          price: number;
+          image_url?: string;
+          category?: string;
+          stock_quantity: number;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          description?: string;
+          price: number;
+          image_url?: string;
+          category?: string;
+          stock_quantity?: number;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          description?: string;
+          price?: number;
+          image_url?: string;
+          category?: string;
+          stock_quantity?: number;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      cart_items: {
+        Row: {
+          id: string;
+          user_id: string;
+          product_id?: string;
+          course_id?: string;
+          item_type: "product" | "course";
+          quantity: number;
+          price: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          product_id?: string;
+          course_id?: string;
+          item_type: "product" | "course";
+          quantity?: number;
+          price: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          product_id?: string;
+          course_id?: string;
+          item_type?: "product" | "course";
+          quantity?: number;
+          price?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
     Views: {
       [_ in never]: never;
@@ -376,3 +449,7 @@ export type ManagerApproval =
   Database["public"]["Tables"]["manager_approvals"]["Row"];
 export type ManagerNotification =
   Database["public"]["Tables"]["manager_notifications"]["Row"];
+export type Product = Database["public"]["Tables"]["products"]["Row"];
+export type CartItem = Database["public"]["Tables"]["cart_items"]["Row"];
+export type CartItemInsert = Database["public"]["Tables"]["cart_items"]["Insert"];
+export type CartItemUpdate = Database["public"]["Tables"]["cart_items"]["Update"];

@@ -319,3 +319,121 @@ ON CONFLICT DO NOTHING;
 INSERT INTO public.managers (email, full_name) VALUES
     ('admin@namlongcenter.com', 'Admin Manager')
 ON CONFLICT (email) DO NOTHING;
+
+-- ===========================================
+-- CART FUNCTIONALITY SCHEMA
+-- ===========================================
+
+-- Create products table for cart functionality
+CREATE TABLE IF NOT EXISTS public.products (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT,
+    price DECIMAL(10,2) NOT NULL CHECK (price >= 0),
+    image_url TEXT,
+    category TEXT,
+    stock_quantity INTEGER DEFAULT 0 CHECK (stock_quantity >= 0),
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Create cart_items table
+CREATE TABLE IF NOT EXISTS public.cart_items (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    product_id UUID REFERENCES public.products(id) ON DELETE CASCADE,
+    course_id UUID REFERENCES public.courses(id) ON DELETE CASCADE,
+    item_type TEXT NOT NULL CHECK (item_type IN ('product', 'course')),
+    quantity INTEGER NOT NULL DEFAULT 1 CHECK (quantity > 0),
+    price DECIMAL(10,2) NOT NULL CHECK (price >= 0),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    
+    -- Đảm bảo mỗi user chỉ có 1 item của cùng 1 sản phẩm/khóa học
+    UNIQUE(user_id, product_id, item_type),
+    UNIQUE(user_id, course_id, item_type)
+);
+
+-- Indexes cho cart_items
+CREATE INDEX IF NOT EXISTS idx_cart_items_user_id ON public.cart_items(user_id);
+CREATE INDEX IF NOT EXISTS idx_cart_items_product_id ON public.cart_items(product_id);
+CREATE INDEX IF NOT EXISTS idx_cart_items_course_id ON public.cart_items(course_id);
+CREATE INDEX IF NOT EXISTS idx_cart_items_item_type ON public.cart_items(item_type);
+
+-- Indexes cho products
+CREATE INDEX IF NOT EXISTS idx_products_is_active ON public.products(is_active);
+CREATE INDEX IF NOT EXISTS idx_products_category ON public.products(category);
+
+-- RLS Policies cho cart_items
+ALTER TABLE public.cart_items ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view their own cart items" ON public.cart_items
+    FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert their own cart items" ON public.cart_items
+    FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own cart items" ON public.cart_items
+    FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete their own cart items" ON public.cart_items
+    FOR DELETE USING (auth.uid() = user_id);
+
+-- RLS Policies cho products
+ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can view active products" ON public.products
+    FOR SELECT USING (is_active = true);
+
+CREATE POLICY "Only admins can manage products" ON public.products
+    FOR ALL USING (
+        EXISTS (
+            SELECT 1 FROM public.account_nam_long_center 
+            WHERE user_id = auth.uid() 
+            AND role = 'admin'
+        )
+    );
+
+-- Triggers cho updated_at
+CREATE TRIGGER update_products_updated_at 
+    BEFORE UPDATE ON public.products 
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TRIGGER update_cart_items_updated_at 
+    BEFORE UPDATE ON public.cart_items 
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+-- Functions cho cart
+CREATE OR REPLACE FUNCTION public.get_cart_total(user_uuid UUID)
+RETURNS DECIMAL(10,2) AS $$
+BEGIN
+    RETURN COALESCE(
+        (SELECT SUM(quantity * price) 
+         FROM public.cart_items 
+         WHERE user_id = user_uuid), 
+        0
+    );
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION public.get_cart_count(user_uuid UUID)
+RETURNS INTEGER AS $$
+BEGIN
+    RETURN COALESCE(
+        (SELECT SUM(quantity) 
+         FROM public.cart_items 
+         WHERE user_id = user_uuid), 
+        0
+    );
+END;
+$$ LANGUAGE plpgsql;
+
+-- Sample data cho products
+INSERT INTO public.products (name, description, price, image_url, category, stock_quantity) VALUES
+('Khóa học React cơ bản', 'Học React từ A-Z cho người mới bắt đầu', 299000, '/images/products/react-basic.jpg', 'course', 100),
+('Khóa học Node.js nâng cao', 'Xây dựng API và backend với Node.js', 499000, '/images/products/nodejs-advanced.jpg', 'course', 50),
+('E-book JavaScript ES6+', 'Tài liệu học JavaScript hiện đại', 99000, '/images/products/js-es6-ebook.jpg', 'ebook', 200),
+('Template Landing Page', 'Template HTML/CSS responsive', 199000, '/images/products/landing-template.jpg', 'template', 30),
+('Khóa học TypeScript', 'TypeScript từ cơ bản đến nâng cao', 399000, '/images/products/typescript-course.jpg', 'course', 75)
+ON CONFLICT DO NOTHING;
