@@ -426,7 +426,15 @@ function App() {
 
                     <LocatorSetup />
                     <SimpleFloatingMenu />
-                    <Toaster position="top-right" />
+                    <Toaster 
+                      position="top-center" 
+                      toastOptions={{
+                        style: {
+                          marginTop: '80px', // Để tránh chen với header
+                          zIndex: 9999
+                        }
+                      }}
+                    />
                   </div>
                 </Router>
               </NotificationProvider>

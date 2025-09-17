@@ -3,7 +3,7 @@
  * Hỗ trợ đồng bộ với Supabase và localStorage
  */
 
-import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useCallback, ReactNode } from 'react';
 import { CartItem, Product, Course } from '../lib/supabase-config';
 import { supabase } from '../lib/supabase-config';
 import { useAuth } from './UnifiedAuthContext';
@@ -130,6 +130,43 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, initialState);
   const { user } = useAuth();
 
+  const syncCart = useCallback(async () => {
+    if (!user) return;
+
+    try {
+      dispatch({ type: 'SET_LOADING', payload: true });
+      dispatch({ type: 'SET_ERROR', payload: null });
+
+      // Load cart from Supabase
+      const { data: cartItems, error } = await supabase
+        .from('cart_items')
+        .select(`
+          *,
+          product:products(*),
+          course:courses(*)
+        `)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      // Transform data
+      const itemsWithDetails: CartItemWithDetails[] = cartItems.map(item => ({
+        ...item,
+        name: item.product?.name || item.course?.title || 'Unknown Item',
+        image_url: item.product?.image_url || item.course?.image_url,
+        product: item.product,
+        course: item.course,
+      }));
+
+      dispatch({ type: 'SET_ITEMS', payload: itemsWithDetails });
+    } catch (error) {
+      console.error('Error syncing cart:', error);
+      dispatch({ type: 'SET_ERROR', payload: 'Không thể đồng bộ giỏ hàng' });
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
+    }
+  }, [user]);
+
   // Load cart from localStorage on mount
   useEffect(() => {
     const loadCartFromStorage = () => {
@@ -155,7 +192,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       // Clear cart when user logs out
       dispatch({ type: 'CLEAR_CART' });
     }
-  }, [user]);
+  }, [user, syncCart]);
 
   // Save cart to localStorage whenever items change
   useEffect(() => {
@@ -302,43 +339,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error('Error clearing cart:', error);
       dispatch({ type: 'SET_ERROR', payload: 'Không thể xóa giỏ hàng' });
-    } finally {
-      dispatch({ type: 'SET_LOADING', payload: false });
-    }
-  };
-
-  const syncCart = async () => {
-    if (!user) return;
-
-    try {
-      dispatch({ type: 'SET_LOADING', payload: true });
-      dispatch({ type: 'SET_ERROR', payload: null });
-
-      // Load cart from Supabase
-      const { data: cartItems, error } = await supabase
-        .from('cart_items')
-        .select(`
-          *,
-          product:products(*),
-          course:courses(*)
-        `)
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-
-      // Transform data
-      const itemsWithDetails: CartItemWithDetails[] = cartItems.map(item => ({
-        ...item,
-        name: item.product?.name || item.course?.title || 'Unknown Item',
-        image_url: item.product?.image_url || item.course?.image_url,
-        product: item.product,
-        course: item.course,
-      }));
-
-      dispatch({ type: 'SET_ITEMS', payload: itemsWithDetails });
-    } catch (error) {
-      console.error('Error syncing cart:', error);
-      dispatch({ type: 'SET_ERROR', payload: 'Không thể đồng bộ giỏ hàng' });
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }

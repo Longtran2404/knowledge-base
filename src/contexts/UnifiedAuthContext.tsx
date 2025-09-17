@@ -138,7 +138,35 @@ export function UnifiedAuthProvider({
       setUserProfile(profile);
     } catch (error: any) {
       console.warn("Could not load user profile:", error.message);
-      // Don't set error here as it's not critical
+      
+      // Try to create user profile if it doesn't exist
+      try {
+        const currentUser = await supabase.auth.getUser();
+        if (currentUser.data.user) {
+          const newProfile = {
+            id: userId,
+            email: currentUser.data.user.email || '',
+            full_name: currentUser.data.user.user_metadata?.full_name || currentUser.data.user.email || 'User',
+            role: 'student' as const,
+            plan: 'free',
+            is_active: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          };
+          
+          const { data, error: insertError } = await supabase
+            .from('users')
+            .insert(newProfile)
+            .select()
+            .single();
+          
+          if (!insertError && data) {
+            setUserProfile(data);
+          }
+        }
+      } catch (createError) {
+        console.error("Could not create user profile:", createError);
+      }
     }
   };
 

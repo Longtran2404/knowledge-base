@@ -451,5 +451,7 @@ export type ManagerNotification =
   Database["public"]["Tables"]["manager_notifications"]["Row"];
 export type Product = Database["public"]["Tables"]["products"]["Row"];
 export type CartItem = Database["public"]["Tables"]["cart_items"]["Row"];
-export type CartItemInsert = Database["public"]["Tables"]["cart_items"]["Insert"];
-export type CartItemUpdate = Database["public"]["Tables"]["cart_items"]["Update"];
+export type CartItemInsert =
+  Database["public"]["Tables"]["cart_items"]["Insert"];
+export type CartItemUpdate =
+  Database["public"]["Tables"]["cart_items"]["Update"];
