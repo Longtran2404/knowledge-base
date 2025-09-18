@@ -198,10 +198,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const itemsWithDetails: CartItemWithDetails[] = (cartItems || []).map(
         (item) => ({
           ...(item as any),
-          name: (item as any).name || "Unknown Item",
-          image_url: (item as any).image_url || null,
-          product: null,
-          course: null,
+          name:
+            (item as any).product?.name ||
+            (item as any).course?.title ||
+            "Unknown Item",
+          image_url:
+            (item as any).product?.image_url || (item as any).course?.image_url,
+          product: (item as any).product,
+          course: (item as any).course,
         })
       );
 

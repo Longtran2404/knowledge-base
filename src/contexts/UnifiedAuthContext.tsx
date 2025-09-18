@@ -38,6 +38,7 @@ export interface AuthState {
   userProfile: UserProfile | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isLoadingProfile: boolean;
   error: string | null;
 }
 
@@ -82,6 +83,7 @@ export function UnifiedAuthProvider({
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Refs để tránh stale closures
@@ -94,11 +96,11 @@ export function UnifiedAuthProvider({
   }, [user]);
 
   const loadUserProfile = useCallback(
-    async (userId: string, retryCount = 0) => {
-      const maxRetries = 3;
-      console.log(
-        `Loading user profile for ${userId} (attempt ${retryCount + 1})`
-      );
+    async (userId: string) => {
+      if (isLoadingProfile) return; // Prevent multiple calls
+      
+      setIsLoadingProfile(true);
+      console.log(`Loading user profile for ${userId}`);
 
       try {
         const profile = await api.user.getUserProfile(userId);
@@ -113,96 +115,30 @@ export function UnifiedAuthProvider({
           });
         }
       } catch (error: any) {
-        console.warn(
-          `Could not load user profile (attempt ${retryCount + 1}):`,
-          error
-        );
+        console.warn("Could not load user profile:", error);
 
-        // Retry logic for network errors
-        if (
-          retryCount < maxRetries &&
-          (error.code === "PGRST116" ||
-            error.message.includes("network") ||
-            error.message.includes("JSON"))
-        ) {
-          console.log(`Retrying in ${1000 * (retryCount + 1)}ms...`);
-          setTimeout(
-            () => loadUserProfile(userId, retryCount + 1),
-            1000 * (retryCount + 1)
-          );
-          return;
-        }
-
-        // Try to create user profile if it doesn't exist
-        console.log("Attempting to create new user profile...");
-        try {
-          const currentUser = await supabase.auth.getUser();
-          if (currentUser.data.user) {
-            const newProfile = {
-              id: userId,
-              email: currentUser.data.user.email || "",
-              full_name:
-                currentUser.data.user.user_metadata?.full_name ||
-                currentUser.data.user.email?.split("@")[0] ||
-                "User",
-              avatar_url:
-                currentUser.data.user.user_metadata?.avatar_url || null,
-              role: "student" as const,
-              plan: "free" as const,
-              is_active: true,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            };
-
-            // Insert new profile into database
-            const { data, error: insertError } = await (supabase as any)
-              .from("user_profiles")
-              .insert([newProfile])
-              .select()
-              .single();
-
-            if (insertError) {
-              console.error("Failed to create user profile:", insertError);
-              throw insertError;
-            }
-
-            console.log("✅ New user profile created:", data);
-            setUserProfile(data);
-
-            // Log registration activity
-            await activityService.logRegister(
-              userId,
-              currentUser.data.user.email || "",
-              {
-                role: "student",
-                plan: "free",
-                registration_method: "email",
-              }
-            );
-          }
-        } catch (createError: any) {
-          console.error("Failed to create user profile:", createError);
-          // Use fallback profile
-          const fallbackProfile = {
-            id: userId,
-            email: user?.email || "",
-            full_name:
-              user?.user_metadata?.full_name ||
-              user?.email?.split("@")[0] ||
-              "User",
-            avatar_url: null,
-            role: "student" as const,
-            plan: "free" as const,
-            is_active: true,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          };
-          console.log("Using fallback profile:", fallbackProfile);
-          setUserProfile(fallbackProfile);
-        }
+        // Use fallback profile immediately for faster loading
+        const fallbackProfile = {
+          id: userId,
+          email: user?.email || "",
+          full_name:
+            user?.user_metadata?.full_name ||
+            user?.email?.split("@")[0] ||
+            "User",
+          avatar_url: null,
+          role: "student" as const,
+          plan: "free" as const,
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+        console.log("Using fallback profile:", fallbackProfile);
+        setUserProfile(fallbackProfile);
+      } finally {
+        setIsLoadingProfile(false);
       }
     },
-    [user?.email, user?.user_metadata?.full_name]
+    [user?.email, user?.user_metadata?.full_name, isLoadingProfile]
   );
 
   useEffect(() => {
@@ -533,6 +469,7 @@ export function UnifiedAuthProvider({
       userProfile,
       isAuthenticated,
       isLoading,
+      isLoadingProfile,
       error,
       // Actions
       signUp,
@@ -549,6 +486,7 @@ export function UnifiedAuthProvider({
       userProfile,
       isAuthenticated,
       isLoading,
+      isLoadingProfile,
       error,
       signUp,
       signIn,

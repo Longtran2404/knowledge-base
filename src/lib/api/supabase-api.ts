@@ -23,7 +23,7 @@ export const userApi = {
   // Get user profile from users table
   async getUserProfile(userId: string) {
     const { data, error } = await supabase
-      .from("user_profiles")
+      .from("users")
       .select("*")
       .eq("id", userId)
       .single();
@@ -38,7 +38,7 @@ export const userApi = {
     updates: Partial<Tables["users"]["Update"]>
   ) {
     const { data, error } = await (supabase as any)
-      .from("user_profiles")
+      .from("users")
       .update({ ...updates, updated_at: new Date().toISOString() })
       .eq("id", userId)
       .select()
