@@ -182,7 +182,7 @@ export function UnifiedAuthProvider({
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [loadUserProfile, user?.id]);
 
   const loadUserProfile = async (userId: string, retryCount = 0) => {
     const maxRetries = 3;
@@ -360,7 +360,7 @@ export function UnifiedAuthProvider({
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [user?.id]);
 
   const signOut = useCallback(async () => {
     try {
@@ -377,7 +377,7 @@ export function UnifiedAuthProvider({
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [user]);
 
   const resetPassword = useCallback(async (email: string) => {
     try {
@@ -416,7 +416,7 @@ export function UnifiedAuthProvider({
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [user?.id]);
 
   const updateProfile = useCallback(async (updates: Partial<UserProfile>) => {
     try {
@@ -443,7 +443,7 @@ export function UnifiedAuthProvider({
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [user]);
 
   const uploadAvatar = useCallback(async (file: File) => {
     try {
@@ -464,7 +464,7 @@ export function UnifiedAuthProvider({
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [user]);
 
   const refreshSession = useCallback(async (): Promise<boolean> => {
     try {
@@ -509,7 +509,7 @@ export function UnifiedAuthProvider({
         clearInterval(refreshInterval);
       }
     };
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, refreshSession]);
 
   // Memoize context value để tránh unnecessary re-renders
   const value: AuthContextType = useMemo(

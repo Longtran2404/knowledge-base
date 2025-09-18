@@ -244,7 +244,7 @@ export default function LoginEnhancement() {
     }
 
     return null;
-  }, [checkingAccount, accountExists]);
+  }, [checkingAccount, accountExists, formData.email]);
 
   // Show success screen if authenticated
   if (isAuthenticated && userProfile) {

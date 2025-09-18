@@ -160,7 +160,7 @@ export default function ActivityDashboard() {
       loadActivities();
       loadStats();
     }
-  }, [isAuthenticated, userProfile, filters]);
+  }, [isAuthenticated, userProfile, filters, loadActivities, loadStats]);
 
   const loadActivities = async () => {
     if (!userProfile?.id) return;
