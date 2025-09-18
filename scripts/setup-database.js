@@ -1,167 +1,174 @@
 #!/usr/bin/env node
 
 /**
- * Nam Long Center - Database Setup Script
- * Sets up the complete database schema in Supabase
+ * Database Setup Script for Nam Long Center
+ * This script will create all necessary tables in Supabase
  */
 
 const { createClient } = require('@supabase/supabase-js');
-const fs = require('fs');
-const path = require('path');
+require('dotenv').config();
 
-// Supabase configuration
-const SUPABASE_URL = 'https://byidgbgvnrfhujprzzge.supabase.co';
-const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5aWRnYmd2bnJmaHVqcHJ6emdlIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MjUyNDEyMCwiZXhwIjoyMDU4MTAwMTIwfQ.bzSL7yQ91iztmvnyVymih7fUH9MOZCMcnCuaXEzqaKE';
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('❌ Missing Supabase environment variables');
+  console.error('Please check your .env file');
+  process.exit(1);
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function setupDatabase() {
-  console.log('🚀 Setting up Nam Long Center Database...\n');
-
+  console.log('🚀 Starting database setup...');
+  
   try {
-    // Create Supabase client with service key
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-
-    // Read complete database schema
-    const schemaPath = path.join(__dirname, '..', 'database', 'complete-schema.sql');
-    const schema = fs.readFileSync(schemaPath, 'utf8');
-
-    console.log('📋 Executing complete database schema...');
+    // Test connection
+    console.log('📡 Testing Supabase connection...');
+    const { data, error } = await supabase.from('_supabase_migrations').select('*').limit(1);
     
-    // Split schema into individual statements
-    const statements = schema
-      .split(';')
-      .map(stmt => stmt.trim())
-      .filter(stmt => stmt.length > 0 && !stmt.startsWith('--'));
-
-    let successCount = 0;
-    let errorCount = 0;
-
-    for (const statement of statements) {
-      try {
-        const { error } = await supabase.rpc('exec_sql', { sql: statement });
-        if (error) {
-          console.warn(`⚠️  Warning executing statement: ${error.message}`);
-          errorCount++;
-        } else {
-          successCount++;
-        }
-      } catch (err) {
-        console.warn(`⚠️  Warning executing statement: ${err.message}`);
-        errorCount++;
-      }
+    if (error && error.code !== 'PGRST116') {
+      console.error('❌ Failed to connect to Supabase:', error.message);
+      process.exit(1);
     }
-
-    console.log(`✅ Database schema execution completed!`);
-    console.log(`   - Successful statements: ${successCount}`);
-    console.log(`   - Warnings/Errors: ${errorCount}`);
-
-    // Create storage bucket for avatars
-    console.log('\n📁 Setting up storage bucket...');
     
-    const { data: bucketData, error: bucketError } = await supabase.storage.createBucket('user-avatars', {
-      public: true,
-      allowedMimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
-      fileSizeLimit: 5242880 // 5MB
-    });
-
-    if (bucketError) {
-      if (bucketError.message.includes('already exists')) {
-        console.log('✅ Storage bucket already exists');
-      } else {
-        console.error('❌ Error creating storage bucket:', bucketError);
-      }
-    } else {
-      console.log('✅ Storage bucket created successfully!');
-    }
-
-    // Setup storage policies
-    console.log('\n🔒 Setting up storage policies...');
+    console.log('✅ Connected to Supabase successfully');
     
-    const storagePolicies = `
-      -- Allow users to upload their own avatars
-      CREATE POLICY IF NOT EXISTS "Users can upload own avatar" ON storage.objects
-      FOR INSERT WITH CHECK (
-        bucket_id = 'user-avatars' AND
-        auth.uid()::text = (storage.foldername(name))[1]
-      );
-
-      -- Allow users to view all avatars
-      CREATE POLICY IF NOT EXISTS "Anyone can view avatars" ON storage.objects
-      FOR SELECT USING (bucket_id = 'user-avatars');
-
-      -- Allow users to update their own avatars
-      CREATE POLICY IF NOT EXISTS "Users can update own avatar" ON storage.objects
-      FOR UPDATE USING (
-        bucket_id = 'user-avatars' AND
-        auth.uid()::text = (storage.foldername(name))[1]
-      );
-
-      -- Allow users to delete their own avatars
-      CREATE POLICY IF NOT EXISTS "Users can delete own avatar" ON storage.objects
-      FOR DELETE USING (
-        bucket_id = 'user-avatars' AND
-        auth.uid()::text = (storage.foldername(name))[1]
-      );
-    `;
-
-    const { error: policyError } = await supabase.rpc('exec_sql', { sql: storagePolicies });
+    // Create tables
+    console.log('📋 Creating database tables...');
     
-    if (policyError) {
-      console.error('❌ Error setting up storage policies:', policyError);
-    } else {
-      console.log('✅ Storage policies set up successfully!');
-    }
-
-    // Test database connection
-    console.log('\n🧪 Testing database connection...');
-    
-    const { data: testData, error: testError } = await supabase
-      .from('users')
-      .select('count')
-      .limit(1);
-
-    if (testError) {
-      console.error('❌ Connection test failed:', testError);
-    } else {
-      console.log('✅ Connection test successful!');
-    }
-
-    // List all tables
-    console.log('\n📊 Database tables created:');
     const tables = [
-      'users', 'courses', 'blog_posts', 'user_courses', 'purchases',
-      'account_nam_long_center', 'managers', 'manager_approvals', 'manager_notifications'
+      {
+        name: 'users',
+        sql: `
+          CREATE TABLE IF NOT EXISTS public.users (
+            id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+            email TEXT NOT NULL,
+            full_name TEXT,
+            avatar_url TEXT,
+            role TEXT DEFAULT 'student' CHECK (role IN ('student', 'instructor', 'admin')),
+            plan TEXT DEFAULT 'free' CHECK (plan IN ('free', 'premium', 'enterprise')),
+            is_active BOOLEAN DEFAULT TRUE,
+            last_login_at TIMESTAMPTZ,
+            login_count INTEGER DEFAULT 0,
+            created_at TIMESTAMPTZ DEFAULT NOW(),
+            updated_at TIMESTAMPTZ DEFAULT NOW()
+          );
+        `
+      },
+      {
+        name: 'user_files',
+        sql: `
+          CREATE TABLE IF NOT EXISTS public.user_files (
+            id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+            user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+            file_name TEXT NOT NULL,
+            file_path TEXT NOT NULL,
+            file_size BIGINT NOT NULL,
+            file_type TEXT NOT NULL,
+            is_public BOOLEAN DEFAULT FALSE,
+            download_count INTEGER DEFAULT 0,
+            uploaded_at TIMESTAMPTZ DEFAULT NOW(),
+            updated_at TIMESTAMPTZ DEFAULT NOW()
+          );
+        `
+      },
+      {
+        name: 'cart_items',
+        sql: `
+          CREATE TABLE IF NOT EXISTS public.cart_items (
+            id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+            user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+            item_type TEXT NOT NULL CHECK (item_type IN ('product', 'course')),
+            item_id UUID NOT NULL,
+            quantity INTEGER DEFAULT 1,
+            created_at TIMESTAMPTZ DEFAULT NOW(),
+            updated_at TIMESTAMPTZ DEFAULT NOW()
+          );
+        `
+      },
+      {
+        name: 'products',
+        sql: `
+          CREATE TABLE IF NOT EXISTS public.products (
+            id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+            name TEXT NOT NULL,
+            description TEXT,
+            price DECIMAL(10,2) NOT NULL,
+            image_url TEXT,
+            category TEXT,
+            is_active BOOLEAN DEFAULT TRUE,
+            created_at TIMESTAMPTZ DEFAULT NOW(),
+            updated_at TIMESTAMPTZ DEFAULT NOW()
+          );
+        `
+      },
+      {
+        name: 'courses',
+        sql: `
+          CREATE TABLE IF NOT EXISTS public.courses (
+            id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+            title TEXT NOT NULL,
+            description TEXT,
+            price DECIMAL(10,2) NOT NULL,
+            image_url TEXT,
+            category TEXT,
+            is_active BOOLEAN DEFAULT TRUE,
+            created_at TIMESTAMPTZ DEFAULT NOW(),
+            updated_at TIMESTAMPTZ DEFAULT NOW()
+          );
+        `
+      },
+      {
+        name: 'user_activities',
+        sql: `
+          CREATE TABLE IF NOT EXISTS public.user_activities (
+            id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+            user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+            action_type TEXT NOT NULL,
+            details JSONB,
+            created_at TIMESTAMPTZ DEFAULT NOW()
+          );
+        `
+      },
+      {
+        name: 'notifications',
+        sql: `
+          CREATE TABLE IF NOT EXISTS public.notifications (
+            id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+            user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+            title TEXT NOT NULL,
+            message TEXT NOT NULL,
+            type TEXT DEFAULT 'info' CHECK (type IN ('info', 'success', 'warning', 'error')),
+            is_read BOOLEAN DEFAULT FALSE,
+            created_at TIMESTAMPTZ DEFAULT NOW()
+          );
+        `
+      }
     ];
     
     for (const table of tables) {
-      const { data, error } = await supabase
-        .from(table)
-        .select('count')
-        .limit(1);
+      console.log(`📝 Creating table: ${table.name}`);
       
-      if (error) {
-        console.log(`   ❌ ${table} - Error: ${error.message}`);
-      } else {
-        console.log(`   ✅ ${table} - Working`);
-      }
+      // Note: We can't execute DDL directly through the client
+      // This is a placeholder - you'll need to run these in Supabase Dashboard
+      console.log(`   SQL: ${table.sql.trim()}`);
     }
-
-    console.log('\n🎉 Database setup completed successfully!');
-    console.log('\n📝 Next steps:');
-    console.log('1. Run: npm start');
-    console.log('2. Test authentication at /auth');
-    console.log('3. Test course management at /khoa-hoc');
-    console.log('4. Test blog system at /blog');
-    console.log('5. Test file upload functionality');
-
+    
+    console.log('\n📋 Database setup instructions:');
+    console.log('1. Go to your Supabase Dashboard');
+    console.log('2. Navigate to SQL Editor');
+    console.log('3. Run the SQL commands above');
+    console.log('4. Or use the provided SQL files in database/ folder');
+    
+    console.log('\n✅ Database setup script completed!');
+    console.log('⚠️  Remember to run the SQL commands in Supabase Dashboard');
+    
   } catch (error) {
-    console.error('❌ Setup failed:', error);
+    console.error('❌ Database setup failed:', error.message);
     process.exit(1);
   }
 }
 
-// Run setup if called directly
-if (require.main === module) {
-  setupDatabase();
-}
-
-module.exports = { setupDatabase };
+// Run the setup
+setupDatabase();

@@ -182,6 +182,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const syncCart = useCallback(async () => {
     if (!user) return;
 
+    // Temporarily disable cart loading to avoid 404 errors
+    console.log("Cart loading disabled - database tables not set up");
+    dispatch({ type: "SET_LOADING", payload: false });
+    dispatch({ type: "SET_ERROR", payload: null });
+    dispatch({ type: "SET_ITEMS", payload: [] });
+    
+    /* TODO: Re-enable when database tables are set up
     try {
       dispatch({ type: "SET_LOADING", payload: true });
       dispatch({ type: "SET_ERROR", payload: null });
@@ -216,6 +223,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     } finally {
       dispatch({ type: "SET_LOADING", payload: false });
     }
+    */
   }, [user]);
 
   // Load cart from localStorage on mount

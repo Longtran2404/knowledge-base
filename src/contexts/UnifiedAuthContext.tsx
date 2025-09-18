@@ -84,6 +84,7 @@ export function UnifiedAuthProvider({
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
+  const [profileLoaded, setProfileLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Refs để tránh stale closures
@@ -97,7 +98,7 @@ export function UnifiedAuthProvider({
 
   const loadUserProfile = useCallback(
     async (userId: string) => {
-      if (isLoadingProfile) return; // Prevent multiple calls
+      if (isLoadingProfile || profileLoaded) return; // Prevent multiple calls
       
       setIsLoadingProfile(true);
       console.log(`Loading user profile for ${userId}`);
@@ -106,6 +107,7 @@ export function UnifiedAuthProvider({
         const profile = await api.user.getUserProfile(userId);
         console.log("User profile loaded successfully:", profile);
         setUserProfile(profile);
+        setProfileLoaded(true);
 
         // Update last login time
         if (profile) {
@@ -134,11 +136,12 @@ export function UnifiedAuthProvider({
         };
         console.log("Using fallback profile:", fallbackProfile);
         setUserProfile(fallbackProfile);
+        setProfileLoaded(true);
       } finally {
         setIsLoadingProfile(false);
       }
     },
-    [user?.email, user?.user_metadata?.full_name, isLoadingProfile]
+    [user?.email, user?.user_metadata?.full_name, isLoadingProfile, profileLoaded]
   );
 
   useEffect(() => {
@@ -206,6 +209,10 @@ export function UnifiedAuthProvider({
         if (name) localStorage.setItem("nlc_username", name);
       } else if (event === "SIGNED_OUT") {
         console.log("🚪 User signed out");
+        setUser(null);
+        setUserProfile(null);
+        setIsAuthenticated(false);
+        setProfileLoaded(false);
         // Log logout activity if user was authenticated
         if (user?.id) {
           try {
