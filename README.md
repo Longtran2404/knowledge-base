@@ -1,165 +1,161 @@
-# 🚀 Nam Long Center
+# Nam Long Center v1.0.0
 
-Hệ thống quản lý học tập và khóa học trực tuyến với đầy đủ tính năng hiện đại.
+Ứng dụng web hiện đại cho trung tâm Nam Long với React 18, TypeScript, và Supabase.
 
-## ✨ Tính năng chính
+## 🚀 Tính năng chính
 
-- 🎓 **Quản lý khóa học** - Tạo, quản lý và theo dõi khóa học
-- 📝 **Blog hệ thống** - Viết và quản lý bài viết
-- 👤 **Quản lý người dùng** - Đăng ký, đăng nhập, profile
-- 💳 **Hệ thống thanh toán** - Tích hợp Stripe
-- 📁 **Upload file** - Avatar và tài liệu
-- 🔐 **Bảo mật** - Row Level Security với Supabase
-- 📱 **Responsive** - Giao diện thân thiện mọi thiết bị
+- **Authentication**: Đăng nhập/đăng ký với Supabase Auth (PKCE flow)
+- **File Management**: Upload, quản lý và chia sẻ file với progress tracking
+- **Real-time**: Thông báo và cập nhật real-time với Supabase Realtime
+- **Modern UI**: Liquid Glass design system với Framer Motion animations
+- **Payment**: Tích hợp VNPay và MoMo payment gateways
+- **Responsive**: Thiết kế responsive cho mọi thiết bị
 
 ## 🛠️ Công nghệ sử dụng
 
-- **Frontend**: React 18.3.1 + TypeScript + Tailwind CSS
-- **Backend**: Supabase (PostgreSQL + Auth + Storage)
-- **UI Library**: Shadcn/UI + Radix UI
-- **State Management**: Zustand + React Query
-- **Build Tool**: CRACO + Webpack
+- **Frontend**: React 18.3.1, TypeScript 5.0, Next.js 15.5.0
+- **Backend**: Supabase (PostgreSQL, Auth, Storage, Realtime)
+- **UI**: Radix UI, Tailwind CSS, Framer Motion
+- **State Management**: React Context API, Redux Toolkit
+- **Build Tool**: CRACO (Create React App Configuration Override)
 
-## 🚀 Cài đặt và chạy
-
-### 1. Cài đặt dependencies
+## 📦 Cài đặt
 
 ```bash
+# Clone repository
+git clone https://github.com/Longtran2404/nam-long-center.git
+cd nam-long-center
+
+# Cài đặt dependencies
 npm install
+
+# Cấu hình environment variables
+cp .env.example .env.local
+# Chỉnh sửa .env.local với thông tin Supabase của bạn
+
+# Chạy development server
+npm start
 ```
 
-### 2. Cấu hình environment
+## 🔧 Environment Variables
 
-```bash
-cp env.example .env.local
-```
-
-Cập nhật các biến môi trường trong `.env.local`:
+Tạo file `.env.local` với các biến sau:
 
 ```env
 REACT_APP_SUPABASE_URL=your_supabase_url
 REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-### 3. Setup database
+## 🚀 Deploy lên Vercel
+
+### 1. Deploy từ GitHub
+
+1. Truy cập [Vercel Dashboard](https://vercel.com/dashboard)
+2. Click "New Project"
+3. Import repository từ GitHub: `Longtran2404/nam-long-center`
+4. Cấu hình Environment Variables:
+   - `REACT_APP_SUPABASE_URL`: URL Supabase của bạn
+   - `REACT_APP_SUPABASE_ANON_KEY`: Anon key Supabase của bạn
+5. Click "Deploy"
+
+### 2. Deploy từ CLI
 
 ```bash
-# Xem hướng dẫn chi tiết
-cat docs/DATABASE_SETUP_GUIDE.md
+# Cài đặt Vercel CLI
+npm i -g vercel
 
-# Hoặc chạy script test
-npm run test:db
+# Login vào Vercel
+vercel login
+
+# Deploy
+vercel
+
+# Deploy production
+vercel --prod
 ```
 
-### 4. Chạy ứng dụng
+## 📁 Cấu trúc dự án
+
+```
+src/
+├── components/          # React components
+│   ├── auth/           # Authentication components
+│   ├── ui/             # UI components
+│   ├── upload/         # File upload components
+│   └── ...
+├── contexts/           # React contexts
+├── lib/                # Utilities và services
+│   ├── supabase-config.ts
+│   ├── api/            # API services
+│   ├── payment/        # Payment gateways
+│   └── ...
+├── pages/              # Page components
+└── types/              # TypeScript types
+```
+
+## 🔐 Supabase Setup
+
+1. Tạo project mới trên [Supabase](https://supabase.com)
+2. Chạy SQL migrations để tạo tables
+3. Cấu hình Row Level Security (RLS) policies
+4. Setup Storage buckets cho file uploads
+5. Cấu hình Authentication providers
+
+## 📱 Scripts
 
 ```bash
-# Development
-npm start
-
-# Production build
-npm run build
+npm start          # Chạy development server
+npm run build      # Build production
+npm run lint       # Chạy ESLint
+npm run test       # Chạy tests
+npm run setup:storage  # Setup Supabase storage
 ```
 
-## 📁 Cấu trúc thư mục
+## 🎨 UI Components
 
-```
-namlongcenter/
-├── docs/                    # Tài liệu hướng dẫn
-├── scripts/                 # Scripts tiện ích
-├── database/               # Database schema
-├── src/
-│   ├── components/         # React components
-│   ├── pages/             # Trang chính
-│   ├── lib/               # Utilities và services
-│   ├── contexts/          # React contexts
-│   └── types/             # TypeScript types
-└── public/                # Static files
-```
+- **LiquidGlassButton**: Button với hiệu ứng glass morphism
+- **LiquidGlassCard**: Card component với glass effect
+- **EnhancedToast**: Toast notification system
+- **AdvancedFileUpload**: File upload với progress tracking
 
-## 🗄️ Database
+## 🔄 State Management
 
-### Tables chính:
+- **UnifiedAuthContext**: Quản lý authentication state
+- **CartContext**: Quản lý shopping cart
+- **NotificationContext**: Quản lý notifications
+- **Redux Store**: Global state management
 
-- `users` - Thông tin người dùng
-- `courses` - Khóa học
-- `blog_posts` - Bài viết blog
-- `user_courses` - Đăng ký khóa học
-- `purchases` - Giao dịch
-- `account_nam_long_center` - Quản lý tài khoản
-- `managers` - Danh sách quản lý
-- `manager_approvals` - Phê duyệt quản lý
-- `manager_notifications` - Thông báo
+## 📊 Performance
 
-## 🧪 Testing
+- Code splitting với React.lazy()
+- Memoization với useCallback và useMemo
+- Optimized bundle size với Webpack
+- Image optimization
+- Caching strategies
 
-```bash
-# Test database connection
-npm run test:db
+## 🚀 Deployment
 
-# Run unit tests
-npm run test
-
-# Run E2E tests
-npm run test:e2e
-
-# Run all tests
-npm run test:all
-```
-
-## 📚 Tài liệu
-
-- [Database Setup Guide](docs/DATABASE_SETUP_GUIDE.md)
-- [Supabase Integration Summary](docs/SUPABASE_INTEGRATION_SUMMARY.md)
-- [Testing Guide](docs/TESTING_GUIDE.md)
-- [Payment Setup Guide](docs/PAYMENT_SETUP_GUIDE.md)
-
-## 🚀 Scripts có sẵn
-
-```bash
-npm start              # Chạy development server
-npm run build          # Build production
-npm run test           # Chạy tests
-npm run test:db        # Test database connection
-npm run setup:db       # Setup database
-npm run lint           # Lint code
-npm run lint:check     # Check linting
-```
-
-## 🔧 Troubleshooting
-
-### Lỗi thường gặp:
-
-1. **Database connection error**
-
-   - Kiểm tra Supabase URL và API key
-   - Chạy `npm run test:db` để kiểm tra
-
-2. **Build error**
-
-   - Chạy `npm run lint:check` để kiểm tra lỗi code
-   - Kiểm tra TypeScript types
-
-3. **Authentication error**
-   - Kiểm tra Supabase Auth configuration
-   - Xem [Database Setup Guide](docs/DATABASE_SETUP_GUIDE.md)
+Dự án đã được cấu hình sẵn cho Vercel deployment với:
+- `vercel.json`: Cấu hình build và routing
+- `.vercelignore`: Loại trừ files không cần thiết
+- Environment variables setup
 
 ## 📄 License
 
-MIT License - Xem file [LICENSE](LICENSE) để biết thêm chi tiết.
+MIT License - xem file [LICENSE](LICENSE) để biết thêm chi tiết.
 
 ## 🤝 Contributing
 
 1. Fork repository
-2. Tạo feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
+2. Tạo feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
 5. Tạo Pull Request
 
 ## 📞 Support
 
-Nếu có vấn đề, vui lòng tạo issue trên GitHub hoặc liên hệ qua email.
+Nếu có vấn đề gì, vui lòng tạo issue trên GitHub hoặc liên hệ qua email.
 
 ---
 
-**Nam Long Center** - Học tập hiệu quả, phát triển bền vững! 🎓✨
+**Nam Long Center** - Nền tảng học tập và chia sẻ tài liệu hiện đại 🎓
