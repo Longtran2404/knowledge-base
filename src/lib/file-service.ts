@@ -69,7 +69,7 @@ export const uploadFile = async (
 
     // Save file metadata to database
     const { data: fileData, error: dbError } = await supabase
-      .from("file_uploads")
+      .from("user_files")
       .insert({
         filename: filename,
         original_filename: file.name,
@@ -145,7 +145,7 @@ export const deleteFile = async (
   try {
     // Get file info first
     const { data: fileData, error: fetchError } = await supabase
-      .from("file_uploads")
+      .from("user_files")
       .select("file_path")
       .eq("id", fileId)
       .single();
@@ -165,7 +165,7 @@ export const deleteFile = async (
 
     // Delete from database
     const { error: dbError } = await supabase
-      .from("file_uploads")
+      .from("user_files")
       .delete()
       .eq("id", fileId);
 
@@ -188,7 +188,7 @@ export const downloadFile = async (
 ): Promise<{ success: boolean; url?: string; error?: string }> => {
   try {
     const { data: fileData, error } = await supabase
-      .from("file_uploads")
+      .from("user_files")
       .select("file_path, original_filename")
       .eq("id", fileId)
       .single();
@@ -208,14 +208,14 @@ export const downloadFile = async (
 
     // Increment download count
     const { data: currentFile } = await supabase
-      .from("file_uploads")
+      .from("user_files")
       .select("download_count")
       .eq("id", fileId)
       .single();
 
     if (currentFile) {
       await supabase
-        .from("file_uploads")
+        .from("user_files")
         .update({ download_count: currentFile.download_count + 1 })
         .eq("id", fileId);
     }

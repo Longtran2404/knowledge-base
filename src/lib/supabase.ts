@@ -503,7 +503,7 @@ export const uploadAvatar = async (
 
 export const updateUserAvatar = async (userId: string, avatarUrl: string) => {
   const { error } = await supabase
-    .from("users")
+    .from("user_profiles")
     .update({ avatar_url: avatarUrl })
     .eq("id", userId);
 
@@ -535,7 +535,7 @@ export const deleteOldAvatar = async (avatarUrl: string) => {
 // Get user profile data
 export const getUserProfile = async (userId: string) => {
   const { data, error } = await supabase
-    .from("users")
+    .from("user_profiles")
     .select("*")
     .eq("id", userId)
     .single();
@@ -557,7 +557,7 @@ export const updateUserProfile = async (
   updates: Partial<User>
 ) => {
   const { data, error } = await supabase
-    .from("users")
+    .from("user_profiles")
     .update({
       ...updates,
       updated_at: new Date().toISOString(),

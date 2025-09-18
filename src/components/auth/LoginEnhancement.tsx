@@ -62,7 +62,7 @@ export default function LoginEnhancement() {
         setCheckingAccount(true);
         try {
           const { data, error } = await supabase
-            .from("users")
+            .from("user_profiles")
             .select("id, email, full_name, role, is_active")
             .eq("email", formData.email)
             .single();

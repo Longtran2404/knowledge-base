@@ -93,6 +93,118 @@ export function UnifiedAuthProvider({
     userRef.current = user;
   }, [user]);
 
+  const loadUserProfile = useCallback(
+    async (userId: string, retryCount = 0) => {
+      const maxRetries = 3;
+      console.log(
+        `Loading user profile for ${userId} (attempt ${retryCount + 1})`
+      );
+
+      try {
+        const profile = await api.user.getUserProfile(userId);
+        console.log("User profile loaded successfully:", profile);
+        setUserProfile(profile);
+
+        // Update last login time
+        if (profile) {
+          await api.user.updateUserProfile(userId, {
+            last_login_at: new Date().toISOString(),
+            login_count: ((profile as any).login_count || 0) + 1,
+          });
+        }
+      } catch (error: any) {
+        console.warn(
+          `Could not load user profile (attempt ${retryCount + 1}):`,
+          error
+        );
+
+        // Retry logic for network errors
+        if (
+          retryCount < maxRetries &&
+          (error.code === "PGRST116" ||
+            error.message.includes("network") ||
+            error.message.includes("JSON"))
+        ) {
+          console.log(`Retrying in ${1000 * (retryCount + 1)}ms...`);
+          setTimeout(
+            () => loadUserProfile(userId, retryCount + 1),
+            1000 * (retryCount + 1)
+          );
+          return;
+        }
+
+        // Try to create user profile if it doesn't exist
+        console.log("Attempting to create new user profile...");
+        try {
+          const currentUser = await supabase.auth.getUser();
+          if (currentUser.data.user) {
+            const newProfile = {
+              id: userId,
+              email: currentUser.data.user.email || "",
+              full_name:
+                currentUser.data.user.user_metadata?.full_name ||
+                currentUser.data.user.email?.split("@")[0] ||
+                "User",
+              avatar_url:
+                currentUser.data.user.user_metadata?.avatar_url || null,
+              role: "student" as const,
+              plan: "free" as const,
+              is_active: true,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            };
+
+            // Insert new profile into database
+            const { data, error: insertError } = await (supabase as any)
+              .from("user_profiles")
+              .insert([newProfile])
+              .select()
+              .single();
+
+            if (insertError) {
+              console.error("Failed to create user profile:", insertError);
+              throw insertError;
+            }
+
+            console.log("✅ New user profile created:", data);
+            setUserProfile(data);
+
+            // Log registration activity
+            await activityService.logRegister(
+              userId,
+              currentUser.data.user.email || "",
+              {
+                role: "student",
+                plan: "free",
+                registration_method: "email",
+              }
+            );
+          }
+        } catch (createError: any) {
+          console.error("Failed to create user profile:", createError);
+          // Use fallback profile
+          const fallbackProfile = {
+            id: userId,
+            email: user?.email || "",
+            full_name:
+              user?.user_metadata?.full_name ||
+              user?.email?.split("@")[0] ||
+              "User",
+            avatar_url: null,
+            role: "student" as const,
+            plan: "free" as const,
+            is_active: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
+          console.log("Using fallback profile:", fallbackProfile);
+          setUserProfile(fallbackProfile);
+        }
+      }
+    },
+    [user?.email, user?.user_metadata?.full_name]
+  );
+
   useEffect(() => {
     // Get initial session
     const getInitialSession = async () => {
@@ -182,117 +294,7 @@ export function UnifiedAuthProvider({
     });
 
     return () => subscription.unsubscribe();
-  }, [loadUserProfile, user?.id]);
-
-  const loadUserProfile = async (userId: string, retryCount = 0) => {
-    const maxRetries = 3;
-    console.log(
-      `Loading user profile for ${userId} (attempt ${retryCount + 1})`
-    );
-
-    try {
-      const profile = await api.user.getUserProfile(userId);
-      console.log("User profile loaded successfully:", profile);
-      setUserProfile(profile);
-
-      // Update last login time
-      if (profile) {
-        await api.user.updateUserProfile(userId, {
-          last_login_at: new Date().toISOString(),
-          login_count: ((profile as any).login_count || 0) + 1,
-        });
-      }
-    } catch (error: any) {
-      console.warn(
-        `Could not load user profile (attempt ${retryCount + 1}):`,
-        error
-      );
-
-      // Retry logic for network errors
-      if (
-        retryCount < maxRetries &&
-        (error.code === "PGRST116" ||
-          error.message.includes("network") ||
-          error.message.includes("JSON"))
-      ) {
-        console.log(`Retrying in ${1000 * (retryCount + 1)}ms...`);
-        setTimeout(
-          () => loadUserProfile(userId, retryCount + 1),
-          1000 * (retryCount + 1)
-        );
-        return;
-      }
-
-      // Try to create user profile if it doesn't exist
-      console.log("Attempting to create new user profile...");
-      try {
-        const currentUser = await supabase.auth.getUser();
-        if (currentUser.data.user) {
-          const newProfile = {
-            id: userId,
-            email: currentUser.data.user.email || "",
-            full_name:
-              currentUser.data.user.user_metadata?.full_name ||
-              currentUser.data.user.email?.split("@")[0] ||
-              "User",
-            role: "student" as const,
-            is_active: true,
-            email_verified: currentUser.data.user.email_confirmed_at
-              ? true
-              : false,
-            email_verified_at: currentUser.data.user.email_confirmed_at || null,
-            last_login_at: new Date().toISOString(),
-            login_count: 1,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          };
-
-          console.log("Creating user profile:", newProfile);
-
-          const { data, error: insertError } = await supabase
-            .from("users")
-            .insert(newProfile as any)
-            .select()
-            .single();
-
-          if (!insertError && data) {
-            setUserProfile(data);
-            console.log("Created new user profile successfully:", data);
-
-            // Log successful registration activity
-            await activityService.logRegister(
-              (data as any).id,
-              (data as any).email,
-              {
-                profile_created: true,
-                auto_created: true,
-              }
-            );
-          } else {
-            console.error("Failed to create user profile:", insertError);
-            throw insertError;
-          }
-        }
-      } catch (createError: any) {
-        console.error("Could not create user profile:", createError);
-        // Set a minimal profile for UI consistency but with proper structure
-        const fallbackProfile: UserProfile = {
-          id: userId,
-          email: user?.email || "",
-          full_name:
-            user?.user_metadata?.full_name ||
-            user?.email?.split("@")[0] ||
-            "User",
-          role: "student",
-          is_active: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
-        console.log("Using fallback profile:", fallbackProfile);
-        setUserProfile(fallbackProfile);
-      }
-    }
-  };
+  }, [user?.id, loadUserProfile]);
 
   const signUp = useCallback(
     async (
@@ -360,7 +362,7 @@ export function UnifiedAuthProvider({
     } finally {
       setIsLoading(false);
     }
-  }, [user?.id]);
+  }, []);
 
   const signOut = useCallback(async () => {
     try {
@@ -377,7 +379,7 @@ export function UnifiedAuthProvider({
     } finally {
       setIsLoading(false);
     }
-  }, [user]);
+  }, []);
 
   const resetPassword = useCallback(async (email: string) => {
     try {
@@ -395,76 +397,88 @@ export function UnifiedAuthProvider({
     }
   }, []);
 
-  const updatePassword = useCallback(async (newPassword: string) => {
-    try {
-      setIsLoading(true);
-      setError(null);
+  const updatePassword = useCallback(
+    async (newPassword: string) => {
+      try {
+        setIsLoading(true);
+        setError(null);
 
-      await api.auth.updatePassword(newPassword);
+        await api.auth.updatePassword(newPassword);
 
-      // Log password change activity
-      if (user?.id) {
-        await activityService.logPasswordChange(user.id);
+        // Log password change activity
+        if (user?.id) {
+          await activityService.logPasswordChange(user.id);
+        }
+
+        return { success: true };
+      } catch (error: any) {
+        const errorMessage =
+          error.message || "Có lỗi xảy ra khi cập nhật mật khẩu";
+        setError(errorMessage);
+        return { success: false, error: errorMessage };
+      } finally {
+        setIsLoading(false);
       }
+    },
+    [user?.id]
+  );
 
-      return { success: true };
-    } catch (error: any) {
-      const errorMessage =
-        error.message || "Có lỗi xảy ra khi cập nhật mật khẩu";
-      setError(errorMessage);
-      return { success: false, error: errorMessage };
-    } finally {
-      setIsLoading(false);
-    }
-  }, [user?.id]);
+  const updateProfile = useCallback(
+    async (updates: Partial<UserProfile>) => {
+      try {
+        if (!user) {
+          throw new Error("User not authenticated");
+        }
 
-  const updateProfile = useCallback(async (updates: Partial<UserProfile>) => {
-    try {
-      if (!user) {
-        throw new Error("User not authenticated");
+        setIsLoading(true);
+        setError(null);
+
+        const updatedProfile = await api.user.updateUserProfile(
+          user.id,
+          updates
+        );
+        setUserProfile(updatedProfile);
+
+        // Log profile update activity
+        const updatedFields = Object.keys(updates);
+        await activityService.logProfileUpdate(user.id, updatedFields);
+
+        return { success: true };
+      } catch (error: any) {
+        const errorMessage =
+          error.message || "Có lỗi xảy ra khi cập nhật thông tin";
+        setError(errorMessage);
+        return { success: false, error: errorMessage };
+      } finally {
+        setIsLoading(false);
       }
+    },
+    [user]
+  );
 
-      setIsLoading(true);
-      setError(null);
+  const uploadAvatar = useCallback(
+    async (file: File) => {
+      try {
+        if (!user) {
+          throw new Error("User not authenticated");
+        }
 
-      const updatedProfile = await api.user.updateUserProfile(user.id, updates);
-      setUserProfile(updatedProfile);
+        setIsLoading(true);
+        setError(null);
 
-      // Log profile update activity
-      const updatedFields = Object.keys(updates);
-      await activityService.logProfileUpdate(user.id, updatedFields);
+        const avatarUrl = await api.user.uploadAvatar(file, user.id);
 
-      return { success: true };
-    } catch (error: any) {
-      const errorMessage =
-        error.message || "Có lỗi xảy ra khi cập nhật thông tin";
-      setError(errorMessage);
-      return { success: false, error: errorMessage };
-    } finally {
-      setIsLoading(false);
-    }
-  }, [user]);
-
-  const uploadAvatar = useCallback(async (file: File) => {
-    try {
-      if (!user) {
-        throw new Error("User not authenticated");
+        return { success: true, url: avatarUrl };
+      } catch (error: any) {
+        const errorMessage = error.message || "Có lỗi xảy ra khi upload avatar";
+        setError(errorMessage);
+        return { success: false, error: errorMessage };
+      } finally {
+        setIsLoading(false);
       }
-
-      setIsLoading(true);
-      setError(null);
-
-      const avatarUrl = await api.user.uploadAvatar(file, user.id);
-
-      return { success: true, url: avatarUrl };
-    } catch (error: any) {
-      const errorMessage = error.message || "Có lỗi xảy ra khi upload avatar";
-      setError(errorMessage);
-      return { success: false, error: errorMessage };
-    } finally {
-      setIsLoading(false);
-    }
-  }, [user]);
+    },
+    [user]
+  );
 
   const refreshSession = useCallback(async (): Promise<boolean> => {
     try {

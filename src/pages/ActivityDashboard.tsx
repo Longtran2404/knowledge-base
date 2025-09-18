@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../contexts/UnifiedAuthContext";
 import { activityService } from "../lib/activity-service";
 import type { UserActivity } from "../lib/supabase-config";
@@ -155,14 +155,7 @@ export default function ActivityDashboard() {
     limit: 50,
   });
 
-  useEffect(() => {
-    if (isAuthenticated && userProfile?.id) {
-      loadActivities();
-      loadStats();
-    }
-  }, [isAuthenticated, userProfile, filters, loadActivities, loadStats]);
-
-  const loadActivities = async () => {
+  const loadActivities = useCallback(async () => {
     if (!userProfile?.id) return;
 
     try {
@@ -179,9 +172,9 @@ export default function ActivityDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userProfile?.id, filters]);
 
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     if (!userProfile?.id) return;
 
     try {
@@ -190,7 +183,14 @@ export default function ActivityDashboard() {
     } catch (error) {
       console.error("Failed to load stats:", error);
     }
-  };
+  }, [userProfile?.id]);
+
+  useEffect(() => {
+    if (isAuthenticated && userProfile?.id) {
+      loadActivities();
+      loadStats();
+    }
+  }, [isAuthenticated, userProfile, filters, loadActivities, loadStats]);
 
   const handleFilterChange = (key: string, value: string | number) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -253,7 +253,9 @@ export default function ActivityDashboard() {
                   <Label htmlFor="actionType">Loại hoạt động</Label>
                   <Select
                     value={filters.actionType}
-                    onValueChange={(value) => handleFilterChange("actionType", value)}
+                    onValueChange={(value) =>
+                      handleFilterChange("actionType", value)
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Tất cả" />
@@ -262,9 +264,13 @@ export default function ActivityDashboard() {
                       <SelectItem value="">Tất cả</SelectItem>
                       <SelectItem value="login">Đăng nhập</SelectItem>
                       <SelectItem value="logout">Đăng xuất</SelectItem>
-                      <SelectItem value="course_purchase">Mua khóa học</SelectItem>
+                      <SelectItem value="course_purchase">
+                        Mua khóa học
+                      </SelectItem>
                       <SelectItem value="file_upload">Tải lên tệp</SelectItem>
-                      <SelectItem value="profile_update">Cập nhật hồ sơ</SelectItem>
+                      <SelectItem value="profile_update">
+                        Cập nhật hồ sơ
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -274,7 +280,9 @@ export default function ActivityDashboard() {
                     id="startDate"
                     type="date"
                     value={filters.startDate}
-                    onChange={(e) => handleFilterChange("startDate", e.target.value)}
+                    onChange={(e) =>
+                      handleFilterChange("startDate", e.target.value)
+                    }
                   />
                 </div>
                 <div>
@@ -283,7 +291,9 @@ export default function ActivityDashboard() {
                     id="endDate"
                     type="date"
                     value={filters.endDate}
-                    onChange={(e) => handleFilterChange("endDate", e.target.value)}
+                    onChange={(e) =>
+                      handleFilterChange("endDate", e.target.value)
+                    }
                   />
                 </div>
                 <div className="flex items-end gap-2">
@@ -325,7 +335,11 @@ export default function ActivityDashboard() {
                       key={activity.id}
                       className="flex items-start gap-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors"
                     >
-                      <div className={`p-2 rounded-full ${getActionColor(activity.action_type)}`}>
+                      <div
+                        className={`p-2 rounded-full ${getActionColor(
+                          activity.action_type
+                        )}`}
+                      >
                         {getActionIcon(activity.action_type)}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -334,17 +348,24 @@ export default function ActivityDashboard() {
                             {getActionText(activity.action_type)}
                           </Badge>
                           <span className="text-sm text-muted-foreground">
-                            {formatDistanceToNow(new Date(activity.created_at), {
-                              addSuffix: true,
-                              locale: vi,
-                            })}
+                            {formatDistanceToNow(
+                              new Date(activity.created_at),
+                              {
+                                addSuffix: true,
+                                locale: vi,
+                              }
+                            )}
                           </span>
                         </div>
-                        <p className="text-sm font-medium">{activity.description}</p>
+                        <p className="text-sm font-medium">
+                          {activity.description}
+                        </p>
                         {activity.metadata && (
                           <div className="mt-2 text-xs text-muted-foreground">
                             <details>
-                              <summary className="cursor-pointer">Chi tiết</summary>
+                              <summary className="cursor-pointer">
+                                Chi tiết
+                              </summary>
                               <pre className="mt-1 whitespace-pre-wrap">
                                 {JSON.stringify(activity.metadata, null, 2)}
                               </pre>
@@ -353,8 +374,12 @@ export default function ActivityDashboard() {
                         )}
                       </div>
                       <div className="text-right text-sm text-muted-foreground">
-                        <div>{format(new Date(activity.created_at), "dd/MM/yyyy")}</div>
-                        <div>{format(new Date(activity.created_at), "HH:mm:ss")}</div>
+                        <div>
+                          {format(new Date(activity.created_at), "dd/MM/yyyy")}
+                        </div>
+                        <div>
+                          {format(new Date(activity.created_at), "HH:mm:ss")}
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -369,7 +394,9 @@ export default function ActivityDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Tổng hoạt động</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Tổng hoạt động
+                </CardTitle>
                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -382,7 +409,9 @@ export default function ActivityDashboard() {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Loại hoạt động</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Loại hoạt động
+                </CardTitle>
                 <BarChart3 className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -397,7 +426,9 @@ export default function ActivityDashboard() {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Hoạt động hàng ngày</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Hoạt động hàng ngày
+                </CardTitle>
                 <Calendar className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -421,7 +452,10 @@ export default function ActivityDashboard() {
                 {Object.entries(stats.byType)
                   .sort(([, a], [, b]) => b - a)
                   .map(([type, count]) => (
-                    <div key={type} className="flex items-center justify-between">
+                    <div
+                      key={type}
+                      className="flex items-center justify-between"
+                    >
                       <div className="flex items-center gap-2">
                         <div className={`p-1 rounded ${getActionColor(type)}`}>
                           {getActionIcon(type)}
