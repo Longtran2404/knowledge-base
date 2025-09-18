@@ -51,13 +51,13 @@ export function CartDrawer({ isOpen, onClose, onCheckout }: CartDrawerProps) {
       />
       
       {/* Drawer */}
-      <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white dark:bg-gray-900 shadow-xl transform transition-transform">
+      <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-xl transform transition-transform">
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between p-4 border-b border-gray-200 ">
             <div className="flex items-center space-x-2">
               <ShoppingCart size={24} className="text-blue-600" />
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-lg font-semibold text-gray-900 ">
                 Giỏ hàng
               </h2>
               {count > 0 && (
@@ -86,10 +86,10 @@ export function CartDrawer({ isOpen, onClose, onCheckout }: CartDrawerProps) {
             ) : items.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-64 text-center p-6">
                 <ShoppingCart size={48} className="text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                <h3 className="text-lg font-medium text-gray-900  mb-2">
                   Giỏ hàng trống
                 </h3>
-                <p className="text-gray-500 dark:text-gray-400 mb-4">
+                <p className="text-gray-500  mb-4">
                   Hãy thêm sản phẩm vào giỏ hàng để bắt đầu mua sắm
                 </p>
                 <Button onClick={onClose} variant="outline">
@@ -112,20 +112,20 @@ export function CartDrawer({ isOpen, onClose, onCheckout }: CartDrawerProps) {
 
           {/* Footer */}
           {items.length > 0 && (
-            <div className="border-t border-gray-200 dark:border-gray-700 p-4 space-y-4">
+            <div className="border-t border-gray-200  p-4 space-y-4">
               {/* Summary */}
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600 dark:text-gray-400">
+                  <span className="text-gray-600 ">
                     Tạm tính ({count} sản phẩm):
                   </span>
-                  <span className="font-medium text-gray-900 dark:text-white">
+                  <span className="font-medium text-gray-900 ">
                     {formatPrice(total)}
                   </span>
                 </div>
                 
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600 dark:text-gray-400">
+                  <span className="text-gray-600 ">
                     Phí vận chuyển:
                   </span>
                   <span className="font-medium text-green-600">
@@ -136,7 +136,7 @@ export function CartDrawer({ isOpen, onClose, onCheckout }: CartDrawerProps) {
                 <Separator />
                 
                 <div className="flex justify-between text-lg font-bold">
-                  <span className="text-gray-900 dark:text-white">
+                  <span className="text-gray-900 ">
                     Tổng cộng:
                   </span>
                   <span className="text-blue-600">
@@ -208,13 +208,13 @@ export function MobileCartDrawer({ isOpen, onClose, onCheckout }: CartDrawerProp
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-white dark:bg-gray-900">
+    <div className="fixed inset-0 z-50 bg-white">
       <div className="flex flex-col h-full">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 ">
           <div className="flex items-center space-x-2">
             <ShoppingCart size={24} className="text-blue-600" />
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-lg font-semibold text-gray-900 ">
               Giỏ hàng
             </h2>
             {count > 0 && (
@@ -243,10 +243,10 @@ export function MobileCartDrawer({ isOpen, onClose, onCheckout }: CartDrawerProp
           ) : items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-64 text-center p-6">
               <ShoppingCart size={48} className="text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+              <h3 className="text-lg font-medium text-gray-900  mb-2">
                 Giỏ hàng trống
               </h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-4">
+              <p className="text-gray-500  mb-4">
                 Hãy thêm sản phẩm vào giỏ hàng
               </p>
               <Button onClick={onClose} variant="outline">
@@ -269,9 +269,9 @@ export function MobileCartDrawer({ isOpen, onClose, onCheckout }: CartDrawerProp
 
         {/* Footer */}
         {items.length > 0 && (
-          <div className="border-t border-gray-200 dark:border-gray-700 p-4 space-y-3">
+          <div className="border-t border-gray-200  p-4 space-y-3">
             <div className="flex justify-between text-lg font-bold">
-              <span className="text-gray-900 dark:text-white">
+              <span className="text-gray-900 ">
                 Tổng cộng:
               </span>
               <span className="text-blue-600">

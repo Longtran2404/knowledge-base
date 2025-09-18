@@ -47,9 +47,9 @@ export function CartIcon({
       className={`relative ${sizeClasses[size]} ${className}`}
       aria-label={`Giỏ hàng có ${count} sản phẩm`}
     >
-      <ShoppingCart 
-        size={iconSizes[size]} 
-        className="text-gray-700 dark:text-gray-300" 
+      <ShoppingCart
+        size={iconSizes[size]}
+        className="text-gray-800"
       />
       
       {showCount && count > 0 && (
@@ -78,12 +78,12 @@ export function MobileCartIcon({ onClick, className = '' }: { onClick?: () => vo
     <button
       onClick={onClick}
       disabled={isLoading}
-      className={`relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${className}`}
+      className={`relative p-2 rounded-lg hover:bg-gray-100 transition-colors ${className}`}
       aria-label={`Giỏ hàng có ${count} sản phẩm`}
     >
-      <ShoppingBag 
-        size={20} 
-        className="text-gray-700 dark:text-gray-300" 
+      <ShoppingBag
+        size={20}
+        className="text-gray-800"
       />
       
       {count > 0 && (

@@ -1,7 +1,8 @@
 import React from "react";
 
 import { Search, Filter, Star, Users, Clock, ArrowRight, BookOpen, Zap, Target } from "lucide-react";
-import { Button } from "../components/ui/button";
+import { LiquidGlassButton } from "../components/ui/liquid-glass-button";
+import { LiquidGlassCard } from "../components/ui/liquid-glass-card";
 import { Input } from "../components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
@@ -16,16 +17,16 @@ import { FilterWrapper } from "../components/filters/filter-wrapper";
 export default function CoursesPage() {
   return (
     <AppProviders>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
         <main className="container mx-auto px-4 py-8 md:py-12">
           {/* Hero Section */}
           <AnimeScrollEffects animationType="fadeInUp" delay={200}>
-            <section className="text-center py-16 md:py-24 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl shadow-lg mb-12">
+            <LiquidGlassCard variant="gradient" glow={true} className="text-center py-16 md:py-24 mb-12">
               <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 mb-6">
                 Khóa học <span className="text-blue-600">BIM Automation</span>
               </h1>
               <p className="text-xl md:text-2xl text-gray-700 max-w-3xl mx-auto mb-8">
-                Học tư duy workflow + tool tự động hóa thiết kế xây dựng. 
+                Học tư duy workflow + tool tự động hóa thiết kế xây dựng.
                 Làm chủ công nghệ BIM, Revit, AutoCAD và các phần mềm thiết kế hiện đại.
               </p>
               <div className="flex flex-wrap justify-center gap-4">
@@ -42,7 +43,7 @@ export default function CoursesPage() {
                   4.9/5 Đánh giá
                 </Badge>
               </div>
-            </section>
+            </LiquidGlassCard>
           </AnimeScrollEffects>
 
           {/* Search and Filters */}
@@ -109,7 +110,7 @@ export default function CoursesPage() {
 
           {/* Featured Course */}
           <AnimeScrollEffects animationType="scaleIn" delay={500}>
-            <Card className="mb-12 border-0 shadow-xl bg-gradient-to-r from-blue-600 to-indigo-700 text-white overflow-hidden">
+            <LiquidGlassCard variant="gradient" glow={true} className="mb-12 text-white overflow-hidden">
               <div className="grid md:grid-cols-2 gap-8 p-8">
                 <div>
                   <Badge variant="secondary" className="mb-4 bg-yellow-400 text-yellow-900">
@@ -137,9 +138,9 @@ export default function CoursesPage() {
                       <span>4.9/5</span>
                     </div>
                   </div>
-                  <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+                  <LiquidGlassButton size="lg" variant="secondary" glow={true}>
                     Đăng ký ngay <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
+                  </LiquidGlassButton>
                 </div>
                 <div className="flex items-center justify-center">
                   <div className="w-32 h-32 bg-white/20 rounded-full flex items-center justify-center">
@@ -147,7 +148,7 @@ export default function CoursesPage() {
                   </div>
                 </div>
               </div>
-            </Card>
+            </LiquidGlassCard>
           </AnimeScrollEffects>
 
           {/* Course Grid */}
@@ -159,7 +160,7 @@ export default function CoursesPage() {
                   animationType="fadeInUp"
                   delay={600 + index * 50}
                 >
-                  <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 group">
+                  <LiquidGlassCard variant="interactive" hover={true} className="group">
                     <div className="h-48 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-t-lg flex items-center justify-center">
                       <div className="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center">
                         <BookOpen className="h-10 w-10 text-white" />
@@ -204,12 +205,12 @@ export default function CoursesPage() {
                             {course.ratingAvg || 0}/5
                           </span>
                         </div>
-                        <Button className="w-full group-hover:bg-blue-600 transition-colors">
+                        <LiquidGlassButton className="w-full" variant="primary">
                           Xem chi tiết <ArrowRight className="ml-2 h-4 w-4" />
-                        </Button>
+                        </LiquidGlassButton>
                       </div>
                     </CardContent>
-                  </Card>
+                  </LiquidGlassCard>
                 </AnimeScrollEffects>
               ))}
             </div>
@@ -218,7 +219,7 @@ export default function CoursesPage() {
           {/* Call to Action */}
           <AnimeScrollEffects animationType="fadeInUp" delay={800}>
             <section className="mt-16 text-center">
-              <Card className="border-0 shadow-xl bg-gradient-to-r from-indigo-600 to-purple-700 text-white p-8">
+              <LiquidGlassCard variant="gradient" glow={true} className="text-white p-8">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
                   Sẵn sàng bắt đầu hành trình?
                 </h2>
@@ -226,14 +227,14 @@ export default function CoursesPage() {
                   Tham gia cộng đồng kỹ sư xây dựng tiên tiến và làm chủ công nghệ BIM Automation
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button size="lg" className="bg-white text-indigo-600 hover:bg-gray-100">
+                  <LiquidGlassButton size="lg" variant="secondary" glow={true}>
                     Đăng ký khóa học
-                  </Button>
-                  <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-indigo-600">
+                  </LiquidGlassButton>
+                  <LiquidGlassButton size="lg" variant="ghost" className="text-white">
                     Tư vấn miễn phí
-                  </Button>
+                  </LiquidGlassButton>
                 </div>
-              </Card>
+              </LiquidGlassCard>
             </section>
           </AnimeScrollEffects>
         </main>

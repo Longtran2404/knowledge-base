@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-import MainHeader from "../header/main-header";
+import LiquidGlassNavigation from "../navigation/LiquidGlassNavigation";
 
 interface HeaderLayoutProps {
   children: React.ReactNode;
@@ -11,11 +11,11 @@ export default function HeaderLayout({ children }: HeaderLayoutProps) {
 
   // Routes that should not have header (auth routes have their own header)
   const routesWithoutHeader = [
-    "/auth",
-    "/verify-email",
-    "/forgot-password",
-    "/reset-password",
-    "/resend-verification",
+    "/dang-nhap",
+    "/xac-minh-email",
+    "/quen-mat-khau",
+    "/dat-lai-mat-khau",
+    "/gui-lai-xac-minh",
     "/gioi-thieu",
   ];
 
@@ -23,8 +23,8 @@ export default function HeaderLayout({ children }: HeaderLayoutProps) {
 
   return (
     <>
-      {shouldShowHeader && <MainHeader />}
-      <div className={shouldShowHeader ? "pt-16 lg:pt-18" : ""}>{children}</div>
+      {shouldShowHeader && <LiquidGlassNavigation />}
+{children}
     </>
   );
 }

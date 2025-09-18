@@ -37,7 +37,7 @@ export const userApi = {
     userId: string,
     updates: Partial<Tables["users"]["Update"]>
   ) {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from("users")
       .update({ ...updates, updated_at: new Date().toISOString() })
       .eq("id", userId)
@@ -142,7 +142,7 @@ export const courseApi = {
 
   // Enroll in course
   async enrollInCourse(userId: string, courseId: string) {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from("user_courses")
       .insert({
         user_id: userId,
@@ -170,9 +170,9 @@ export const courseApi = {
       updates.completed_at = new Date().toISOString();
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from("user_courses")
-      .update(updates)
+      .update(updates as any)
       .eq("user_id", userId)
       .eq("course_id", courseId)
       .select()
@@ -240,15 +240,16 @@ export const blogApi = {
 
     if (!currentPost) return [];
 
+    const currentPostData = currentPost as any;
     const { data, error } = await supabase
       .from("blog_posts")
       .select("*, author:users!author_id(full_name, avatar_url)")
       .eq("is_published", true)
       .neq("id", postId)
       .or(
-        `category.eq.${currentPost.category},tags.ov.{${currentPost.tags.join(
-          ","
-        )}}`
+        `category.eq.${
+          currentPostData.category
+        },tags.ov.{${currentPostData.tags.join(",")}}`
       )
       .limit(limit);
 
@@ -266,7 +267,7 @@ export const purchaseApi = {
     amount: number,
     paymentMethod: string
   ) {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from("purchases")
       .insert({
         user_id: userId,
@@ -293,9 +294,9 @@ export const purchaseApi = {
       updates.stripe_payment_intent_id = stripePaymentIntentId;
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from("purchases")
-      .update(updates)
+      .update(updates as any)
       .eq("id", purchaseId)
       .select()
       .single();

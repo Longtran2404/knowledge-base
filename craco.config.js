@@ -1,4 +1,5 @@
 const webpack = require('webpack');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 module.exports = {
   webpack: {
@@ -11,16 +12,66 @@ module.exports = {
         process: require.resolve('process/browser'),
         vm: require.resolve('vm-browserify'),
       };
-      
+
+      // Optimized chunk splitting for faster development
+      webpackConfig.optimization = {
+        ...webpackConfig.optimization,
+        splitChunks: {
+          chunks: 'all',
+          minSize: 20000,
+          maxSize: 244000,
+          cacheGroups: {
+            default: {
+              minChunks: 2,
+              priority: -20,
+              reuseExistingChunk: true,
+            },
+            vendor: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendors',
+              priority: -10,
+              chunks: 'all',
+            },
+            common: {
+              name: 'common',
+              minChunks: 2,
+              priority: -5,
+              chunks: 'all',
+              enforce: true,
+            },
+          },
+        },
+      };
+
+      // Add ESLint plugin and optimize plugins
       webpackConfig.plugins = [
         ...webpackConfig.plugins,
         new webpack.ProvidePlugin({
           process: 'process/browser',
           Buffer: ['buffer', 'Buffer'],
         }),
+        new ESLintPlugin({
+          extensions: ['js', 'jsx', 'ts', 'tsx'],
+          cache: true,
+          cacheLocation: 'node_modules/.cache/eslint-webpack-plugin',
+          failOnError: false,
+          failOnWarning: false,
+        }),
       ];
-      
+
+      // Development optimizations
+      if (webpackConfig.mode === 'development') {
+        webpackConfig.optimization.removeAvailableModules = false;
+        webpackConfig.optimization.removeEmptyChunks = false;
+        webpackConfig.optimization.splitChunks = false;
+      }
+
       return webpackConfig;
+    },
+  },
+  devServer: {
+    setupMiddlewares: (middlewares, devServer) => {
+      return middlewares;
     },
   },
 };

@@ -3,9 +3,11 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "./components/ui/sonner";
 import { ToastProvider } from "./components/ui/toast";
 import { NotificationProvider } from "./components/ui/notification";
+import { EnhancedToastProvider } from "./components/ui/enhanced-toast";
+import { NotificationProvider as EnhancedNotificationProvider } from "./contexts/NotificationContext";
 import { ClientWrapper } from "./components/client-wrapper";
 import LocatorSetup from "./components/locator-setup";
-import SimpleFloatingMenu from "./components/navigation/simple-floating-menu";
+import LiquidGlassQuickMenu from "./components/navigation/LiquidGlassQuickMenu";
 import HeaderLayout from "./components/layout/HeaderLayout";
 import PageTransition from "./components/layout/PageTransition";
 import PageTourWrapper from "./components/guide/PageTourWrapper";
@@ -19,6 +21,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { CartProvider } from "./contexts/CartContext";
 import { ProtectedRoute, AdminRoute } from "./components/auth/ProtectedRoute";
 import { config } from "./services/config";
+import { errorHandler } from "./lib/error-handler";
 
 // Lazy load pages for better performance
 const HomePage = React.lazy(() => import("./pages/HomePage"));
@@ -46,10 +49,9 @@ const SecurityPage = React.lazy(() => import("./pages/SecurityPage"));
 const AccountManagementPage = React.lazy(
   () => import("./pages/AccountManagementPage")
 );
+const ActivityDashboard = React.lazy(() => import("./pages/ActivityDashboard"));
 const PublicFilesPage = React.lazy(() => import("./pages/PublicFilesPage"));
-const SimpleMarketplacePage = React.lazy(
-  () => import("./pages/SimpleMarketplacePage")
-);
+const MarketplacePage = React.lazy(() => import("./pages/MarketplacePage"));
 const ProfilePage = React.lazy(() => import("./pages/ProfilePage"));
 const ManagerDashboard = React.lazy(() => import("./pages/ManagerDashboard"));
 const TermsPrivacy = React.lazy(() => import("./pages/TermsPrivacy"));
@@ -61,10 +63,11 @@ const SuccessPremiumPage = React.lazy(
 const SuccessPartnerPage = React.lazy(
   () => import("./pages/SuccessPartnerPage")
 );
-const InstructionPage = React.lazy(() => import("./pages/InstructionPage"));
 const EnhancedInstructionPage = React.lazy(
   () => import("./pages/EnhancedInstructionPage")
 );
+const UploadPage = React.lazy(() => import("./pages/UploadPage"));
+const NotificationDemo = React.lazy(() => import("./components/demo/NotificationDemo"));
 
 function App() {
   // Debug configuration in development
@@ -72,11 +75,43 @@ function App() {
     config.debug();
   }, []);
 
+  // Initialize global error handling
+  React.useEffect(() => {
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      console.error('Unhandled promise rejection:', event.reason);
+      errorHandler.wrapError(event.reason, {
+        operation: 'unhandled_promise_rejection',
+        component: 'App',
+        timestamp: new Date().toISOString(),
+      });
+      event.preventDefault();
+    };
+
+    const handleError = (event: ErrorEvent) => {
+      console.error('Global error:', event.error);
+      errorHandler.wrapError(event.error, {
+        operation: 'global_error',
+        component: 'App',
+        timestamp: new Date().toISOString(),
+      });
+    };
+
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+    window.addEventListener('error', handleError);
+
+    return () => {
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+      window.removeEventListener('error', handleError);
+    };
+  }, []);
+
   return (
     <ErrorBoundary>
       <ThemeProvider>
         <UnifiedAuthProvider>
           <CartProvider>
+            <EnhancedNotificationProvider>
+              <EnhancedToastProvider>
             <ToastProvider>
               <NotificationProvider>
                 <Router
@@ -91,7 +126,7 @@ function App() {
                     <Routes>
                       {/* Auth routes without header/footer */}
                       <Route
-                        path="/auth"
+                        path="/dang-nhap"
                         element={
                           <Suspense
                             fallback={
@@ -107,7 +142,7 @@ function App() {
                         }
                       />
                       <Route
-                        path="/verify-email"
+                        path="/xac-minh-email"
                         element={
                           <Suspense
                             fallback={
@@ -121,7 +156,7 @@ function App() {
                         }
                       />
                       <Route
-                        path="/forgot-password"
+                        path="/quen-mat-khau"
                         element={
                           <Suspense
                             fallback={
@@ -135,7 +170,7 @@ function App() {
                         }
                       />
                       <Route
-                        path="/reset-password"
+                        path="/dat-lai-mat-khau"
                         element={
                           <Suspense
                             fallback={
@@ -149,7 +184,7 @@ function App() {
                         }
                       />
                       <Route
-                        path="/resend-verification"
+                        path="/gui-lai-xac-minh"
                         element={
                           <Suspense
                             fallback={
@@ -163,7 +198,7 @@ function App() {
                         }
                       />
                       <Route
-                        path="/privacy"
+                        path="/chinh-sach-bao-mat"
                         element={
                           <Suspense
                             fallback={
@@ -177,7 +212,7 @@ function App() {
                         }
                       />
                       <Route
-                        path="/terms"
+                        path="/dieu-khoan-su-dung"
                         element={
                           <Suspense
                             fallback={
@@ -191,7 +226,7 @@ function App() {
                         }
                       />
                       <Route
-                        path="/security"
+                        path="/bao-mat"
                         element={
                           <Suspense
                             fallback={
@@ -205,7 +240,7 @@ function App() {
                         }
                       />
                       <Route
-                        path="/account"
+                        path="/quan-ly-tai-khoan"
                         element={
                           <Suspense
                             fallback={
@@ -219,7 +254,23 @@ function App() {
                         }
                       />
                       <Route
-                        path="/terms-privacy"
+                        path="/lich-su-hoat-dong"
+                        element={
+                          <ProtectedRoute>
+                            <Suspense
+                              fallback={
+                                <div className="min-h-screen flex items-center justify-center">
+                                  <div className="animate-pulse">Đang tải...</div>
+                                </div>
+                              }
+                            >
+                              <ActivityDashboard />
+                            </Suspense>
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/dieu-khoan-bao-mat"
                         element={
                           <Suspense
                             fallback={
@@ -271,14 +322,6 @@ function App() {
                                   }
                                 />
                                 <Route
-                                  path="/huong-dan-cu"
-                                  element={
-                                    <PageTransition>
-                                      <InstructionPage />
-                                    </PageTransition>
-                                  }
-                                />
-                                <Route
                                   path="/thanh-cong/free"
                                   element={
                                     <PageTransition>
@@ -324,7 +367,7 @@ function App() {
                                   }
                                 />
                                 <Route
-                                  path="/blog"
+                                  path="/bai-viet"
                                   element={
                                     <PageTransition>
                                       <BlogPage />
@@ -332,7 +375,7 @@ function App() {
                                   }
                                 />
                                 <Route
-                                  path="/blog/:id"
+                                  path="/bai-viet/:id"
                                   element={
                                     <PageTransition>
                                       <BlogPostPage />
@@ -388,15 +431,15 @@ function App() {
                                   }
                                 />
                                 <Route
-                                  path="/marketplace"
+                                  path="/cho-mua-ban"
                                   element={
                                     <PageTransition>
-                                      <SimpleMarketplacePage />
+                                      <MarketplacePage />
                                     </PageTransition>
                                   }
                                 />
                                 <Route
-                                  path="/profile"
+                                  path="/ho-so"
                                   element={
                                     <ProtectedRoute>
                                       <PageTransition>
@@ -406,13 +449,31 @@ function App() {
                                   }
                                 />
                                 <Route
-                                  path="/manager"
+                                  path="/quan-ly"
                                   element={
                                     <AdminRoute>
                                       <PageTransition>
                                         <ManagerDashboard />
                                       </PageTransition>
                                     </AdminRoute>
+                                  }
+                                />
+                                <Route
+                                  path="/tai-len"
+                                  element={
+                                    <ProtectedRoute>
+                                      <PageTransition>
+                                        <UploadPage />
+                                      </PageTransition>
+                                    </ProtectedRoute>
+                                  }
+                                />
+                                <Route
+                                  path="/demo/notifications"
+                                  element={
+                                    <PageTransition>
+                                      <NotificationDemo />
+                                    </PageTransition>
                                   }
                                 />
                               </Routes>
@@ -425,7 +486,7 @@ function App() {
                     </Routes>
 
                     <LocatorSetup />
-                    <SimpleFloatingMenu />
+                    <LiquidGlassQuickMenu />
                     <Toaster 
                       position="top-center" 
                       toastOptions={{
@@ -439,6 +500,8 @@ function App() {
                 </Router>
               </NotificationProvider>
             </ToastProvider>
+              </EnhancedToastProvider>
+            </EnhancedNotificationProvider>
           </CartProvider>
         </UnifiedAuthProvider>
       </ThemeProvider>

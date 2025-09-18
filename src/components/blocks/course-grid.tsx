@@ -18,7 +18,8 @@ import {
 } from "../../components/ui/select";
 
 import { Course } from "../../types/course";
-import { formatPrice, getLevelBadgeColor } from "../../lib/shared";
+import { formatPrice } from "../../lib/shared/formatters";
+import { getLevelBadgeColor } from "../../lib/shared/helpers";
 
 interface CourseGridProps {
   className?: string;

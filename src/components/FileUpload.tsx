@@ -260,8 +260,8 @@ export default function FileUpload({
                         {file.original_filename}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {formatFileSize(file.file_size)} • {file.download_count}{" "}
-                        lượt tải
+                        {formatFileSize((file as any).file_size)} •{" "}
+                        {(file as any).download_count} lượt tải
                       </p>
                     </div>
                   </div>

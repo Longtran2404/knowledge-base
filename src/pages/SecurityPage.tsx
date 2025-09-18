@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useEmailAuth } from "../contexts/EmailAuthContext";
+import { useAuth } from "../contexts/UnifiedAuthContext";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
@@ -33,7 +33,7 @@ import { toast } from "sonner";
 
 export default function SecurityPage() {
   const navigate = useNavigate();
-  const { user, updateProfile, loading } = useEmailAuth();
+  const { user, userProfile, updateProfile, isLoading } = useAuth();
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -185,10 +185,10 @@ export default function SecurityPage() {
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                     <span className="text-blue-600 font-semibold text-sm">
-                      {user.full_name?.charAt(0) || "U"}
+                      {userProfile?.full_name?.charAt(0) || user?.email?.charAt(0) || "U"}
                     </span>
                   </div>
-                  <span className="text-gray-900">{user.full_name}</span>
+                  <span className="text-gray-900">{userProfile?.full_name || "Chưa cập nhật"}</span>
                 </div>
               </div>
 
@@ -198,7 +198,7 @@ export default function SecurityPage() {
                 </Label>
                 <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-gray-500" />
-                  <span className="text-gray-900">{user.email}</span>
+                  <span className="text-gray-900">{user?.email}</span>
                   <div className="flex items-center gap-1 text-green-600">
                     <CheckCircle className="h-4 w-4" />
                     <span className="text-xs">Đã xác thực</span>
@@ -213,17 +213,17 @@ export default function SecurityPage() {
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                     <span className="text-green-600 font-semibold text-sm">
-                      {user.role === "student"
+                      {userProfile?.role === "student"
                         ? "H"
-                        : user.role === "instructor"
+                        : userProfile?.role === "instructor"
                         ? "G"
                         : "A"}
                     </span>
                   </div>
                   <span className="text-gray-900">
-                    {user.role === "student"
+                    {userProfile?.role === "student"
                       ? "Học viên"
-                      : user.role === "instructor"
+                      : userProfile?.role === "instructor"
                       ? "Giảng viên"
                       : "Quản trị viên"}
                   </span>
@@ -237,7 +237,7 @@ export default function SecurityPage() {
                 <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4 text-gray-500" />
                   <span className="text-gray-900">
-                    {new Date(user.created_at).toLocaleDateString("vi-VN")}
+                    {userProfile?.created_at ? new Date(userProfile.created_at).toLocaleDateString("vi-VN") : "Chưa rõ"}
                   </span>
                 </div>
               </div>

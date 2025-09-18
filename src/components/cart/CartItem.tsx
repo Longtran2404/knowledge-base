@@ -59,7 +59,7 @@ export function CartItem({
 
   if (variant === 'compact') {
     return (
-      <div className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-700 last:border-b-0">
+      <div className="flex items-center justify-between p-3 border-b border-gray-200 last:border-b-0">
         <div className="flex items-center space-x-3 flex-1 min-w-0">
           {item.image_url ? (
             <img
@@ -68,13 +68,13 @@ export function CartItem({
               className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
             />
           ) : (
-            <div className="w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0">
+            <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
               {getItemIcon()}
             </div>
           )}
           
           <div className="flex-1 min-w-0">
-            <h4 className="text-sm font-medium text-gray-900 dark:text-white truncate">
+            <h4 className="text-sm font-medium text-gray-900 truncate">
               {item.name}
             </h4>
             <div className="flex items-center space-x-2 mt-1">
@@ -142,7 +142,7 @@ export function CartItem({
               className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
             />
           ) : (
-            <div className="w-16 h-16 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0">
+            <div className="w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
               {getItemIcon()}
             </div>
           )}
@@ -150,7 +150,7 @@ export function CartItem({
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
+                <h3 className="text-lg font-semibold text-gray-900 truncate">
                   {item.name}
                 </h3>
                 
@@ -203,7 +203,7 @@ export function CartItem({
                 </div>
 
                 <div className="text-right">
-                  <div className="text-lg font-bold text-gray-900 dark:text-white">
+                  <div className="text-lg font-bold text-gray-900">
                     {formatPrice(item.quantity * item.price)}
                   </div>
                   <Button

@@ -3,35 +3,35 @@
  * Handles order creation, tracking, and payment processing
  */
 
-import { supabase } from '../supabase-config';
-import { vnPayService } from '../payment/vnpay';
-import { momoService } from '../payment/momo';
+import { supabase } from "../supabase-config";
+import { vnPayService } from "../payment/vnpay";
+import { momoService } from "../payment/momo";
 
 // Order Types
 export type OrderStatus =
-  | 'pending'           // Chờ thanh toán
-  | 'processing'        // Đang xử lý thanh toán
-  | 'paid'             // Đã thanh toán
-  | 'confirmed'        // Đã xác nhận
-  | 'delivering'       // Đang giao hàng (for physical products)
-  | 'delivered'        // Đã giao hàng
-  | 'completed'        // Hoàn thành
-  | 'cancelled'        // Đã hủy
-  | 'refunded'         // Đã hoàn tiền
-  | 'failed';          // Thất bại
+  | "pending" // Chờ thanh toán
+  | "processing" // Đang xử lý thanh toán
+  | "paid" // Đã thanh toán
+  | "confirmed" // Đã xác nhận
+  | "delivering" // Đang giao hàng (for physical products)
+  | "delivered" // Đã giao hàng
+  | "completed" // Hoàn thành
+  | "cancelled" // Đã hủy
+  | "refunded" // Đã hoàn tiền
+  | "failed"; // Thất bại
 
-export type PaymentMethod = 'vnpay' | 'momo' | 'bank_transfer' | 'cash';
+export type PaymentMethod = "vnpay" | "momo" | "bank_transfer" | "cash";
 
 export type PaymentStatus =
-  | 'pending'
-  | 'processing'
-  | 'completed'
-  | 'failed'
-  | 'refunded';
+  | "pending"
+  | "processing"
+  | "completed"
+  | "failed"
+  | "refunded";
 
 export interface OrderItem {
   id: string;
-  type: 'course' | 'product' | 'service';
+  type: "course" | "product" | "service";
   refId: string;
   title: string;
   description?: string;
@@ -80,8 +80,8 @@ export interface Order {
 }
 
 export interface CreateOrderData {
-  items: Omit<OrderItem, 'id'>[];
-  shippingInfo?: Omit<ShippingInfo, 'shippingFee'>;
+  items: Omit<OrderItem, "id">[];
+  shippingInfo?: Omit<ShippingInfo, "shippingFee">;
   discountCode?: string;
   notes?: string;
   metadata?: Record<string, any>;
@@ -102,18 +102,27 @@ class OrderManager {
   /**
    * Create new order
    */
-  async createOrder(userId: string, orderData: CreateOrderData): Promise<Order> {
+  async createOrder(
+    userId: string,
+    orderData: CreateOrderData
+  ): Promise<Order> {
     try {
       // Generate order number
       const orderNumber = this.generateOrderNumber();
 
       // Calculate pricing
-      const pricing = await this.calculatePricing(orderData.items, orderData.discountCode);
+      const pricing = await this.calculatePricing(
+        orderData.items,
+        orderData.discountCode
+      );
 
       // Calculate shipping fee if needed
       let shippingInfo: ShippingInfo | undefined;
       if (orderData.shippingInfo) {
-        const shippingFee = await this.calculateShippingFee(orderData.items, orderData.shippingInfo);
+        const shippingFee = await this.calculateShippingFee(
+          orderData.items,
+          orderData.shippingInfo
+        );
         shippingInfo = {
           ...orderData.shippingInfo,
           shippingFee,
@@ -122,10 +131,10 @@ class OrderManager {
 
       // Create order object
       const order: Order = {
-        id: '', // Will be set by database
+        id: "", // Will be set by database
         orderNumber,
         userId,
-        items: orderData.items.map(item => ({
+        items: orderData.items.map((item) => ({
           ...item,
           id: this.generateItemId(),
         })),
@@ -134,9 +143,9 @@ class OrderManager {
         shippingFee: shippingInfo?.shippingFee || 0,
         tax: pricing.tax,
         total: pricing.total + (shippingInfo?.shippingFee || 0),
-        currency: 'VND',
-        status: 'pending',
-        paymentStatus: 'pending',
+        currency: "VND",
+        status: "pending",
+        paymentStatus: "pending",
         shippingInfo,
         notes: orderData.notes,
         metadata: orderData.metadata,
@@ -145,8 +154,8 @@ class OrderManager {
       };
 
       // Save to database
-      const { data, error } = await supabase
-        .from('orders')
+      const { data, error } = await (supabase as any)
+        .from("orders")
         .insert([order])
         .select()
         .single();
@@ -164,19 +173,16 @@ class OrderManager {
    */
   async getOrder(orderId: string, userId?: string): Promise<Order | null> {
     try {
-      let query = supabase
-        .from('orders')
-        .select('*')
-        .eq('id', orderId);
+      let query = supabase.from("orders").select("*").eq("id", orderId);
 
       if (userId) {
-        query = query.eq('userId', userId);
+        query = query.eq("userId", userId);
       }
 
       const { data, error } = await query.single();
 
       if (error) {
-        if (error.code === 'PGRST116') return null; // No rows found
+        if (error.code === "PGRST116") return null; // No rows found
         throw error;
       }
 
@@ -196,18 +202,20 @@ class OrderManager {
     status?: OrderStatus
   ): Promise<{ orders: Order[]; total: number }> {
     try {
-      let query = supabase
-        .from('orders')
-        .select('*', { count: 'exact' })
-        .eq('userId', userId)
-        .order('createdAt', { ascending: false });
+      let query = (supabase as any)
+        .from("orders")
+        .select("*", { count: "exact" })
+        .eq("userId", userId)
+        .order("createdAt", { ascending: false });
 
       if (status) {
-        query = query.eq('status', status);
+        query = query.eq("status", status);
       }
 
-      const { data, error, count } = await query
-        .range((page - 1) * limit, page * limit - 1);
+      const { data, error, count } = await query.range(
+        (page - 1) * limit,
+        page * limit - 1
+      );
 
       if (error) throw error;
 
@@ -230,17 +238,17 @@ class OrderManager {
   }> {
     try {
       const order = await this.getOrder(paymentRequest.orderId);
-      if (!order) throw new Error('Order not found');
+      if (!order) throw new Error("Order not found");
 
-      if (order.status !== 'pending') {
-        throw new Error('Order is not in pending status');
+      if (order.status !== "pending") {
+        throw new Error("Order is not in pending status");
       }
 
       let paymentResponse;
-      let paymentReference = '';
+      let paymentReference = "";
 
       switch (paymentRequest.paymentMethod) {
-        case 'vnpay':
+        case "vnpay":
           const vnpayResponse = vnPayService.createPaymentUrl({
             orderId: order.orderNumber,
             amount: order.total,
@@ -256,16 +264,18 @@ class OrderManager {
           paymentReference = vnpayResponse.transactionRef;
           break;
 
-        case 'momo':
+        case "momo":
           const momoResponse = await momoService.createPayment({
             orderId: order.orderNumber,
             amount: order.total,
             orderInfo: `Thanh toán đơn hàng ${order.orderNumber}`,
-            userInfo: paymentRequest.customerInfo ? {
-              name: paymentRequest.customerInfo.name,
-              phoneNumber: paymentRequest.customerInfo.phone,
-              email: paymentRequest.customerInfo.email,
-            } : undefined,
+            userInfo: paymentRequest.customerInfo
+              ? {
+                  name: paymentRequest.customerInfo.name,
+                  phoneNumber: paymentRequest.customerInfo.phone,
+                  email: paymentRequest.customerInfo.email,
+                }
+              : undefined,
           });
 
           if (momoResponse.resultCode !== 0) {
@@ -281,13 +291,13 @@ class OrderManager {
           break;
 
         default:
-          throw new Error('Unsupported payment method');
+          throw new Error("Unsupported payment method");
       }
 
       // Update order with payment reference
       await this.updateOrder(order.id, {
-        status: 'processing',
-        paymentStatus: 'processing',
+        status: "processing",
+        paymentStatus: "processing",
         paymentMethod: paymentRequest.paymentMethod,
         paymentReference,
         updatedAt: new Date().toISOString(),
@@ -304,13 +314,15 @@ class OrderManager {
    */
   async updateOrder(orderId: string, updates: Partial<Order>): Promise<Order> {
     try {
-      const { data, error } = await supabase
-        .from('orders')
-        .update({
-          ...updates,
-          updatedAt: new Date().toISOString(),
-        })
-        .eq('id', orderId)
+      const updateData = {
+        ...updates,
+        updatedAt: new Date().toISOString(),
+      };
+
+      const { data, error } = await (supabase as any)
+        .from("orders")
+        .update(updateData as any)
+        .eq("id", orderId)
         .select()
         .single();
 
@@ -332,22 +344,22 @@ class OrderManager {
   ): Promise<Order> {
     try {
       const order = await this.getOrder(orderId);
-      if (!order) throw new Error('Order not found');
+      if (!order) throw new Error("Order not found");
 
       const updates: Partial<Order> = {
-        status: 'paid',
-        paymentStatus: 'completed',
+        status: "paid",
+        paymentStatus: "completed",
         transactionId,
         paidAt: new Date().toISOString(),
       };
 
       // Auto-confirm digital products
-      const hasOnlyDigitalItems = order.items.every(item =>
-        item.type === 'course' || item.type === 'service'
+      const hasOnlyDigitalItems = order.items.every(
+        (item) => item.type === "course" || item.type === "service"
       );
 
       if (hasOnlyDigitalItems) {
-        updates.status = 'completed';
+        updates.status = "completed";
         updates.completedAt = new Date().toISOString();
       }
 
@@ -363,16 +375,18 @@ class OrderManager {
   async cancelOrder(orderId: string, reason?: string): Promise<Order> {
     try {
       const order = await this.getOrder(orderId);
-      if (!order) throw new Error('Order not found');
+      if (!order) throw new Error("Order not found");
 
-      if (['paid', 'completed', 'cancelled'].includes(order.status)) {
-        throw new Error('Cannot cancel order in current status');
+      if (["paid", "completed", "cancelled"].includes(order.status)) {
+        throw new Error("Cannot cancel order in current status");
       }
 
       return await this.updateOrder(orderId, {
-        status: 'cancelled',
+        status: "cancelled",
         cancelledAt: new Date().toISOString(),
-        notes: reason ? `${order.notes || ''}\nCancellation reason: ${reason}`.trim() : order.notes,
+        notes: reason
+          ? `${order.notes || ""}\nCancellation reason: ${reason}`.trim()
+          : order.notes,
       });
     } catch (error) {
       throw new Error(`Failed to cancel order: ${error}`);
@@ -385,9 +399,11 @@ class OrderManager {
   private generateOrderNumber(): string {
     const date = new Date();
     const year = date.getFullYear().toString().slice(-2);
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const random = Math.floor(Math.random() * 10000)
+      .toString()
+      .padStart(4, "0");
 
     return `NLC${year}${month}${day}${random}`;
   }
@@ -403,7 +419,7 @@ class OrderManager {
    * Calculate order pricing
    */
   private async calculatePricing(
-    items: Omit<OrderItem, 'id'>[],
+    items: Omit<OrderItem, "id">[],
     discountCode?: string
   ): Promise<{
     subtotal: number;
@@ -412,7 +428,7 @@ class OrderManager {
     total: number;
   }> {
     const subtotal = items.reduce((sum, item) => {
-      return sum + (item.price * item.quantity);
+      return sum + item.price * item.quantity;
     }, 0);
 
     let discount = 0;
@@ -439,20 +455,20 @@ class OrderManager {
    * Calculate shipping fee
    */
   private async calculateShippingFee(
-    items: Omit<OrderItem, 'id'>[],
-    shippingInfo: Omit<ShippingInfo, 'shippingFee'>
+    items: Omit<OrderItem, "id">[],
+    shippingInfo: Omit<ShippingInfo, "shippingFee">
   ): Promise<number> {
     // Simple shipping calculation
     // In real app, integrate with shipping providers
-    const hasPhysicalItems = items.some(item => item.type === 'product');
+    const hasPhysicalItems = items.some((item) => item.type === "product");
 
     if (!hasPhysicalItems) return 0;
 
     // Base shipping fee by city
     const cityRates: Record<string, number> = {
-      'Hà Nội': 30000,
-      'TP. Hồ Chí Minh': 30000,
-      'Đà Nẵng': 40000,
+      "Hà Nội": 30000,
+      "TP. Hồ Chí Minh": 30000,
+      "Đà Nẵng": 40000,
     };
 
     return cityRates[shippingInfo.city] || 50000;
@@ -461,20 +477,23 @@ class OrderManager {
   /**
    * Calculate discount
    */
-  private async calculateDiscount(subtotal: number, discountCode: string): Promise<number> {
+  private async calculateDiscount(
+    subtotal: number,
+    discountCode: string
+  ): Promise<number> {
     try {
       // Query discount codes from database
       const { data, error } = await supabase
-        .from('discount_codes')
-        .select('*')
-        .eq('code', discountCode.toUpperCase())
-        .eq('is_active', true)
+        .from("discount_codes")
+        .select("*")
+        .eq("code", discountCode.toUpperCase())
+        .eq("is_active", true)
         .single();
 
       if (error || !data) return 0;
 
       const discount = data as {
-        type: 'percentage' | 'fixed';
+        type: "percentage" | "fixed";
         value: number;
         min_amount?: number;
         max_discount?: number;
@@ -485,7 +504,7 @@ class OrderManager {
       }
 
       let discountAmount = 0;
-      if (discount.type === 'percentage') {
+      if (discount.type === "percentage") {
         discountAmount = Math.round((subtotal * discount.value) / 100);
         if (discount.max_discount && discountAmount > discount.max_discount) {
           discountAmount = discount.max_discount;
@@ -496,7 +515,7 @@ class OrderManager {
 
       return Math.min(discountAmount, subtotal);
     } catch (error) {
-      console.error('Failed to calculate discount:', error);
+      console.error("Failed to calculate discount:", error);
       return 0;
     }
   }

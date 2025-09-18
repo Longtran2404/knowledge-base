@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useEmailAuth } from "../contexts/EmailAuthContext";
+import { useAuth } from "../contexts/UnifiedAuthContext";
 import { Button } from "../components/ui/button";
 import {
   Card,
@@ -25,7 +25,7 @@ import {
 export default function ResetPasswordPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { resetUserPassword, loading } = useEmailAuth();
+  const { updatePassword, isLoading } = useAuth();
 
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
@@ -71,11 +71,11 @@ export default function ResetPasswordPage() {
     setMessage("");
 
     try {
-      const result = await resetUserPassword(token, newPassword);
+      const result = await updatePassword(newPassword);
 
       if (result.success) {
         setStatus("success");
-        setMessage(result.message || "Mật khẩu đã được đặt lại thành công!");
+        setMessage("Mật khẩu đã được đặt lại thành công!");
 
         // Redirect to login page after 3 seconds
         setTimeout(() => {
@@ -231,7 +231,7 @@ export default function ResetPasswordPage() {
             <Button
               type="submit"
               className="w-full"
-              disabled={isSubmitting || loading}
+              disabled={isSubmitting || isLoading}
             >
               {isSubmitting ? (
                 <>

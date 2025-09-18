@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { useEmailAuth } from "../contexts/EmailAuthContext";
+import { useAuth } from "../contexts/UnifiedAuthContext";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
@@ -33,6 +33,9 @@ import {
   X,
   CheckCircle,
   AlertCircle,
+  ShoppingBag,
+  Package,
+  CreditCard,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -44,7 +47,7 @@ import {
 
 export default function AccountManagementPage() {
   const navigate = useNavigate();
-  const { user, updateProfile, loading } = useEmailAuth();
+  const { userProfile: user, updateProfile, isLoading: loading } = useAuth();
 
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
@@ -130,7 +133,7 @@ export default function AccountManagementPage() {
             <p className="text-gray-600 mb-4">
               Vui lòng đăng nhập để quản lý tài khoản
             </p>
-            <Button onClick={() => navigate("/auth")} className="w-full">
+            <Button onClick={() => navigate("/dang-nhap")} className="w-full">
               Đăng nhập ngay
             </Button>
           </CardContent>
@@ -169,10 +172,19 @@ export default function AccountManagementPage() {
         </div>
 
         <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="profile">Thông tin cá nhân</TabsTrigger>
-            <TabsTrigger value="files">Tài liệu cá nhân</TabsTrigger>
-            <TabsTrigger value="settings">Cài đặt</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 md:grid-cols-4">
+            <TabsTrigger value="profile" className="text-xs md:text-sm">
+              Thông tin
+            </TabsTrigger>
+            <TabsTrigger value="files" className="text-xs md:text-sm">
+              Tài liệu
+            </TabsTrigger>
+            <TabsTrigger value="orders" className="text-xs md:text-sm">
+              Đơn hàng
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="text-xs md:text-sm">
+              Cài đặt
+            </TabsTrigger>
           </TabsList>
 
           {/* Profile Tab */}
@@ -397,7 +409,7 @@ export default function AccountManagementPage() {
                                 {file.original_filename}
                               </p>
                               <p className="text-xs text-gray-500">
-                                {formatFileSize(file.file_size)} •{" "}
+                                {formatFileSize((file as any).file_size)} •{" "}
                                 {file.download_count} lượt tải •
                                 {new Date(file.created_at).toLocaleDateString(
                                   "vi-VN"
@@ -437,6 +449,71 @@ export default function AccountManagementPage() {
             </div>
           </TabsContent>
 
+          {/* Orders Tab */}
+          <TabsContent value="orders">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <ShoppingBag className="h-5 w-5" />
+                  Đơn hàng của tôi
+                </CardTitle>
+                <CardDescription>
+                  Theo dõi các đơn hàng và giao dịch của bạn
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {/* Sample Order */}
+                  <div className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <Package className="h-5 w-5 text-blue-600" />
+                        <div>
+                          <p className="font-medium">Đơn hàng #NLC001</p>
+                          <p className="text-sm text-gray-500">15/01/2025</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-semibold text-green-600">
+                          599,000 VNĐ
+                        </p>
+                        <p className="text-sm text-green-600">Hoàn thành</p>
+                      </div>
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      Khóa học React cơ bản + TypeScript nâng cao
+                    </div>
+                    <div className="flex items-center gap-2 mt-3">
+                      <Button variant="outline" size="sm">
+                        <Eye className="h-4 w-4 mr-1" />
+                        Xem chi tiết
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        <Download className="h-4 w-4 mr-1" />
+                        Tải hóa đơn
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Empty State */}
+                  <div className="text-center py-8">
+                    <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600 mb-2">Chưa có đơn hàng nào</p>
+                    <p className="text-sm text-gray-500 mb-4">
+                      Khám phá các khóa học và sản phẩm của chúng tôi
+                    </p>
+                    <Button
+                      onClick={() => (window.location.href = "/cho-mua-ban")}
+                    >
+                      <ShoppingBag className="h-4 w-4 mr-2" />
+                      Mua sắm ngay
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           {/* Settings Tab */}
           <TabsContent value="settings">
             <Card>
@@ -460,7 +537,7 @@ export default function AccountManagementPage() {
                     </div>
                     <Button
                       variant="outline"
-                      onClick={() => navigate("/security")}
+                      onClick={() => navigate("/bao-mat")}
                     >
                       Thay đổi
                     </Button>

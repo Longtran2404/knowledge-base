@@ -3,8 +3,8 @@
  * Generate professional invoices with PDF export capability
  */
 
-import { Order } from '../order/order-manager';
-import { formatPrice, formatDate } from '../shared';
+import { Order } from "../order/order-manager";
+import { formatPrice, formatDate } from "../shared/formatters";
 
 export interface Invoice {
   id: string;
@@ -32,7 +32,7 @@ export interface Invoice {
   tax: number;
   total: number;
   currency: string;
-  status: 'draft' | 'issued' | 'paid' | 'cancelled';
+  status: "draft" | "issued" | "paid" | "cancelled";
   issuedAt?: string;
   dueDate?: string;
   paidAt?: string;
@@ -65,28 +65,32 @@ export interface InvoiceTemplate {
 
 class InvoiceGenerator {
   private defaultCompanyInfo = {
-    name: 'Nam Long Center',
-    address: 'Tầng 5, Toà nhà ABC, 123 Đường XYZ, Quận 1, TP. Hồ Chí Minh',
-    phone: '(028) 1234 5678',
-    email: 'info@namlongcenter.vn',
-    website: 'www.namlongcenter.vn',
-    taxCode: '0123456789',
+    name: "Nam Long Center",
+    address: "Tầng 5, Toà nhà ABC, 123 Đường XYZ, Quận 1, TP. Hồ Chí Minh",
+    phone: "(028) 1234 5678",
+    email: "info@namlongcenter.vn",
+    website: "www.namlongcenter.vn",
+    taxCode: "0123456789",
   };
 
   private defaultTemplate: InvoiceTemplate = {
-    headerColor: '#1e40af',
-    accentColor: '#3b82f6',
-    fontFamily: 'Inter, system-ui, sans-serif',
+    headerColor: "#1e40af",
+    accentColor: "#3b82f6",
+    fontFamily: "Inter, system-ui, sans-serif",
     showLogo: true,
     showTax: true,
     showDiscount: true,
-    footerText: 'Cảm ơn bạn đã tin tướng và sử dụng dịch vụ của Nam Long Center!',
+    footerText:
+      "Cảm ơn bạn đã tin tướng và sử dụng dịch vụ của Nam Long Center!",
   };
 
   /**
    * Create invoice from order
    */
-  createInvoiceFromOrder(order: Order, customerInfo: Invoice['customerInfo']): Invoice {
+  createInvoiceFromOrder(
+    order: Order,
+    customerInfo: Invoice["customerInfo"]
+  ): Invoice {
     const invoiceNumber = this.generateInvoiceNumber();
 
     const invoice: Invoice = {
@@ -96,21 +100,24 @@ class InvoiceGenerator {
       userId: order.userId,
       customerInfo,
       companyInfo: this.defaultCompanyInfo,
-      items: order.items.map(item => ({
-        description: item.title + (item.description ? ` - ${item.description}` : ''),
+      items: order.items.map((item) => ({
+        description:
+          item.title + (item.description ? ` - ${item.description}` : ""),
         quantity: item.quantity,
         unitPrice: item.price,
         discount: item.discount || 0,
-        amount: (item.price * item.quantity) - (item.discount || 0),
+        amount: item.price * item.quantity - (item.discount || 0),
         taxRate: 10, // 10% VAT
-        taxAmount: Math.round(((item.price * item.quantity) - (item.discount || 0)) * 0.1),
+        taxAmount: Math.round(
+          (item.price * item.quantity - (item.discount || 0)) * 0.1
+        ),
       })),
       subtotal: order.subtotal,
       discount: order.discount,
       tax: order.tax,
       total: order.total,
       currency: order.currency,
-      status: order.status === 'completed' ? 'paid' : 'issued',
+      status: order.status === "completed" ? "paid" : "issued",
       issuedAt: new Date().toISOString(),
       dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days
       paidAt: order.paidAt,
@@ -125,7 +132,10 @@ class InvoiceGenerator {
   /**
    * Generate HTML invoice
    */
-  generateHTML(invoice: Invoice, template: InvoiceTemplate = this.defaultTemplate): string {
+  generateHTML(
+    invoice: Invoice,
+    template: InvoiceTemplate = this.defaultTemplate
+  ): string {
     return `
 <!DOCTYPE html>
 <html lang="vi">
@@ -331,9 +341,13 @@ class InvoiceGenerator {
             <div class="invoice-info">
                 <div class="invoice-title">HÓA ĐƠN</div>
                 <div class="invoice-number">Số: ${invoice.invoiceNumber}</div>
-                <div class="invoice-date">Ngày: ${formatDate(invoice.issuedAt || invoice.createdAt)}</div>
+                <div class="invoice-date">Ngày: ${formatDate(
+                  invoice.issuedAt || invoice.createdAt
+                )}</div>
                 <div style="margin-top: 10px;">
-                    <span class="status-badge status-${invoice.status}">${this.getStatusText(invoice.status)}</span>
+                    <span class="status-badge status-${
+                      invoice.status
+                    }">${this.getStatusText(invoice.status)}</span>
                 </div>
             </div>
         </div>
@@ -343,9 +357,21 @@ class InvoiceGenerator {
             <div class="customer-title">THÔNG TIN KHÁCH HÀNG</div>
             <div><strong>Họ tên:</strong> ${invoice.customerInfo.name}</div>
             <div><strong>Email:</strong> ${invoice.customerInfo.email}</div>
-            ${invoice.customerInfo.phone ? `<div><strong>Điện thoại:</strong> ${invoice.customerInfo.phone}</div>` : ''}
-            ${invoice.customerInfo.address ? `<div><strong>Địa chỉ:</strong> ${invoice.customerInfo.address}</div>` : ''}
-            ${invoice.customerInfo.taxCode ? `<div><strong>Mã số thuế:</strong> ${invoice.customerInfo.taxCode}</div>` : ''}
+            ${
+              invoice.customerInfo.phone
+                ? `<div><strong>Điện thoại:</strong> ${invoice.customerInfo.phone}</div>`
+                : ""
+            }
+            ${
+              invoice.customerInfo.address
+                ? `<div><strong>Địa chỉ:</strong> ${invoice.customerInfo.address}</div>`
+                : ""
+            }
+            ${
+              invoice.customerInfo.taxCode
+                ? `<div><strong>Mã số thuế:</strong> ${invoice.customerInfo.taxCode}</div>`
+                : ""
+            }
         </div>
 
         <!-- Items Table -->
@@ -355,20 +381,38 @@ class InvoiceGenerator {
                     <th style="width: 50%">Mô tả</th>
                     <th class="text-center" style="width: 10%">SL</th>
                     <th class="text-right" style="width: 15%">Đơn giá</th>
-                    ${template.showDiscount ? '<th class="text-right" style="width: 10%">Giảm giá</th>' : ''}
+                    ${
+                      template.showDiscount
+                        ? '<th class="text-right" style="width: 10%">Giảm giá</th>'
+                        : ""
+                    }
                     <th class="text-right" style="width: 15%">Thành tiền</th>
                 </tr>
             </thead>
             <tbody>
-                ${invoice.items.map(item => `
+                ${invoice.items
+                  .map(
+                    (item) => `
                     <tr>
                         <td>${item.description}</td>
                         <td class="text-center">${item.quantity}</td>
-                        <td class="text-right">${formatPrice(item.unitPrice)}</td>
-                        ${template.showDiscount ? `<td class="text-right">${item.discount > 0 ? formatPrice(item.discount) : '-'}</td>` : ''}
+                        <td class="text-right">${formatPrice(
+                          item.unitPrice
+                        )}</td>
+                        ${
+                          template.showDiscount
+                            ? `<td class="text-right">${
+                                item.discount > 0
+                                  ? formatPrice(item.discount)
+                                  : "-"
+                              }</td>`
+                            : ""
+                        }
                         <td class="text-right">${formatPrice(item.amount)}</td>
                     </tr>
-                `).join('')}
+                `
+                  )
+                  .join("")}
             </tbody>
         </table>
 
@@ -378,34 +422,49 @@ class InvoiceGenerator {
                 <span>Tạm tính:</span>
                 <span>${formatPrice(invoice.subtotal)}</span>
             </div>
-            ${invoice.discount > 0 && template.showDiscount ? `
+            ${
+              invoice.discount > 0 && template.showDiscount
+                ? `
                 <div class="summary-row">
                     <span>Giảm giá:</span>
                     <span>-${formatPrice(invoice.discount)}</span>
                 </div>
-            ` : ''}
-            ${invoice.tax > 0 && template.showTax ? `
+            `
+                : ""
+            }
+            ${
+              invoice.tax > 0 && template.showTax
+                ? `
                 <div class="summary-row">
                     <span>Thuế VAT (10%):</span>
                     <span>${formatPrice(invoice.tax)}</span>
                 </div>
-            ` : ''}
+            `
+                : ""
+            }
             <div class="summary-total">
                 <span>TỔNG CỘNG:</span>
                 <span>${formatPrice(invoice.total)}</span>
             </div>
         </div>
 
-        ${invoice.notes ? `
+        ${
+          invoice.notes
+            ? `
             <div style="margin-top: 30px;">
                 <strong>Ghi chú:</strong><br>
                 ${invoice.notes}
             </div>
-        ` : ''}
+        `
+            : ""
+        }
 
         <!-- Footer -->
         <div class="footer">
-            ${template.footerText || 'Cảm ơn bạn đã tin tướng và sử dụng dịch vụ của chúng tôi!'}<br>
+            ${
+              template.footerText ||
+              "Cảm ơn bạn đã tin tướng và sử dụng dịch vụ của chúng tôi!"
+            }<br>
             <small>Hóa đơn được tạo tự động bởi hệ thống Nam Long Center</small>
         </div>
     </div>
@@ -417,46 +476,49 @@ class InvoiceGenerator {
   /**
    * Generate PDF buffer (requires server-side implementation)
    */
-  async generatePDF(invoice: Invoice, template?: InvoiceTemplate): Promise<Blob> {
+  async generatePDF(
+    invoice: Invoice,
+    template?: InvoiceTemplate
+  ): Promise<Blob> {
     const html = this.generateHTML(invoice, template);
 
     // For browser environment, use html2pdf library
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       try {
         // Dynamic import for client-side only
-        const html2pdf = (await import('html2pdf.js')).default;
+        const html2pdf = (await import("html2pdf.js")).default;
 
         const options = {
           margin: 10,
           filename: `invoice_${invoice.invoiceNumber}.pdf`,
-          image: { type: 'jpeg', quality: 0.98 },
+          image: { type: "jpeg", quality: 0.98 },
           html2canvas: { scale: 2, logging: false },
-          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
         };
 
-        return await html2pdf()
-          .from(html)
-          .set(options)
-          .outputPdf('blob');
+        return await html2pdf().from(html).set(options).outputPdf("blob");
       } catch (error) {
-        throw new Error('PDF generation requires html2pdf.js library');
+        throw new Error("PDF generation requires html2pdf.js library");
       }
     }
 
     // For server-side, would use puppeteer or similar
-    throw new Error('PDF generation not available in this environment');
+    throw new Error("PDF generation not available in this environment");
   }
 
   /**
    * Download PDF invoice
    */
-  async downloadPDF(invoice: Invoice, template?: InvoiceTemplate): Promise<void> {
+  async downloadPDF(
+    invoice: Invoice,
+    template?: InvoiceTemplate
+  ): Promise<void> {
     try {
       const pdfBlob = await this.generatePDF(invoice, template);
 
       // Create download link
       const url = URL.createObjectURL(pdfBlob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
       link.download = `invoice_${invoice.invoiceNumber}.pdf`;
 
@@ -477,7 +539,7 @@ class InvoiceGenerator {
   printInvoice(invoice: Invoice, template?: InvoiceTemplate): void {
     const html = this.generateHTML(invoice, template);
 
-    const printWindow = window.open('', '_blank');
+    const printWindow = window.open("", "_blank");
     if (printWindow) {
       printWindow.document.write(html);
       printWindow.document.close();
@@ -495,8 +557,10 @@ class InvoiceGenerator {
   private generateInvoiceNumber(): string {
     const date = new Date();
     const year = date.getFullYear().toString().slice(-2);
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const sequence = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const sequence = Math.floor(Math.random() * 10000)
+      .toString()
+      .padStart(4, "0");
 
     return `INV${year}${month}${sequence}`;
   }
@@ -504,12 +568,12 @@ class InvoiceGenerator {
   /**
    * Get status text in Vietnamese
    */
-  private getStatusText(status: Invoice['status']): string {
+  private getStatusText(status: Invoice["status"]): string {
     const statusMap = {
-      draft: 'Nháp',
-      issued: 'Đã phát hành',
-      paid: 'Đã thanh toán',
-      cancelled: 'Đã hủy',
+      draft: "Nháp",
+      issued: "Đã phát hành",
+      paid: "Đã thanh toán",
+      cancelled: "Đã hủy",
     };
 
     return statusMap[status] || status;

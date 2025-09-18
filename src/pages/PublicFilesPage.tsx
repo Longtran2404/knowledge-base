@@ -258,7 +258,7 @@ export default function PublicFilesPage() {
                         {file.original_filename}
                       </h3>
                       <p className="text-xs text-gray-500 mt-1">
-                        {formatFileSize(file.file_size)}
+                        {formatFileSize((file as any).file_size)}
                       </p>
                       <p className="text-xs text-gray-500">
                         {file.download_count} lượt tải
@@ -305,7 +305,10 @@ export default function PublicFilesPage() {
                 <div>
                   <p className="text-2xl font-bold text-purple-600">
                     {formatFileSize(
-                      files.reduce((sum, file) => sum + file.file_size, 0)
+                      files.reduce(
+                        (sum, file) => sum + (file as any).file_size,
+                        0
+                      )
                     )}
                   </p>
                   <p className="text-sm text-gray-600">Tổng dung lượng</p>

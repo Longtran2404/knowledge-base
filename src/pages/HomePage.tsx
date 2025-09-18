@@ -17,13 +17,13 @@ import {
   Rocket,
   GraduationCap,
 } from "lucide-react";
-import { Button } from "../components/ui/button";
-import { Card, CardContent } from "../components/ui/card";
+import { LiquidGlassButton } from "../components/ui/liquid-glass-button";
+import { LiquidGlassCard } from "../components/ui/liquid-glass-card";
 import { Badge } from "../components/ui/badge";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
       {/* Hero Section */}
       <section
         data-tour="hero-section"
@@ -81,23 +81,25 @@ export default function HomePage() {
             <div className="animate-fade-in-up animation-delay-600">
               <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
                 <Link to="/auth">
-                  <Button
-                    size="lg"
-                    className="bg-white text-blue-600 hover:bg-blue-50 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 text-lg px-10 py-5 h-16 rounded-2xl font-bold btn-glow"
+                  <LiquidGlassButton
+                    size="xl"
+                    variant="primary"
+                    glow={true}
+                    className="text-lg px-10 py-5 font-bold"
                   >
-                    <Rocket className="mr-3 h-6 w-6 animate-float" />
+                    <Rocket className="mr-3 h-6 w-6" />
                     Bắt đầu học ngay
-                  </Button>
+                  </LiquidGlassButton>
                 </Link>
                 <Link to="/khoa-hoc">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="border-white/30 text-white hover:bg-white/10 backdrop-blur-sm text-lg px-10 py-5 h-16 rounded-2xl font-semibold hover:border-white/50 transition-all duration-300 glass"
+                  <LiquidGlassButton
+                    size="xl"
+                    variant="secondary"
+                    className="text-lg px-10 py-5 font-semibold text-white"
                   >
                     <Play className="mr-3 h-6 w-6" />
                     Khám phá khóa học
-                  </Button>
+                  </LiquidGlassButton>
                 </Link>
               </div>
             </div>
@@ -144,7 +146,7 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="section-padding bg-gradient-to-br from-gray-50 to-white">
+      <section className="section-padding bg-gradient-to-br from-white via-gray-50 to-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-20">
             <div className="animate-fade-in-up">
@@ -167,105 +169,93 @@ export default function HomePage() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="animate-fade-in-up animation-delay-200">
-              <Card className="border-0 shadow-soft hover:shadow-medium transition-all duration-300 card-hover group">
-                <CardContent className="p-8 text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                    <GraduationCap className="h-10 w-10 text-blue-600" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-4 text-gray-900">
-                    Đào tạo chuyên sâu
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    Khóa học BIM, Automation và công nghệ xây dựng hiện đại với
-                    chứng chỉ được công nhận quốc tế
-                  </p>
-                </CardContent>
-              </Card>
+              <LiquidGlassCard variant="interactive" hover={true} className="p-8 text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-6 transition-transform duration-300">
+                  <GraduationCap className="h-10 w-10 text-blue-600" />
+                </div>
+                <h3 className="text-xl font-semibold mb-4 text-gray-900">
+                  Đào tạo chuyên sâu
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Khóa học BIM, Automation và công nghệ xây dựng hiện đại với
+                  chứng chỉ được công nhận quốc tế
+                </p>
+              </LiquidGlassCard>
             </div>
 
             <div className="animate-fade-in-up animation-delay-400">
-              <Card className="border-0 shadow-soft hover:shadow-medium transition-all duration-300 card-hover group">
-                <CardContent className="p-8 text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                    <Users className="h-10 w-10 text-indigo-600" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-4 text-gray-900">
-                    Cộng đồng chuyên gia
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    Kết nối với 10,000+ kỹ sư, chuyên gia và doanh nghiệp trong
-                    ngành xây dựng hàng đầu
-                  </p>
-                </CardContent>
-              </Card>
+              <LiquidGlassCard variant="interactive" hover={true} className="p-8 text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-2xl flex items-center justify-center mx-auto mb-6 transition-transform duration-300">
+                  <Users className="h-10 w-10 text-indigo-600" />
+                </div>
+                <h3 className="text-xl font-semibold mb-4 text-gray-900">
+                  Cộng đồng chuyên gia
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Kết nối với 10,000+ kỹ sư, chuyên gia và doanh nghiệp trong
+                  ngành xây dựng hàng đầu
+                </p>
+              </LiquidGlassCard>
             </div>
 
             <div className="animate-fade-in-up animation-delay-600">
-              <Card className="border-0 shadow-soft hover:shadow-medium transition-all duration-300 card-hover group">
-                <CardContent className="p-8 text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                    <Zap className="h-10 w-10 text-purple-600" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-4 text-gray-900">
-                    Công nghệ tiên tiến
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    Sử dụng AI, Machine Learning và công nghệ mới nhất để tối ưu
-                    hóa quy trình xây dựng
-                  </p>
-                </CardContent>
-              </Card>
+              <LiquidGlassCard variant="interactive" hover={true} className="p-8 text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center mx-auto mb-6 transition-transform duration-300">
+                  <Zap className="h-10 w-10 text-purple-600" />
+                </div>
+                <h3 className="text-xl font-semibold mb-4 text-gray-900">
+                  Công nghệ tiên tiến
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Sử dụng AI, Machine Learning và công nghệ mới nhất để tối ưu
+                  hóa quy trình xây dựng
+                </p>
+              </LiquidGlassCard>
             </div>
 
             <div className="animate-fade-in-up animation-delay-800">
-              <Card className="border-0 shadow-soft hover:shadow-medium transition-all duration-300 card-hover group">
-                <CardContent className="p-8 text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                    <Target className="h-10 w-10 text-green-600" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-4 text-gray-900">
-                    Giải pháp thực tế
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    Áp dụng kiến thức vào các dự án thực tế với case studies từ
-                    các công ty hàng đầu
-                  </p>
-                </CardContent>
-              </Card>
+              <LiquidGlassCard variant="interactive" hover={true} className="p-8 text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center mx-auto mb-6 transition-transform duration-300">
+                  <Target className="h-10 w-10 text-green-600" />
+                </div>
+                <h3 className="text-xl font-semibold mb-4 text-gray-900">
+                  Giải pháp thực tế
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Áp dụng kiến thức vào các dự án thực tế với case studies từ
+                  các công ty hàng đầu
+                </p>
+              </LiquidGlassCard>
             </div>
 
             <div className="animate-fade-in-up animation-delay-1000">
-              <Card className="border-0 shadow-soft hover:shadow-medium transition-all duration-300 card-hover group">
-                <CardContent className="p-8 text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                    <Globe className="h-10 w-10 text-orange-600" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-4 text-gray-900">
-                    Tiếp cận toàn cầu
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    Học từ các chuyên gia quốc tế và cập nhật xu hướng công nghệ
-                    xây dựng toàn cầu
-                  </p>
-                </CardContent>
-              </Card>
+              <LiquidGlassCard variant="interactive" hover={true} className="p-8 text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl flex items-center justify-center mx-auto mb-6 transition-transform duration-300">
+                  <Globe className="h-10 w-10 text-orange-600" />
+                </div>
+                <h3 className="text-xl font-semibold mb-4 text-gray-900">
+                  Tiếp cận toàn cầu
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Học từ các chuyên gia quốc tế và cập nhật xu hướng công nghệ
+                  xây dựng toàn cầu
+                </p>
+              </LiquidGlassCard>
             </div>
 
             <div className="animate-fade-in-up animation-delay-1200">
-              <Card className="border-0 shadow-soft hover:shadow-medium transition-all duration-300 card-hover group">
-                <CardContent className="p-8 text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-red-100 to-red-200 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                    <Trophy className="h-10 w-10 text-red-600" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-4 text-gray-900">
-                    Chứng nhận uy tín
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    Chứng chỉ được công nhận bởi các tổ chức giáo dục và hiệp
-                    hội ngành xây dựng
-                  </p>
-                </CardContent>
-              </Card>
+              <LiquidGlassCard variant="interactive" hover={true} className="p-8 text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-red-100 to-red-200 rounded-2xl flex items-center justify-center mx-auto mb-6 transition-transform duration-300">
+                  <Trophy className="h-10 w-10 text-red-600" />
+                </div>
+                <h3 className="text-xl font-semibold mb-4 text-gray-900">
+                  Chứng nhận uy tín
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Chứng chỉ được công nhận bởi các tổ chức giáo dục và hiệp
+                  hội ngành xây dựng
+                </p>
+              </LiquidGlassCard>
             </div>
           </div>
         </div>
@@ -334,7 +324,7 @@ export default function HomePage() {
       </section>
 
       {/* Enhanced CTA Section */}
-      <section className="section-padding bg-gradient-to-br from-gray-50 to-white">
+      <section className="section-padding bg-gradient-to-br from-white via-gray-50 to-white">
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-4xl mx-auto">
             <div className="animate-fade-in-up">
@@ -359,23 +349,25 @@ export default function HomePage() {
             <div className="animate-fade-in-up animation-delay-600">
               <div className="flex flex-col sm:flex-row gap-6 justify-center">
                 <Link to="/auth">
-                  <Button
-                    size="lg"
-                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-10 py-5 h-16 rounded-2xl font-bold btn-glow"
+                  <LiquidGlassButton
+                    size="xl"
+                    variant="gradient"
+                    glow={true}
+                    className="px-10 py-5 font-bold"
                   >
-                    <Star className="mr-3 h-6 w-6 animate-float" />
+                    <Star className="mr-3 h-6 w-6" />
                     Đăng ký miễn phí
-                  </Button>
+                  </LiquidGlassButton>
                 </Link>
                 <Link to="/khoa-hoc">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 px-10 py-5 h-16 rounded-2xl font-semibold transition-all duration-300"
+                  <LiquidGlassButton
+                    size="xl"
+                    variant="secondary"
+                    className="px-10 py-5 font-semibold"
                   >
                     <BookOpen className="mr-3 h-6 w-6" />
                     Xem khóa học
-                  </Button>
+                  </LiquidGlassButton>
                 </Link>
               </div>
             </div>

@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "../../contexts/ThemeContext";
 import { UnifiedAuthProvider } from "../../contexts/UnifiedAuthContext";
-import { EmailAuthProvider } from "../../contexts/EmailAuthContext";
 import { ToastProvider } from "../../components/ui/toast";
 import { NotificationProvider } from "../../components/ui/notification";
 import { ErrorBoundary } from "../../components/ui/error-boundary";
@@ -39,15 +38,6 @@ const mockAuthContext = {
   checkSubscription: jest.fn(),
 };
 
-// Mock email auth context
-const mockEmailAuthContext = {
-  isEmailAuthEnabled: false,
-  sendVerificationEmail: jest.fn(),
-  verifyEmail: jest.fn(),
-  resendVerification: jest.fn(),
-  resetPassword: jest.fn(),
-  confirmPasswordReset: jest.fn(),
-};
 
 // Mock theme context
 const mockThemeContext = {
@@ -64,11 +54,9 @@ const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
         <BrowserRouter>
           <ThemeProvider>
             <UnifiedAuthProvider>
-              <EmailAuthProvider>
-                <ToastProvider>
-                  <NotificationProvider>{children}</NotificationProvider>
-                </ToastProvider>
-              </EmailAuthProvider>
+              <ToastProvider>
+                <NotificationProvider>{children}</NotificationProvider>
+              </ToastProvider>
             </UnifiedAuthProvider>
           </ThemeProvider>
         </BrowserRouter>

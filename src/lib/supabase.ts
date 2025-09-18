@@ -366,7 +366,7 @@ export const setManagerApproval = async (
     })
     .eq("user_id", approval.user_id);
 
-  await supabase.from("manager_notifications").insert({
+  await (supabase as any).from("manager_notifications").insert({
     approval_id: approvalId,
     type: approve ? "approved" : "rejected",
     payload: { email: approval.email, full_name: approval.full_name },

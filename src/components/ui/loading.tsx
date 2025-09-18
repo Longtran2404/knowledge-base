@@ -168,10 +168,10 @@ export function ButtonLoading({
   return (
     <div className={cn("relative", className)}>
       {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-gray-900/80 rounded-md">
+        <div className="absolute inset-0 flex items-center justify-center bg-white/80 rounded-md">
           <div className="flex items-center gap-2">
             <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-300 border-t-blue-600" />
-            <span className="text-sm text-gray-600 dark:text-gray-400">
+            <span className="text-sm text-gray-600">
               {loadingText}
             </span>
           </div>
@@ -201,10 +201,10 @@ export function FormLoading({
   return (
     <div className={cn("relative", className)}>
       {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white/90 dark:bg-gray-900/90 rounded-lg z-10">
+        <div className="absolute inset-0 flex items-center justify-center bg-white/90 rounded-lg z-10">
           <div className="flex flex-col items-center gap-3">
             <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-300 border-t-blue-600" />
-            <span className="text-sm text-gray-600 dark:text-gray-400">
+            <span className="text-sm text-gray-600">
               {loadingText}
             </span>
           </div>

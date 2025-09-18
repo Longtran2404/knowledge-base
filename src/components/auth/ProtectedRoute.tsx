@@ -13,7 +13,7 @@ interface ProtectedRouteProps {
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   requireAuth = true,
-  redirectTo = "/auth",
+  redirectTo = "/dang-nhap",
   allowedRoles,
 }) => {
   const { userProfile: user, isAuthenticated, isLoading } = useAuth();
@@ -44,7 +44,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     localStorage.setItem("nlc_auth_error", "Bạn không có quyền truy cập trang này");
     return (
       <Navigate
-        to="/auth"
+        to="/dang-nhap"
         state={{ from: location }}
         replace
       />

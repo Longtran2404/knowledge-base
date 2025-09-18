@@ -18,7 +18,7 @@ import {
   Users,
   Download,
 } from "lucide-react";
-import { useEmailAuth } from "../../contexts/EmailAuthContext";
+import { useAuth } from "../../contexts/UnifiedAuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { Button } from "../ui/button";
@@ -136,7 +136,7 @@ const navigationItems = [
 ];
 
 export default function EnhancedHeader() {
-  const { user, logout } = useEmailAuth();
+  const { user, userProfile, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
@@ -162,7 +162,7 @@ export default function EnhancedHeader() {
 
   const handleLogout = async () => {
     try {
-      await logout();
+      await signOut();
       navigate("/");
     } catch (error) {
       console.error("Error logging out:", error);
@@ -377,11 +377,11 @@ export default function EnhancedHeader() {
                       >
                         <Avatar className="h-8 w-8">
                           <AvatarImage
-                            src={user.avatar_url}
-                            alt={user.full_name || user.email}
+                            src={userProfile?.avatar_url}
+                            alt={userProfile?.full_name || user?.email}
                           />
                           <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-sm font-semibold">
-                            {(user.full_name || user.email)
+                            {(userProfile?.full_name || user?.email)
                               ?.charAt(0)
                               .toUpperCase()}
                           </AvatarFallback>
@@ -397,14 +397,14 @@ export default function EnhancedHeader() {
                         <div className="flex flex-col space-y-2">
                           <div className="flex items-center gap-3">
                             <Avatar className="h-10 w-10">
-                              <AvatarImage src={user.avatar_url} />
+                              <AvatarImage src={userProfile?.avatar_url} />
                               <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white">
-                                {(user.full_name || user.email)?.charAt(0).toUpperCase()}
+                                {(userProfile?.full_name || user?.email)?.charAt(0).toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-semibold text-gray-900 truncate">
-                                {user.full_name || "Người dùng"}
+                                {userProfile?.full_name || "Người dùng"}
                               </p>
                               <p className="text-xs text-gray-500 truncate">
                                 {user.email}

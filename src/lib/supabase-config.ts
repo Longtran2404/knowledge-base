@@ -1,26 +1,50 @@
 /**
  * Supabase Configuration và Database Schema
- * Tập trung vào việc setup database thực tế
+ * Tập trung vào việc setup database thực tế với best practices mới nhất
  */
 
 import { createClient } from "@supabase/supabase-js";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-// Environment variables
-const supabaseUrl =
-  process.env.REACT_APP_SUPABASE_URL ||
-  "https://byidgbgvnrfhujprzzge.supabase.co";
-const supabaseAnonKey =
-  process.env.REACT_APP_SUPABASE_ANON_KEY ||
+// Environment variables với validation
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+
+// Fallback values cho development (nên được thay thế bằng environment variables thực tế)
+const FALLBACK_URL = "https://byidgbgvnrfhujprzzge.supabase.co";
+const FALLBACK_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5aWRnYmd2bnJmaHVqcHJ6emdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI1MjQxMjAsImV4cCI6MjA1ODEwMDEyMH0.LJmu6PzY89Uc1K_5W-M7rsD18sWm-mHeMx1SeV4o_Dw";
 
-// Create Supabase client
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true,
-  },
-});
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.warn(
+    "⚠️ Supabase environment variables not found. Using fallback values for development."
+  );
+}
+
+// Create Supabase client với configuration tối ưu
+export const supabase: SupabaseClient<Database> = createClient(
+  supabaseUrl || FALLBACK_URL,
+  supabaseAnonKey || FALLBACK_ANON_KEY,
+  {
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: true,
+      flowType: "pkce", // Enhanced security với PKCE flow
+      storage: typeof window !== "undefined" ? window.localStorage : undefined,
+    },
+    realtime: {
+      params: {
+        eventsPerSecond: 10,
+      },
+    },
+    global: {
+      headers: {
+        "X-Client-Info": "namlongcenter@1.0.0",
+      },
+    },
+  }
+);
 
 // Database Types
 export interface Database {
@@ -420,6 +444,163 @@ export interface Database {
           updated_at?: string;
         };
       };
+      user_files: {
+        Row: {
+          id: string;
+          user_id: string;
+          filename: string;
+          original_filename: string;
+          file_path: string;
+          file_type: "document" | "video" | "image" | "other";
+          mime_type: string;
+          file_size: number;
+          duration?: number;
+          thumbnail_url?: string;
+          description?: string;
+          tags?: string[];
+          is_public: boolean;
+          download_count: number;
+          upload_progress: number;
+          status: "uploading" | "processing" | "ready" | "failed";
+          metadata?: any;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          filename: string;
+          original_filename: string;
+          file_path: string;
+          file_type: "document" | "video" | "image" | "other";
+          mime_type: string;
+          file_size: number;
+          duration?: number;
+          thumbnail_url?: string;
+          description?: string;
+          tags?: string[];
+          is_public?: boolean;
+          download_count?: number;
+          upload_progress?: number;
+          status?: "uploading" | "processing" | "ready" | "failed";
+          metadata?: any;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          filename?: string;
+          original_filename?: string;
+          file_path?: string;
+          file_type?: "document" | "video" | "image" | "other";
+          mime_type?: string;
+          file_size?: number;
+          duration?: number;
+          thumbnail_url?: string;
+          description?: string;
+          tags?: string[];
+          is_public?: boolean;
+          download_count?: number;
+          upload_progress?: number;
+          status?: "uploading" | "processing" | "ready" | "failed";
+          metadata?: any;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      user_activities: {
+        Row: {
+          id: string;
+          user_id: string;
+          action_type:
+            | "login"
+            | "logout"
+            | "register"
+            | "course_purchase"
+            | "course_start"
+            | "course_complete"
+            | "file_upload"
+            | "file_download"
+            | "profile_update"
+            | "password_change"
+            | "payment"
+            | "other";
+          description: string;
+          resource_type?:
+            | "course"
+            | "file"
+            | "blog_post"
+            | "product"
+            | "payment"
+            | "user";
+          resource_id?: string;
+          metadata?: any;
+          ip_address?: string;
+          user_agent?: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          action_type:
+            | "login"
+            | "logout"
+            | "register"
+            | "course_purchase"
+            | "course_start"
+            | "course_complete"
+            | "file_upload"
+            | "file_download"
+            | "profile_update"
+            | "password_change"
+            | "payment"
+            | "other";
+          description: string;
+          resource_type?:
+            | "course"
+            | "file"
+            | "blog_post"
+            | "product"
+            | "payment"
+            | "user";
+          resource_id?: string;
+          metadata?: any;
+          ip_address?: string;
+          user_agent?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          action_type?:
+            | "login"
+            | "logout"
+            | "register"
+            | "course_purchase"
+            | "course_start"
+            | "course_complete"
+            | "file_upload"
+            | "file_download"
+            | "profile_update"
+            | "password_change"
+            | "payment"
+            | "other";
+          description?: string;
+          resource_type?:
+            | "course"
+            | "file"
+            | "blog_post"
+            | "product"
+            | "payment"
+            | "user";
+          resource_id?: string;
+          metadata?: any;
+          ip_address?: string;
+          user_agent?: string;
+          created_at?: string;
+        };
+      };
     };
     Views: {
       [_ in never]: never;
@@ -434,7 +615,7 @@ export interface Database {
 }
 
 // Type-safe Supabase client
-export type SupabaseClient = typeof supabase;
+export type SupabaseClientType = typeof supabase;
 
 // Export types for use in components
 export type User = Database["public"]["Tables"]["users"]["Row"];
@@ -455,3 +636,14 @@ export type CartItemInsert =
   Database["public"]["Tables"]["cart_items"]["Insert"];
 export type CartItemUpdate =
   Database["public"]["Tables"]["cart_items"]["Update"];
+export type UserFile = Database["public"]["Tables"]["user_files"]["Row"];
+export type UserFileInsert =
+  Database["public"]["Tables"]["user_files"]["Insert"];
+export type UserFileUpdate =
+  Database["public"]["Tables"]["user_files"]["Update"];
+export type UserActivity =
+  Database["public"]["Tables"]["user_activities"]["Row"];
+export type UserActivityInsert =
+  Database["public"]["Tables"]["user_activities"]["Insert"];
+export type UserActivityUpdate =
+  Database["public"]["Tables"]["user_activities"]["Update"];

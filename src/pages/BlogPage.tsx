@@ -13,7 +13,8 @@ import {
   Filter,
   Tag,
 } from "lucide-react";
-import { Button } from "../components/ui/button";
+import { LiquidGlassButton } from "../components/ui/liquid-glass-button";
+import { LiquidGlassCard } from "../components/ui/liquid-glass-card";
 import { Input } from "../components/ui/input";
 import {
   Card,
@@ -90,16 +91,16 @@ export default function BlogPage() {
 
   return (
     <AppProviders>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
         {/* Hero Section */}
-        <section className="relative bg-gradient-to-br from-orange-900 via-amber-800 to-yellow-900 py-20">
+        <section className="relative bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 py-20">
           <div className="absolute inset-0 bg-grid-white/10 bg-grid-16 [mask-image:radial-gradient(ellipse_at_center,white,transparent)]" />
           <div className="relative z-10 container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <div className="max-w-4xl mx-auto space-y-8">
               <div className="space-y-4">
                 <Badge
                   variant="outline"
-                  className="border-orange-400/50 text-orange-200 bg-orange-950/50 backdrop-blur-sm"
+                  className="border-white/30 text-white bg-white/10 backdrop-blur-sm"
                 >
                   <FileText className="h-4 w-4 mr-2" />
                   Blog chuyên môn
@@ -107,11 +108,11 @@ export default function BlogPage() {
                 <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight">
                   Kiến thức & Kinh nghiệm
                   <br />
-                  <span className="bg-gradient-to-r from-orange-200 to-yellow-200 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-blue-200 to-indigo-200 bg-clip-text text-transparent">
                     từ Chuyên gia
                   </span>
                 </h1>
-                <p className="text-xl text-orange-100 max-w-2xl mx-auto">
+                <p className="text-xl text-white/90 max-w-2xl mx-auto">
                   Chia sẻ kiến thức chuyên môn, kinh nghiệm thực tế và xu hướng
                   công nghệ mới nhất trong ngành xây dựng.
                 </p>
@@ -129,12 +130,12 @@ export default function BlogPage() {
                   return (
                     <div key={index} className="text-center">
                       <div className="flex items-center justify-center w-12 h-12 bg-white/10 rounded-full mx-auto mb-2">
-                        <IconComponent className="h-6 w-6 text-orange-200" />
+                        <IconComponent className="h-6 w-6 text-white/80" />
                       </div>
                       <div className="text-2xl font-bold text-white">
                         {stat.value}
                       </div>
-                      <div className="text-sm text-orange-200">
+                      <div className="text-sm text-white/80">
                         {stat.label}
                       </div>
                     </div>
@@ -213,14 +214,14 @@ export default function BlogPage() {
                 </p>
               </div>
 
-              <Card className="bg-gradient-to-r from-orange-50 to-yellow-50 border-orange-200 overflow-hidden">
+              <LiquidGlassCard variant="gradient" glow={true} className="overflow-hidden">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
                   <div className="p-8 flex flex-col justify-center">
                     <CardHeader className="pb-4">
                       <div className="flex items-center gap-2 mb-4">
                         <Badge
                           variant="outline"
-                          className="border-orange-400 text-orange-700"
+                          className="border-blue-400 text-blue-700"
                         >
                           {postsData[0]?.tags?.includes("BIM")
                             ? "BIM & Revit"
@@ -234,17 +235,17 @@ export default function BlogPage() {
                           Nổi bật
                         </Badge>
                       </div>
-                      <CardTitle className="text-3xl text-orange-900 leading-tight">
+                      <CardTitle className="text-3xl text-gray-900 leading-tight">
                         {postsData[0]?.title ||
                           "Hướng dẫn BIM cho Dự án Xây dựng"}
                       </CardTitle>
-                      <CardDescription className="text-lg text-orange-700">
+                      <CardDescription className="text-lg text-gray-700">
                         {postsData[0]?.excerpt ||
                           "Khám phá quy trình BIM từ thiết kế đến thi công với các công cụ và phương pháp hiện đại."}
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="pb-6">
-                      <div className="flex items-center gap-6 text-sm text-orange-700">
+                      <div className="flex items-center gap-6 text-sm text-gray-700">
                         <div className="flex items-center gap-2">
                           <User className="h-4 w-4" />
                           <span>Nam Long Center</span>
@@ -266,20 +267,21 @@ export default function BlogPage() {
                       </div>
                     </CardContent>
                     <CardFooter className="pt-0">
-                      <Button
+                      <LiquidGlassButton
                         size="lg"
-                        className="bg-orange-600 hover:bg-orange-700"
+                        variant="primary"
+                        glow={true}
                         onClick={() => handleReadPost("featured-post")}
                       >
                         Đọc bài viết
-                      </Button>
+                      </LiquidGlassButton>
                     </CardFooter>
                   </div>
-                  <div className="bg-gradient-to-br from-orange-100 to-yellow-100 flex items-center justify-center p-8">
+                  <div className="bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center p-8">
                     <div className="text-8xl opacity-30">📝</div>
                   </div>
                 </div>
-              </Card>
+              </LiquidGlassCard>
             </div>
 
             {/* Blog Categories Tabs */}
@@ -313,9 +315,11 @@ export default function BlogPage() {
                           post.tags?.includes(category.id)
                       )
                       .map((post) => (
-                        <Card
+                        <LiquidGlassCard
                           key={post.id}
-                          className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                          variant="interactive"
+                          hover={true}
+                          className="group"
                         >
                           <CardHeader className="pb-4">
                             <div className="flex items-start justify-between">
@@ -336,7 +340,7 @@ export default function BlogPage() {
                                 </Badge>
                               )}
                             </div>
-                            <CardTitle className="text-lg group-hover:text-orange-600 transition-colors line-clamp-2">
+                            <CardTitle className="text-lg group-hover:text-blue-600 transition-colors line-clamp-2">
                               {post.title}
                             </CardTitle>
                             <CardDescription className="line-clamp-3">
@@ -400,24 +404,25 @@ export default function BlogPage() {
                                 </div>
                               </div>
                               <div className="flex gap-2">
-                                <Button
+                                <LiquidGlassButton
                                   className="flex-1"
-                                  size="lg"
+                                  size="md"
+                                  variant="primary"
                                   onClick={() => handleReadPost(post.id)}
                                 >
                                   Đọc bài viết
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  size="lg"
+                                </LiquidGlassButton>
+                                <LiquidGlassButton
+                                  variant="ghost"
+                                  size="md"
                                   className="px-3"
                                 >
                                   <Share2 className="h-4 w-4" />
-                                </Button>
+                                </LiquidGlassButton>
                               </div>
                             </div>
                           </CardFooter>
-                        </Card>
+                        </LiquidGlassCard>
                       ))}
                   </div>
                 </TabsContent>
@@ -426,12 +431,12 @@ export default function BlogPage() {
 
             {/* Newsletter Subscription */}
             <div className="mb-16">
-              <Card className="bg-gradient-to-r from-orange-50 to-yellow-50 border-orange-200">
+              <LiquidGlassCard variant="gradient" className="">
                 <CardHeader className="text-center pb-6">
-                  <CardTitle className="text-3xl text-orange-900">
+                  <CardTitle className="text-3xl text-gray-900">
                     Đăng ký nhận tin tức
                   </CardTitle>
-                  <CardDescription className="text-lg text-orange-700">
+                  <CardDescription className="text-lg text-gray-700">
                     Nhận bài viết mới nhất về BIM, Automation và Công nghệ xây
                     dựng
                   </CardDescription>
@@ -443,12 +448,12 @@ export default function BlogPage() {
                       type="email"
                       className="flex-1"
                     />
-                    <Button className="bg-orange-600 hover:bg-orange-700">
+                    <LiquidGlassButton variant="primary">
                       Đăng ký
-                    </Button>
+                    </LiquidGlassButton>
                   </div>
                 </CardContent>
-              </Card>
+              </LiquidGlassCard>
             </div>
 
             {/* CTA Section */}
@@ -460,15 +465,16 @@ export default function BlogPage() {
                   xây dựng
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button
+                  <LiquidGlassButton
                     size="lg"
-                    className="bg-orange-600 hover:bg-orange-700"
+                    variant="gradient"
+                    glow={true}
                   >
                     Viết bài viết
-                  </Button>
-                  <Button variant="outline" size="lg">
+                  </LiquidGlassButton>
+                  <LiquidGlassButton variant="secondary" size="lg">
                     Liên hệ biên tập
-                  </Button>
+                  </LiquidGlassButton>
                 </div>
               </div>
             </div>

@@ -11,7 +11,7 @@ import { Input } from "../../components/ui/input";
 import { Skeleton } from "../../components/ui/skeleton";
 
 import { Post } from "../../types/post";
-import { formatDate } from "../../lib/shared";
+import { formatDate } from "../../lib/shared/formatters";
 
 interface BlogListProps {
   className?: string;
