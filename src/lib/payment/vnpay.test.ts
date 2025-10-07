@@ -27,8 +27,8 @@ describe('VNPayService', () => {
   });
 
   describe('createPaymentUrl', () => {
-    it('should generate a valid payment URL with correct parameters', () => {
-      const result = vnPayService.createPaymentUrl(mockOrderInfo);
+    it('should generate a valid payment URL with correct parameters', async () => {
+      const result = await vnPayService.createPaymentUrl(mockOrderInfo);
 
       expect(result).toHaveProperty('paymentUrl');
       expect(result).toHaveProperty('orderId', mockOrderInfo.orderId);
@@ -42,37 +42,37 @@ describe('VNPayService', () => {
       expect(result.paymentUrl).toContain('vnp_OrderInfo=');
     });
 
-    it('should include bank code when provided', () => {
+    it('should include bank code when provided', async () => {
       const orderWithBankCode = {
         ...mockOrderInfo,
         bankCode: 'NCB',
       };
 
-      const result = vnPayService.createPaymentUrl(orderWithBankCode);
+      const result = await vnPayService.createPaymentUrl(orderWithBankCode);
 
       expect(result.paymentUrl).toContain('vnp_BankCode=NCB');
     });
 
-    it('should use correct locale', () => {
+    it('should use correct locale', async () => {
       const orderWithEnglish = {
         ...mockOrderInfo,
         locale: 'en' as const,
       };
 
-      const result = vnPayService.createPaymentUrl(orderWithEnglish);
+      const result = await vnPayService.createPaymentUrl(orderWithEnglish);
 
       expect(result.paymentUrl).toContain('vnp_Locale=en');
     });
 
-    it('should generate unique transaction references', () => {
-      const result1 = vnPayService.createPaymentUrl(mockOrderInfo);
-      const result2 = vnPayService.createPaymentUrl(mockOrderInfo);
+    it('should generate unique transaction references', async () => {
+      const result1 = await vnPayService.createPaymentUrl(mockOrderInfo);
+      const result2 = await vnPayService.createPaymentUrl(mockOrderInfo);
 
       expect(result1.transactionRef).not.toBe(result2.transactionRef);
     });
 
-    it('should convert amount to VNPay format (multiply by 100)', () => {
-      const result = vnPayService.createPaymentUrl(mockOrderInfo);
+    it('should convert amount to VNPay format (multiply by 100)', async () => {
+      const result = await vnPayService.createPaymentUrl(mockOrderInfo);
 
       expect(result.paymentUrl).toContain('vnp_Amount=10000000'); // 100000 * 100
     });

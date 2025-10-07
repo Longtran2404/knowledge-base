@@ -205,7 +205,7 @@ export default function CollaborationPage() {
                   className={`relative border-2 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 ${
                     plan.popular 
                       ? 'border-blue-500 shadow-xl scale-105' 
-                      : 'border-gray-200 hover:border-blue-300'
+                      : 'border-white/10 hover:border-blue-300'
                   }`}
                 >
                   {plan.popular && (
@@ -220,7 +220,7 @@ export default function CollaborationPage() {
                   <CardHeader className="text-center pb-6">
                     <div className="flex items-center justify-center mb-4">
                       <div className={`p-3 rounded-full ${
-                        plan.popular ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
+                        plan.popular ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-400'
                       }`}>
                         {plan.icon}
                       </div>

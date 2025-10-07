@@ -10,21 +10,77 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
-// Fallback values cho development (nên được thay thế bằng environment variables thực tế)
-const FALLBACK_URL = "https://byidgbgvnrfhujprzzge.supabase.co";
-const FALLBACK_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5aWRnYmd2bnJmaHVqcHJ6emdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI1MjQxMjAsImV4cCI6MjA1ODEwMDEyMH0.LJmu6PzY89Uc1K_5W-M7rsD18sWm-mHeMx1SeV4o_Dw";
-
+// Validate required environment variables
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn(
-    "⚠️ Supabase environment variables not found. Using fallback values for development."
-  );
+  const errorMessage = `
+    ❌ SUPABASE CONFIGURATION ERROR ❌
+
+    Missing required environment variables:
+    ${!supabaseUrl ? '- REACT_APP_SUPABASE_URL' : ''}
+    ${!supabaseAnonKey ? '- REACT_APP_SUPABASE_ANON_KEY' : ''}
+
+    📝 To fix this:
+    1. Create a .env file in the project root
+    2. Add your Supabase credentials:
+       REACT_APP_SUPABASE_URL=https://your-project.supabase.co
+       REACT_APP_SUPABASE_ANON_KEY=your-anon-key
+    3. Restart the development server
+
+    📚 See SUPABASE_CONNECTION_FIX.md for detailed instructions
+
+    ⚠️  Running in OFFLINE MODE - Supabase features disabled
+  `;
+
+  console.warn(errorMessage);
+
+  // In production, throw error. In development, show helpful message
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('Supabase configuration is required');
+  }
 }
 
-// Create Supabase client với configuration tối ưu
+// Check if Supabase URL is reachable (only in development)
+if (process.env.NODE_ENV === 'development' && supabaseUrl && supabaseUrl !== 'https://placeholder.supabase.co') {
+  const projectRef = supabaseUrl.match(/https:\/\/(.+?)\.supabase\.co/)?.[1];
+  if (projectRef) {
+    console.log(`🔍 Checking Supabase connection to project: ${projectRef}...`);
+
+    // Test connection in background (non-blocking)
+    fetch(`${supabaseUrl}/auth/v1/health`, {
+      method: 'GET',
+      signal: AbortSignal.timeout(5000),
+    })
+      .then(res => {
+        if (res.ok) {
+          console.log('✅ Supabase connection successful!');
+        } else {
+          console.warn(`⚠️  Supabase responded with status: ${res.status}`);
+        }
+      })
+      .catch(err => {
+        console.error('❌ Cannot connect to Supabase:', err.message);
+        console.error(`
+⚠️  SUPABASE CONNECTION FAILED
+
+Possible reasons:
+1. Project is still being provisioned (wait 5-10 minutes if just created)
+2. Project URL is incorrect - check https://supabase.com/dashboard
+3. Project has been paused - resume it from dashboard
+4. Network/firewall blocking connection
+5. DNS has not propagated yet (for new projects)
+
+Current URL: ${supabaseUrl}
+
+💡 Verify your project exists at: https://supabase.com/dashboard/projects
+        `);
+      });
+  }
+}
+
+// Create Supabase client với configuration tối ưu cho persistence
 export const supabase: SupabaseClient<Database> = createClient(
-  supabaseUrl || FALLBACK_URL,
-  supabaseAnonKey || FALLBACK_ANON_KEY,
+  supabaseUrl || 'https://placeholder.supabase.co',
+  supabaseAnonKey || 'placeholder-key',
   {
     auth: {
       autoRefreshToken: true,
@@ -32,6 +88,9 @@ export const supabase: SupabaseClient<Database> = createClient(
       detectSessionInUrl: true,
       flowType: "pkce", // Enhanced security với PKCE flow
       storage: typeof window !== "undefined" ? window.localStorage : undefined,
+      // Tăng thời gian refresh token để session tồn tại lâu hơn
+      storageKey: 'sb-nlc-auth-token',
+      debug: process.env.NODE_ENV === 'development', // Enable debug in dev
     },
     realtime: {
       params: {
@@ -41,6 +100,7 @@ export const supabase: SupabaseClient<Database> = createClient(
     global: {
       headers: {
         "X-Client-Info": "namlongcenter@1.0.0",
+        "X-Client-Version": "1.0.0",
       },
     },
   }
@@ -50,6 +110,86 @@ export const supabase: SupabaseClient<Database> = createClient(
 export interface Database {
   public: {
     Tables: {
+      nlc_accounts: {
+        Row: {
+          id: string;
+          email: string;
+          user_id: string;
+          full_name: string;
+          display_name?: string;
+          avatar_url?: string;
+          phone?: string;
+          bio?: string;
+          account_role: "sinh_vien" | "giang_vien" | "quan_ly" | "admin";
+          membership_plan: "free" | "basic" | "premium" | "vip" | "business";
+          account_status: "active" | "inactive" | "suspended" | "pending_approval";
+          is_paid: boolean;
+          is_verified: boolean;
+          auth_provider: "email" | "google" | "facebook";
+          last_login_at?: string;
+          login_count: number;
+          password_changed_at?: string;
+          membership_expires_at?: string;
+          membership_type?: "free" | "basic" | "premium" | "vip";
+          approved_by?: string;
+          approved_at?: string;
+          rejected_reason?: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          email: string;
+          user_id: string;
+          full_name: string;
+          display_name?: string;
+          avatar_url?: string;
+          phone?: string;
+          bio?: string;
+          account_role?: "sinh_vien" | "giang_vien" | "quan_ly" | "admin";
+          membership_plan?: "free" | "basic" | "premium" | "vip" | "business";
+          account_status?: "active" | "inactive" | "suspended" | "pending_approval";
+          is_paid?: boolean;
+          is_verified?: boolean;
+          auth_provider?: "email" | "google" | "facebook";
+          last_login_at?: string;
+          login_count?: number;
+          password_changed_at?: string;
+          membership_expires_at?: string;
+          membership_type?: "free" | "basic" | "premium" | "vip";
+          approved_by?: string;
+          approved_at?: string;
+          rejected_reason?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          email?: string;
+          user_id?: string;
+          full_name?: string;
+          display_name?: string;
+          avatar_url?: string;
+          phone?: string;
+          bio?: string;
+          account_role?: "sinh_vien" | "giang_vien" | "quan_ly" | "admin";
+          membership_plan?: "free" | "basic" | "premium" | "vip" | "business";
+          account_status?: "active" | "inactive" | "suspended" | "pending_approval";
+          is_paid?: boolean;
+          is_verified?: boolean;
+          auth_provider?: "email" | "google" | "facebook";
+          last_login_at?: string;
+          login_count?: number;
+          password_changed_at?: string;
+          membership_expires_at?: string;
+          membership_type?: "free" | "basic" | "premium" | "vip";
+          approved_by?: string;
+          approved_at?: string;
+          rejected_reason?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
       users: {
         Row: {
           id: string;
@@ -409,26 +549,30 @@ export interface Database {
           updated_at?: string;
         };
       };
-      cart_items: {
+      nlc_cart_items: {
         Row: {
           id: string;
           user_id: string;
-          product_id?: string;
-          course_id?: string;
-          item_type: "product" | "course";
+          product_id: string;
+          product_type: string;
+          product_name: string;
+          product_price: number;
           quantity: number;
-          price: number;
+          product_image?: string;
+          product_metadata?: any;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
           user_id: string;
-          product_id?: string;
-          course_id?: string;
-          item_type: "product" | "course";
+          product_id: string;
+          product_type?: string;
+          product_name: string;
+          product_price?: number;
           quantity?: number;
-          price: number;
+          product_image?: string;
+          product_metadata?: any;
           created_at?: string;
           updated_at?: string;
         };
@@ -436,33 +580,33 @@ export interface Database {
           id?: string;
           user_id?: string;
           product_id?: string;
-          course_id?: string;
-          item_type?: "product" | "course";
+          product_type?: string;
+          product_name?: string;
+          product_price?: number;
           quantity?: number;
-          price?: number;
+          product_image?: string;
+          product_metadata?: any;
           created_at?: string;
           updated_at?: string;
         };
       };
-      user_files: {
+      nlc_user_files: {
         Row: {
           id: string;
           user_id: string;
           filename: string;
           original_filename: string;
           file_path: string;
-          file_type: "document" | "video" | "image" | "other";
+          file_type: string;
           mime_type: string;
           file_size: number;
-          duration?: number;
-          thumbnail_url?: string;
           description?: string;
           tags?: string[];
           is_public: boolean;
           download_count: number;
           upload_progress: number;
-          status: "uploading" | "processing" | "ready" | "failed";
-          metadata?: any;
+          status: string;
+          thumbnail_url?: string;
           created_at: string;
           updated_at: string;
         };
@@ -472,18 +616,16 @@ export interface Database {
           filename: string;
           original_filename: string;
           file_path: string;
-          file_type: "document" | "video" | "image" | "other";
+          file_type?: string;
           mime_type: string;
-          file_size: number;
-          duration?: number;
-          thumbnail_url?: string;
+          file_size?: number;
           description?: string;
           tags?: string[];
           is_public?: boolean;
           download_count?: number;
           upload_progress?: number;
-          status?: "uploading" | "processing" | "ready" | "failed";
-          metadata?: any;
+          status?: string;
+          thumbnail_url?: string;
           created_at?: string;
           updated_at?: string;
         };
@@ -493,18 +635,16 @@ export interface Database {
           filename?: string;
           original_filename?: string;
           file_path?: string;
-          file_type?: "document" | "video" | "image" | "other";
+          file_type?: string;
           mime_type?: string;
           file_size?: number;
-          duration?: number;
-          thumbnail_url?: string;
           description?: string;
           tags?: string[];
           is_public?: boolean;
           download_count?: number;
           upload_progress?: number;
-          status?: "uploading" | "processing" | "ready" | "failed";
-          metadata?: any;
+          status?: string;
+          thumbnail_url?: string;
           created_at?: string;
           updated_at?: string;
         };
@@ -618,6 +758,9 @@ export interface Database {
 export type SupabaseClientType = typeof supabase;
 
 // Export types for use in components
+export type NLCAccount = Database["public"]["Tables"]["nlc_accounts"]["Row"];
+export type NLCAccountInsert = Database["public"]["Tables"]["nlc_accounts"]["Insert"];
+export type NLCAccountUpdate = Database["public"]["Tables"]["nlc_accounts"]["Update"];
 export type User = Database["public"]["Tables"]["users"]["Row"];
 export type Course = Database["public"]["Tables"]["courses"]["Row"];
 export type BlogPost = Database["public"]["Tables"]["blog_posts"]["Row"];
@@ -631,16 +774,12 @@ export type ManagerApproval =
 export type ManagerNotification =
   Database["public"]["Tables"]["manager_notifications"]["Row"];
 export type Product = Database["public"]["Tables"]["products"]["Row"];
-export type CartItem = Database["public"]["Tables"]["cart_items"]["Row"];
-export type CartItemInsert =
-  Database["public"]["Tables"]["cart_items"]["Insert"];
-export type CartItemUpdate =
-  Database["public"]["Tables"]["cart_items"]["Update"];
-export type UserFile = Database["public"]["Tables"]["user_files"]["Row"];
-export type UserFileInsert =
-  Database["public"]["Tables"]["user_files"]["Insert"];
-export type UserFileUpdate =
-  Database["public"]["Tables"]["user_files"]["Update"];
+export type NLCCartItem = Database["public"]["Tables"]["nlc_cart_items"]["Row"];
+export type NLCCartItemInsert = Database["public"]["Tables"]["nlc_cart_items"]["Insert"];
+export type NLCCartItemUpdate = Database["public"]["Tables"]["nlc_cart_items"]["Update"];
+export type NLCUserFile = Database["public"]["Tables"]["nlc_user_files"]["Row"];
+export type NLCUserFileInsert = Database["public"]["Tables"]["nlc_user_files"]["Insert"];
+export type NLCUserFileUpdate = Database["public"]["Tables"]["nlc_user_files"]["Update"];
 export type UserActivity =
   Database["public"]["Tables"]["user_activities"]["Row"];
 export type UserActivityInsert =

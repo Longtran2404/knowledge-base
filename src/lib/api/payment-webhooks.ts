@@ -5,6 +5,8 @@
  */
 
 import { webhookHandler } from "../payment/webhook-handler";
+import { stripeService, STRIPE_CONFIG } from "../payment/stripe";
+import { orderManager } from "../order/order-manager";
 import type {
   VNPayWebhookData,
   MoMoWebhookData,
@@ -20,10 +22,195 @@ export interface WebhookRequest {
   query?: Record<string, string>;
 }
 
+// Stripe API Types
+export interface StripePaymentIntentRequest {
+  amount: number;
+  currency: string;
+  description: string;
+  metadata?: Record<string, string>;
+  customer_email?: string;
+  customer_name?: string;
+}
+
+export interface StripePaymentIntentResponse {
+  client_secret: string;
+  id: string;
+  status: string;
+}
+
 export interface WebhookAPIResponse {
   status: number;
   data: WebhookResponse | any;
   headers?: Record<string, string>;
+}
+
+/**
+ * Stripe Create Payment Intent API
+ * POST /api/payment/stripe/create-payment-intent
+ */
+export async function handleStripeCreatePaymentIntent(
+  request: WebhookRequest
+): Promise<WebhookAPIResponse> {
+  try {
+    const body: StripePaymentIntentRequest = request.body;
+
+    // Validate required fields
+    if (!body.amount || !body.currency || !body.description) {
+      return {
+        status: 400,
+        data: {
+          error: "Missing required fields: amount, currency, description",
+        },
+      };
+    }
+
+    // Create Payment Intent with Stripe
+    const response = await fetch("https://api.stripe.com/v1/payment_intents", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${STRIPE_CONFIG.SECRET_KEY}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Stripe-Version": STRIPE_CONFIG.API_VERSION,
+      },
+      body: new URLSearchParams({
+        amount: body.amount.toString(),
+        currency: body.currency,
+        description: body.description,
+        metadata: JSON.stringify(body.metadata || {}),
+        ...(body.customer_email && { receipt_email: body.customer_email }),
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      return {
+        status: 400,
+        data: {
+          error: error.error?.message || "Failed to create payment intent",
+        },
+      };
+    }
+
+    const paymentIntent = await response.json();
+
+    return {
+      status: 200,
+      data: {
+        client_secret: paymentIntent.client_secret,
+        id: paymentIntent.id,
+        status: paymentIntent.status,
+      } as StripePaymentIntentResponse,
+    };
+  } catch (error) {
+    console.error("Stripe create payment intent error:", error);
+    return {
+      status: 500,
+      data: { error: "Internal server error" },
+    };
+  }
+}
+
+/**
+ * Stripe Webhook Handler
+ * POST /api/payment/stripe/webhook
+ */
+export async function handleStripeWebhook(
+  request: WebhookRequest
+): Promise<WebhookAPIResponse> {
+  try {
+    const signature = request.headers["stripe-signature"];
+    const payload = JSON.stringify(request.body);
+
+    if (!signature) {
+      return {
+        status: 400,
+        data: { error: "Missing stripe-signature header" },
+      };
+    }
+
+    // Verify webhook signature (in production)
+    // const event = stripe.webhooks.constructEvent(payload, signature, STRIPE_CONFIG.WEBHOOK_SECRET);
+    const event = request.body; // For development
+
+    switch (event.type) {
+      case "payment_intent.succeeded":
+        await handlePaymentSuccess(event.data.object);
+        break;
+      case "payment_intent.payment_failed":
+        await handlePaymentFailed(event.data.object);
+        break;
+      default:
+        console.log(`Unhandled event type: ${event.type}`);
+    }
+
+    return {
+      status: 200,
+      data: { received: true },
+    };
+  } catch (error) {
+    console.error("Stripe webhook error:", error);
+    return {
+      status: 400,
+      data: { error: "Webhook signature verification failed" },
+    };
+  }
+}
+
+/**
+ * Handle successful payment
+ */
+async function handlePaymentSuccess(paymentIntent: any): Promise<void> {
+  const orderId = paymentIntent.metadata?.order_id;
+
+  if (!orderId) return;
+
+  try {
+    // Update order status
+    await orderManager.updateOrder(orderId, {
+      status: "paid",
+      paymentStatus: "completed",
+    });
+
+    // TODO: Handle commission for partners
+    // await commissionService.processCommission(orderId);
+
+    // Send confirmation email
+    // await emailService.sendPaymentConfirmation(orderId);
+
+    console.log(`Payment succeeded for order ${orderId}`);
+  } catch (error) {
+    console.error(
+      `Error handling payment success for order ${orderId}:`,
+      error
+    );
+  }
+}
+
+/**
+ * Handle failed payment
+ */
+async function handlePaymentFailed(paymentIntent: any): Promise<void> {
+  const orderId = paymentIntent.metadata?.order_id;
+
+  if (!orderId) return;
+
+  try {
+    // Update order status
+    await orderManager.updateOrder(orderId, {
+      status: "failed",
+      paymentStatus: "failed",
+    });
+
+    // Send failure notification
+    // await emailService.sendPaymentFailureNotification(orderId);
+
+    console.log(`Payment failed for order ${orderId}`);
+  } catch (error) {
+    console.error(
+      `Error handling payment failure for order ${orderId}:`,
+      error
+    );
+  }
 }
 
 /**
@@ -67,7 +254,9 @@ export async function handleVNPayIPN(
     }
 
     // Process the webhook
-    const result = await webhookHandler.handleVNPayWebhook(webhookData as VNPayWebhookData);
+    const result = await webhookHandler.handleVNPayWebhook(
+      webhookData as VNPayWebhookData
+    );
 
     // Log webhook activity
     await webhookHandler.logWebhookActivity(

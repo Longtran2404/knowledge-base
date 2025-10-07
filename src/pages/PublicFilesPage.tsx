@@ -42,20 +42,38 @@ export default function PublicFilesPage() {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [filterType, setFilterType] = useState<string>("all");
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const filesPerPage = 20;
 
   useEffect(() => {
     loadFiles();
   }, []);
 
-  const loadFiles = async () => {
+  const loadFiles = async (pageNum: number = 1) => {
     setLoading(true);
     try {
-      const publicFiles = await getPublicFiles();
-      setFiles(publicFiles);
+      const offset = (pageNum - 1) * filesPerPage;
+      const publicFiles = await getPublicFiles(filesPerPage, offset);
+
+      if (pageNum === 1) {
+        setFiles(publicFiles);
+      } else {
+        setFiles(prev => [...prev, ...publicFiles]);
+      }
+
+      setHasMore(publicFiles.length === filesPerPage);
+      setPage(pageNum);
     } catch (error) {
       toast.error("Không thể tải danh sách tài liệu");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadMore = () => {
+    if (!loading && hasMore) {
+      loadFiles(page + 1);
     }
   };
 
@@ -130,10 +148,10 @@ export default function PublicFilesPage() {
               <FileText className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-3xl font-bold text-white">
                 Tài liệu công khai
               </h1>
-              <p className="text-gray-600">
+              <p className="text-gray-400">
                 Khám phá và tải xuống tài liệu miễn phí
               </p>
             </div>
@@ -195,7 +213,7 @@ export default function PublicFilesPage() {
                     className={`px-3 py-2 ${
                       viewMode === "grid"
                         ? "bg-blue-100 text-blue-600"
-                        : "text-gray-600"
+                        : "text-gray-400"
                     }`}
                   >
                     <Grid className="h-4 w-4" />
@@ -205,7 +223,7 @@ export default function PublicFilesPage() {
                     className={`px-3 py-2 ${
                       viewMode === "list"
                         ? "bg-blue-100 text-blue-600"
-                        : "text-gray-600"
+                        : "text-gray-400"
                     }`}
                   >
                     <List className="h-4 w-4" />
@@ -220,18 +238,18 @@ export default function PublicFilesPage() {
         {loading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="text-gray-600 mt-4">Đang tải tài liệu...</p>
+            <p className="text-gray-400 mt-4">Đang tải tài liệu...</p>
           </div>
         ) : filteredFiles.length === 0 ? (
           <Card>
             <CardContent className="text-center py-12">
               <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <h3 className="text-lg font-medium text-white mb-2">
                 {searchQuery
                   ? "Không tìm thấy tài liệu"
                   : "Chưa có tài liệu nào"}
               </h3>
-              <p className="text-gray-600">
+              <p className="text-gray-400">
                 {searchQuery
                   ? "Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc"
                   : "Tài liệu sẽ được hiển thị ở đây khi có người upload"}
@@ -254,7 +272,7 @@ export default function PublicFilesPage() {
                       {getFileIcon(file.mime_type)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-sm text-gray-900 truncate">
+                      <h3 className="font-medium text-sm text-white truncate">
                         {file.original_filename}
                       </h3>
                       <p className="text-xs text-gray-500 mt-1">
@@ -266,6 +284,14 @@ export default function PublicFilesPage() {
                       <p className="text-xs text-gray-500">
                         {new Date(file.created_at).toLocaleDateString("vi-VN")}
                       </p>
+                      {(file as any).user && (
+                        <p className="text-xs text-gray-400 mt-2 flex items-center gap-1">
+                          <span className="inline-block w-4 h-4 rounded-full bg-blue-500 text-white text-[8px] flex items-center justify-center">
+                            {((file as any).user.full_name || (file as any).user.email)[0].toUpperCase()}
+                          </span>
+                          {(file as any).user.full_name || (file as any).user.email}
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -285,6 +311,20 @@ export default function PublicFilesPage() {
           </div>
         )}
 
+        {/* Load More Button */}
+        {hasMore && !loading && filteredFiles.length > 0 && (
+          <div className="mt-8 text-center">
+            <Button
+              onClick={loadMore}
+              size="lg"
+              variant="outline"
+              className="min-w-[200px]"
+            >
+              Tải thêm tài liệu
+            </Button>
+          </div>
+        )}
+
         {/* Stats */}
         {files.length > 0 && (
           <Card className="mt-8">
@@ -294,13 +334,13 @@ export default function PublicFilesPage() {
                   <p className="text-2xl font-bold text-blue-600">
                     {files.length}
                   </p>
-                  <p className="text-sm text-gray-600">Tài liệu</p>
+                  <p className="text-sm text-gray-400">Tài liệu</p>
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-green-600">
                     {files.reduce((sum, file) => sum + file.download_count, 0)}
                   </p>
-                  <p className="text-sm text-gray-600">Lượt tải</p>
+                  <p className="text-sm text-gray-400">Lượt tải</p>
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-purple-600">
@@ -311,13 +351,13 @@ export default function PublicFilesPage() {
                       )
                     )}
                   </p>
-                  <p className="text-sm text-gray-600">Tổng dung lượng</p>
+                  <p className="text-sm text-gray-400">Tổng dung lượng</p>
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-orange-600">
                     {new Set(files.map((f) => f.mime_type.split("/")[0])).size}
                   </p>
-                  <p className="text-sm text-gray-600">Loại file</p>
+                  <p className="text-sm text-gray-400">Loại file</p>
                 </div>
               </div>
             </CardContent>

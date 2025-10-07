@@ -9,15 +9,18 @@
 - **Real-time**: Thông báo và cập nhật real-time với Supabase Realtime
 - **Modern UI**: Liquid Glass design system với Framer Motion animations
 - **Payment**: Tích hợp VNPay và MoMo payment gateways
+- **Membership**: Hệ thống membership với 3 cấp độ (Free, Member, Premium)
+- **Cart & Orders**: Giỏ hàng và quản lý đơn hàng
 - **Responsive**: Thiết kế responsive cho mọi thiết bị
 
 ## 🛠️ Công nghệ sử dụng
 
-- **Frontend**: React 18.3.1, TypeScript 5.0, Next.js 15.5.0
+- **Frontend**: React 18.3.1, TypeScript 5.0, Create React App
 - **Backend**: Supabase (PostgreSQL, Auth, Storage, Realtime)
 - **UI**: Radix UI, Tailwind CSS, Framer Motion
-- **State Management**: React Context API, Redux Toolkit
+- **State Management**: React Context API
 - **Build Tool**: CRACO (Create React App Configuration Override)
+- **Payment**: VNPay, MoMo integration
 
 ## 📦 Cài đặt
 
@@ -136,6 +139,7 @@ npm run setup:storage  # Setup Supabase storage
 ## 🚀 Deployment
 
 Dự án đã được cấu hình sẵn cho Vercel deployment với:
+
 - `vercel.json`: Cấu hình build và routing
 - `.vercelignore`: Loại trừ files không cần thiết
 - Environment variables setup

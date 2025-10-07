@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion, HTMLMotionProps } from 'framer-motion';
 import { cn } from '../../lib/utils';
 
@@ -15,8 +16,9 @@ interface LiquidGlassButtonProps {
   loading?: boolean;
   className?: string;
   disabled?: boolean;
-  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => void;
   type?: "button" | "submit" | "reset";
+  href?: string;
 }
 
 export function LiquidGlassButton({
@@ -28,7 +30,8 @@ export function LiquidGlassButton({
   loading = false,
   disabled = false,
   onClick,
-  type = "button"
+  type = "button",
+  href
 }: LiquidGlassButtonProps) {
   const sizeClasses = {
     sm: 'px-4 py-2 text-sm',
@@ -102,21 +105,25 @@ export function LiquidGlassButton({
     }
   };
 
-  return (
-    <motion.button
-      className={cn(
-        'relative overflow-hidden rounded-2xl font-medium transition-all duration-300 disabled:cursor-not-allowed',
-        sizeClasses[size],
-        className
-      )}
-      style={getButtonStyle()}
-      whileHover={!disabled && !loading ? { scale: 1.02, y: -1 } : undefined}
-      whileTap={!disabled && !loading ? { scale: 0.98 } : undefined}
-      transition={{ type: "spring", stiffness: 400, damping: 30 }}
-      disabled={disabled || loading}
-      onClick={onClick}
-      type={type}
-    >
+  const commonClasses = cn(
+    'relative overflow-hidden rounded-2xl font-medium transition-all duration-300 disabled:cursor-not-allowed inline-block',
+    sizeClasses[size],
+    className
+  );
+
+  const commonProps = {
+    className: commonClasses,
+    style: getButtonStyle(),
+  };
+
+  const motionProps = {
+    whileHover: !disabled && !loading ? { scale: 1.02, y: -1 } : undefined,
+    whileTap: !disabled && !loading ? { scale: 0.98 } : undefined,
+    transition: { type: "spring" as const, stiffness: 400, damping: 30 },
+  };
+
+  const content = (
+    <>
       {/* Glass reflection overlay */}
       <div
         className="absolute inset-0 rounded-2xl pointer-events-none"
@@ -146,6 +153,30 @@ export function LiquidGlassButton({
           transition={{ duration: 0.4 }}
         />
       )}
+    </>
+  );
+
+  // If href is provided, render as Link
+  if (href) {
+    return (
+      <Link to={href} style={{ textDecoration: 'none' }}>
+        <motion.div {...commonProps} {...motionProps}>
+          {content}
+        </motion.div>
+      </Link>
+    );
+  }
+
+  // Otherwise, render as button
+  return (
+    <motion.button
+      {...commonProps}
+      {...motionProps}
+      disabled={disabled || loading}
+      onClick={onClick}
+      type={type}
+    >
+      {content}
     </motion.button>
   );
 }

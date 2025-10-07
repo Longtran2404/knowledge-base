@@ -14,21 +14,38 @@ import React, {
 } from "react";
 import { supabase } from "../lib/supabase-config";
 import { api } from "../lib/api/supabase-api";
+import { nlcApi } from "../lib/api/nlc-database-api";
 import { activityService } from "../lib/activity-service";
+import { authPersistence } from "../lib/auth-persistence";
+import { logger } from "../lib/logger/logger";
+import { ErrorHandler, AppError } from "../lib/errors/app-error";
 import type { User, Session } from "@supabase/supabase-js";
+import type { NLCAccount } from "../types/database";
 
-// Unified auth types
+// Unified auth types - now uses NLCAccount
 export interface UserProfile {
-  id: string;
+  id: string; // Supabase auth user ID
+  user_id: string; // NLC user ID for database operations
   email: string;
-  full_name?: string;
-  phone?: string;
-  address?: string;
-  bio?: string;
+  full_name: string;
+  display_name?: string;
   avatar_url?: string;
-  role?: "student" | "instructor" | "admin";
-  plan?: string;
-  is_active?: boolean;
+  phone?: string;
+  bio?: string;
+  account_role: "sinh_vien" | "giang_vien" | "quan_ly" | "admin";
+  membership_plan: "free" | "basic" | "premium" | "vip" | "business";
+  account_status: "active" | "inactive" | "suspended" | "pending_approval";
+  is_paid: boolean;
+  is_verified: boolean;
+  auth_provider: "email" | "google" | "facebook";
+  last_login_at?: string;
+  login_count: number;
+  password_changed_at?: string;
+  membership_expires_at?: string;
+  membership_type?: "free" | "basic" | "premium" | "vip";
+  approved_by?: string;
+  approved_at?: string;
+  rejected_reason?: string;
   created_at: string;
   updated_at: string;
 }
@@ -87,6 +104,9 @@ export function UnifiedAuthProvider({
   const [profileLoaded, setProfileLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Prevent multiple initializations
+  const [initialized, setInitialized] = useState(false);
+
   // Refs để tránh stale closures
   const userRef = useRef<User | null>(null);
   const sessionRef = useRef<Session | null>(null);
@@ -94,218 +114,279 @@ export function UnifiedAuthProvider({
   // Update refs khi state thay đổi
   useEffect(() => {
     userRef.current = user;
+    // Reset profile loading state when user changes
+    if (!user) {
+      setProfileLoaded(false);
+      setUserProfile(null);
+    }
   }, [user]);
 
+  // Helper functions for type validation
+  const validateAccountRole = (role: string): UserProfile["account_role"] => {
+    const validRoles: UserProfile["account_role"][] = [
+      "sinh_vien",
+      "giang_vien",
+      "quan_ly",
+      "admin",
+    ];
+    return validRoles.includes(role as UserProfile["account_role"])
+      ? (role as UserProfile["account_role"])
+      : "sinh_vien";
+  };
+
+  const validateMembershipPlan = (
+    plan: string
+  ): UserProfile["membership_plan"] => {
+    const validPlans: UserProfile["membership_plan"][] = [
+      "free",
+      "basic",
+      "premium",
+      "vip",
+      "business",
+    ];
+    return validPlans.includes(plan as UserProfile["membership_plan"])
+      ? (plan as UserProfile["membership_plan"])
+      : "free";
+  };
+
+  const convertNLCAccountToUserProfile = (
+    nlcAccount: NLCAccount,
+    userId: string
+  ): UserProfile => {
+    return {
+      id: userId,
+      user_id: nlcAccount.user_id,
+      email: nlcAccount.email,
+      full_name: nlcAccount.full_name,
+      display_name: nlcAccount.display_name,
+      avatar_url: nlcAccount.avatar_url,
+      phone: nlcAccount.phone,
+      bio: nlcAccount.bio,
+      account_role: nlcAccount.account_role,
+      membership_plan: nlcAccount.membership_plan,
+      account_status: nlcAccount.account_status,
+      is_paid: nlcAccount.is_paid,
+      is_verified: nlcAccount.is_verified,
+      auth_provider: nlcAccount.auth_provider,
+      last_login_at: nlcAccount.last_login_at,
+      login_count: nlcAccount.login_count,
+      password_changed_at: nlcAccount.password_changed_at,
+      membership_expires_at: nlcAccount.membership_expires_at,
+      membership_type: nlcAccount.membership_type,
+      approved_by: nlcAccount.approved_by,
+      approved_at: nlcAccount.approved_at,
+      rejected_reason: nlcAccount.rejected_reason,
+      created_at: nlcAccount.created_at,
+      updated_at: nlcAccount.updated_at,
+    };
+  };
+
   const loadUserProfile = useCallback(
-    async (userId: string) => {
-      if (isLoadingProfile || profileLoaded) return; // Prevent multiple calls
-      
+    async (userId: string, userEmail?: string, userFullName?: string) => {
+      if (!userId) return;
+
       setIsLoadingProfile(true);
-      console.log(`Loading user profile for ${userId}`);
-
       try {
-        const profile = await api.user.getUserProfile(userId);
-        console.log("User profile loaded successfully:", profile);
-        setUserProfile(profile);
-        setProfileLoaded(true);
+        // Try to get account from nlc_accounts first by auth user ID
+        const { data: account, error } = await supabase
+          .from("nlc_accounts")
+          .select("*")
+          .eq("user_id", userId)
+          .single();
 
-        // Update last login time
-        if (profile) {
-          await api.user.updateUserProfile(userId, {
-            last_login_at: new Date().toISOString(),
-            login_count: ((profile as any).login_count || 0) + 1,
+        if (error || !account) {
+          // Try fallback to email lookup
+          if (userEmail) {
+            const { data: emailAccount, error: emailError } = await supabase
+              .from("nlc_accounts")
+              .select("*")
+              .eq("email", userEmail)
+              .single();
+
+            if (emailAccount && !emailError) {
+              const profile = convertNLCAccountToUserProfile(
+                emailAccount as NLCAccount,
+                userId
+              );
+              logger.info("User profile loaded via email lookup", {
+                userId,
+                email: userEmail,
+              });
+              setUserProfile(profile);
+              setProfileLoaded(true);
+              return;
+            }
+          }
+
+          // Use fallback profile for new users
+          const fallbackProfile: UserProfile = {
+            id: userId,
+            user_id: userId, // Use same as Supabase auth ID
+            email: userEmail || "",
+            full_name: userFullName || userEmail?.split("@")[0] || "User",
+            account_role: "sinh_vien",
+            membership_plan: "free",
+            account_status: "active",
+            is_paid: false,
+            is_verified: false,
+            auth_provider: "email",
+            login_count: 0,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
+
+          logger.info("Using fallback profile for new/unregistered user", {
+            userId,
+            email: userEmail,
+          });
+          setUserProfile(fallbackProfile);
+          setProfileLoaded(true);
+
+          // Try to create account in database for future use
+          try {
+            await (supabase as any).from('nlc_accounts').insert([{
+              user_id: userId,
+              email: userEmail || "",
+              full_name: userFullName || userEmail?.split("@")[0] || "User",
+              account_role: "sinh_vien",
+              membership_plan: "free",
+              account_status: "active",
+              is_paid: false,
+              is_verified: false,
+              auth_provider: "email",
+              login_count: 0,
+            }]);
+            logger.info("Account created in nlc_accounts", { userId });
+          } catch (createError) {
+            logger.warn("Could not create account record", createError);
+          }
+        } else {
+          // Convert NLCAccount to UserProfile format
+          const profile = convertNLCAccountToUserProfile(
+            account as NLCAccount,
+            userId
+          );
+
+          logger.info("User profile loaded successfully from nlc_accounts", {
+            userId,
+            accountRole: profile.account_role,
+          });
+          setUserProfile(profile);
+          setProfileLoaded(true);
+
+          // Update last login time
+          await nlcApi.accounts.updateLoginInfo(userId).catch((err) => {
+            logger.warn("Could not update login info", err);
           });
         }
       } catch (error: any) {
-        console.warn("Could not load user profile:", error);
+        const appError = ErrorHandler.handleSupabaseError(error, { userId });
+        logger.warn("Could not load user profile from database", {
+          userId,
+          error: appError.message,
+        });
 
-        // Use fallback profile immediately for faster loading
-        const fallbackProfile = {
+        // Use fallback profile
+        const fallbackProfile: UserProfile = {
           id: userId,
-          email: user?.email || "",
-          full_name:
-            user?.user_metadata?.full_name ||
-            user?.email?.split("@")[0] ||
-            "User",
-          avatar_url: null,
-          role: "student" as const,
-          plan: "free" as const,
-          is_active: true,
+          user_id: userId, // Use same as Supabase auth ID
+          email: userEmail || "",
+          full_name: userFullName || userEmail?.split("@")[0] || "User",
+          account_role: "sinh_vien",
+          membership_plan: "free",
+          account_status: "active",
+          is_paid: false,
+          is_verified: false,
+          auth_provider: "email",
+          login_count: 0,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         };
-        console.log("Using fallback profile:", fallbackProfile);
+
+        logger.info("Using fallback profile due to error", {
+          userId,
+          error: appError.code,
+        });
         setUserProfile(fallbackProfile);
         setProfileLoaded(true);
       } finally {
         setIsLoadingProfile(false);
       }
     },
-    [user?.email, user?.user_metadata?.full_name, isLoadingProfile, profileLoaded]
-  );
-
-  useEffect(() => {
-    // Get initial session
-    const getInitialSession = async () => {
-      try {
-        const {
-          data: { session },
-          error,
-        } = await supabase.auth.getSession();
-
-        if (error) {
-          console.error("Error getting session:", error);
-          setError(error.message);
-        } else if (session?.user) {
-          setUser(session.user);
-          setIsAuthenticated(true);
-          await loadUserProfile(session.user.id);
-        }
-      } catch (error: any) {
-        console.error("Error in getInitialSession:", error);
-        setError(error.message || "Có lỗi xảy ra khi khởi tạo phiên đăng nhập");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    getInitialSession();
-
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("🔔 Auth state changed:", event, session?.user?.email);
-
-      if (event === "SIGNED_IN" && session?.user) {
-        console.log("✅ User signed in:", session.user.email);
-        setUser(session.user);
-        setIsAuthenticated(true);
-        setError(null);
-
-        // Load user profile with proper error handling
-        try {
-          await loadUserProfile(session.user.id);
-          console.log("✅ User profile loaded successfully");
-        } catch (error) {
-          console.error("❌ Failed to load user profile:", error);
-          setError("Không thể tải thông tin tài khoản. Vui lòng thử lại.");
-        }
-
-        // Log login activity
-        try {
-          await activityService.logLogin(session.user.id, {
-            event_type: event,
-            login_method: "email",
-            timestamp: new Date().toISOString(),
-          });
-        } catch (error) {
-          console.warn("Failed to log login activity:", error);
-        }
-
-        // Store username for legacy compatibility
-        const name =
-          session.user.user_metadata?.full_name || session.user.email || "";
-        if (name) localStorage.setItem("nlc_username", name);
-      } else if (event === "SIGNED_OUT") {
-        console.log("🚪 User signed out");
-        setUser(null);
-        setUserProfile(null);
-        setIsAuthenticated(false);
-        setProfileLoaded(false);
-        // Log logout activity if user was authenticated
-        if (user?.id) {
-          try {
-            await activityService.logLogout(user.id);
-          } catch (error) {
-            console.warn("Failed to log logout activity:", error);
-          }
-        }
-
-        setUser(null);
-        setUserProfile(null);
-        setIsAuthenticated(false);
-        setError(null);
-        localStorage.removeItem("nlc_username");
-      } else if (event === "TOKEN_REFRESHED" && session?.user) {
-        console.log("🔄 Token refreshed for:", session.user.email);
-        setUser(session.user);
-        setIsAuthenticated(true);
-      }
-
-      setIsLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, [user?.id, loadUserProfile]);
-
-  const signUp = useCallback(
-    async (
-      email: string,
-      password: string,
-      fullName: string,
-      role: string = "student",
-      plan: string = "free"
-    ) => {
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        const { data, error } = await api.auth.signUp(
-          email,
-          password,
-          fullName
-        );
-
-        if (error) {
-          setError(error.message);
-          return { success: false, error: error.message };
-        }
-
-        // Log registration activity
-        if (data?.user?.id) {
-          await activityService.logRegister(data.user.id, email, {
-            role,
-            plan,
-            registration_method: "email",
-          });
-        }
-
-        // Store username for legacy compatibility
-        localStorage.setItem("nlc_username", fullName);
-        return { success: true };
-      } catch (error: any) {
-        const errorMessage = error.message || "Có lỗi xảy ra khi đăng ký";
-        setError(errorMessage);
-        return { success: false, error: errorMessage };
-      } finally {
-        setIsLoading(false);
-      }
-    },
     []
   );
 
-  const signIn = useCallback(async (email: string, password: string) => {
-    try {
-      setIsLoading(true);
-      setError(null);
+  // Initialize auth state on app mount
+  useEffect(() => {
+    const initializeAuth = async () => {
+      if (initialized) return;
+      
+      try {
+        logger.info("Initializing auth state...");
+        setIsLoading(true);
+        
+        // Check current session with timeout
+        const sessionPromise = supabase.auth.getSession();
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Session check timeout')), 5000)
+        );
+        
+        const { data: { session }, error } = await Promise.race([
+          sessionPromise,
+          timeoutPromise
+        ]) as any;
+        
+        if (error) {
+          logger.error("Error getting session", error);
+          setIsLoading(false);
+          setInitialized(true);
+          return;
+        }
 
-      const { error } = await api.auth.signIn(email, password);
-
-      if (error) {
-        setError(error.message);
-        return { success: false, error: error.message };
+        if (session?.user) {
+          logger.info("Found existing session", { userId: session.user.id });
+          setUser(session.user);
+          setIsAuthenticated(true);
+          
+          // Load profile
+          await loadUserProfile(session.user.id, session.user.email, session.user.user_metadata?.full_name);
+        } else {
+          logger.info("No existing session found");
+        }
+      } catch (error: any) {
+        logger.error("Auth initialization failed", error);
+      } finally {
+        setIsLoading(false);
+        setInitialized(true);
       }
+    };
 
-      return { success: true };
-    } catch (error: any) {
-      const errorMessage = error.message || "Có lỗi xảy ra khi đăng nhập";
-      setError(errorMessage);
-      return { success: false, error: errorMessage };
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    initializeAuth();
+  }, [initialized, loadUserProfile]);
+
+  // Listen to auth state changes
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        logger.info("Auth state changed", { event, userId: session?.user?.id });
+        
+        if (event === 'SIGNED_IN' && session?.user) {
+          setUser(session.user);
+          setIsAuthenticated(true);
+          await loadUserProfile(session.user.id, session.user.email, session.user.user_metadata?.full_name);
+        } else if (event === 'SIGNED_OUT') {
+          setUser(null);
+          setUserProfile(null);
+          setIsAuthenticated(false);
+          setProfileLoaded(false);
+        }
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [loadUserProfile]);
 
   const signOut = useCallback(async () => {
     try {
@@ -317,12 +398,123 @@ export function UnifiedAuthProvider({
       setError(null);
       localStorage.removeItem("nlc_username");
     } catch (error: any) {
-      console.error("Error signing out:", error);
-      setError(error.message || "Có lỗi xảy ra khi đăng xuất");
+      const appError = ErrorHandler.handle(error);
+      logger.error("Error signing out", appError);
+      setError(appError.userMessage);
     } finally {
       setIsLoading(false);
     }
   }, []);
+
+  const signUp = useCallback(
+    async (
+      email: string,
+      password: string,
+      fullName: string,
+      role: string = "sinh_vien",
+      plan: string = "free"
+    ) => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name: fullName,
+              account_role: role,
+              membership_plan: plan,
+            },
+          },
+        });
+
+        if (error) {
+          throw error;
+        }
+
+        if (data.user) {
+          setUser(data.user);
+          setIsAuthenticated(true);
+
+          // Create fallback profile for new user
+          const accountRole = validateAccountRole(role);
+          const membershipPlan = validateMembershipPlan(plan);
+
+          const fallbackProfile: UserProfile = {
+            id: data.user.id,
+            user_id: data.user.id,
+            email: email,
+            full_name: fullName,
+            account_role: accountRole,
+            membership_plan: membershipPlan,
+            account_status: "active",
+            is_paid: false,
+            is_verified: false,
+            auth_provider: "email",
+            login_count: 0,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
+
+          setUserProfile(fallbackProfile);
+          setProfileLoaded(true);
+        }
+
+        return { success: true };
+      } catch (error: any) {
+        const appError = ErrorHandler.handleSupabaseError(error, {
+          operation: "signUp",
+          email,
+        });
+        logger.error("Sign up failed", appError, { email });
+        setError(appError.userMessage);
+        return { success: false, error: appError.userMessage };
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
+
+  const signIn = useCallback(
+    async (email: string, password: string) => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) {
+          throw error;
+        }
+
+        if (data.user) {
+          setUser(data.user);
+          setIsAuthenticated(true);
+          await loadUserProfile(data.user.id);
+        }
+
+        logger.info("User signed in successfully", { userId: data.user.id });
+        return { success: true };
+      } catch (error: any) {
+        const appError = ErrorHandler.handleSupabaseError(error, {
+          operation: "signIn",
+          email,
+        });
+        logger.error("Sign in failed", appError, { email });
+        setError(appError.userMessage);
+        return { success: false, error: appError.userMessage };
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [loadUserProfile]
+  );
 
   const resetPassword = useCallback(async (email: string) => {
     try {
@@ -330,11 +522,13 @@ export function UnifiedAuthProvider({
       setError(null);
 
       await api.auth.resetPassword(email);
+      logger.info("Password reset email sent", { email });
       return { success: true };
     } catch (error: any) {
-      const errorMessage = error.message || "Có lỗi xảy ra khi reset mật khẩu";
-      setError(errorMessage);
-      return { success: false, error: errorMessage };
+      const appError = ErrorHandler.handle(error);
+      logger.error("Password reset failed", appError, { email });
+      setError(appError.userMessage);
+      return { success: false, error: appError.userMessage };
     } finally {
       setIsLoading(false);
     }
@@ -349,54 +543,101 @@ export function UnifiedAuthProvider({
         await api.auth.updatePassword(newPassword);
 
         // Log password change activity
-        if (user?.id) {
-          await activityService.logPasswordChange(user.id);
+        if (user?.id && userProfile) {
+          await nlcApi.activityLog.logActivity(
+            userProfile.user_id,
+            userProfile.email,
+            userProfile.account_role,
+            "password_change",
+            "User changed password",
+            {
+              resourceType: "user",
+              resourceId: userProfile.user_id,
+              metadata: {
+                timestamp: new Date().toISOString(),
+              },
+            }
+          );
         }
 
+        logger.info("Password updated successfully", { userId: user.id });
         return { success: true };
       } catch (error: any) {
-        const errorMessage =
-          error.message || "Có lỗi xảy ra khi cập nhật mật khẩu";
-        setError(errorMessage);
-        return { success: false, error: errorMessage };
+        const appError = ErrorHandler.handle(error);
+        logger.error("Password update failed", appError, { userId: user?.id });
+        setError(appError.userMessage);
+        return { success: false, error: appError.userMessage };
       } finally {
         setIsLoading(false);
       }
     },
-    [user?.id]
+    [user?.id, userProfile]
   );
 
   const updateProfile = useCallback(
     async (updates: Partial<UserProfile>) => {
       try {
-        if (!user) {
+        if (!user || !userProfile) {
           throw new Error("User not authenticated");
         }
 
         setIsLoading(true);
         setError(null);
 
-        const updatedProfile = await api.user.updateUserProfile(
-          user.id,
+        // Update in nlc_accounts table
+        const updateResponse = await nlcApi.accounts.updateAccount(
+          userProfile.user_id,
           updates
         );
-        setUserProfile(updatedProfile);
 
-        // Log profile update activity
-        const updatedFields = Object.keys(updates);
-        await activityService.logProfileUpdate(user.id, updatedFields);
+        if (updateResponse.success && updateResponse.data) {
+          // Convert back to UserProfile format
+          const updatedProfile: UserProfile = {
+            id: user.id,
+            ...updateResponse.data,
+          };
+          setUserProfile(updatedProfile);
 
-        return { success: true };
+          // Log profile update activity
+          const updatedFields = Object.keys(updates);
+          await nlcApi.activityLog.logActivity(
+            userProfile.user_id,
+            userProfile.email,
+            userProfile.account_role,
+            "profile_update",
+            `Profile updated: ${updatedFields.join(", ")}`,
+            {
+              resourceType: "user",
+              resourceId: userProfile.user_id,
+              newValues: updates,
+              metadata: { updated_fields: updatedFields },
+            }
+          );
+
+          logger.info("Profile updated successfully", {
+            userId: user.id,
+            updatedFields: Object.keys(updates),
+          });
+          return { success: true };
+        } else {
+          throw new AppError(
+            "DATABASE_ERROR",
+            updateResponse.error || "Failed to update profile"
+          );
+        }
       } catch (error: any) {
-        const errorMessage =
-          error.message || "Có lỗi xảy ra khi cập nhật thông tin";
-        setError(errorMessage);
-        return { success: false, error: errorMessage };
+        const appError = ErrorHandler.handle(error);
+        logger.error("Profile update failed", appError, {
+          userId: user?.id,
+          updatedFields: Object.keys(updates),
+        });
+        setError(appError.userMessage);
+        return { success: false, error: appError.userMessage };
       } finally {
         setIsLoading(false);
       }
     },
-    [user]
+    [user, userProfile]
   );
 
   const uploadAvatar = useCallback(
@@ -411,11 +652,13 @@ export function UnifiedAuthProvider({
 
         const avatarUrl = await api.user.uploadAvatar(file, user.id);
 
+        logger.info("Avatar uploaded successfully", { userId: user.id });
         return { success: true, url: avatarUrl };
       } catch (error: any) {
-        const errorMessage = error.message || "Có lỗi xảy ra khi upload avatar";
-        setError(errorMessage);
-        return { success: false, error: errorMessage };
+        const appError = ErrorHandler.handle(error);
+        logger.error("Avatar upload failed", appError, { userId: user?.id });
+        setError(appError.userMessage);
+        return { success: false, error: appError.userMessage };
       } finally {
         setIsLoading(false);
       }
@@ -428,7 +671,8 @@ export function UnifiedAuthProvider({
       const { data, error } = await supabase.auth.refreshSession();
 
       if (error) {
-        console.error("Session refresh error:", error);
+        const appError = ErrorHandler.handleSupabaseError(error);
+        logger.error("Session refresh error", appError);
         // If refresh fails, sign out user
         await signOut();
         return false;
@@ -437,13 +681,16 @@ export function UnifiedAuthProvider({
       if (data?.session?.user) {
         setUser(data.session.user);
         setIsAuthenticated(true);
-        console.log("Session refreshed successfully");
+        logger.info("Session refreshed successfully", {
+          userId: data.session.user.id,
+        });
         return true;
       }
 
       return false;
     } catch (error) {
-      console.error("Session refresh error:", error);
+      const appError = ErrorHandler.handle(error);
+      logger.error("Session refresh error", appError);
       await signOut();
       return false;
     }
@@ -456,7 +703,7 @@ export function UnifiedAuthProvider({
     if (isAuthenticated && user) {
       // Refresh session every 50 minutes (tokens expire in 60 minutes)
       refreshInterval = setInterval(async () => {
-        console.log("Auto-refreshing session...");
+        logger.debug("Auto-refreshing session...", { userId: user.id });
         await refreshSession();
       }, 50 * 60 * 1000);
     }

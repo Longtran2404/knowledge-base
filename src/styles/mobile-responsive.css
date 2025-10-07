@@ -1,0 +1,120 @@
+/* Mobile Responsive Utilities for Nam Long Center */
+
+/* Mobile-first breakpoints */
+@media (max-width: 640px) {
+  /* Typography scaling */
+  .text-responsive-xl {
+    @apply text-2xl;
+  }
+
+  .text-responsive-lg {
+    @apply text-xl;
+  }
+
+  .text-responsive-base {
+    @apply text-base;
+  }
+
+  /* Padding/Margin adjustments */
+  .px-responsive {
+    @apply px-4;
+  }
+
+  .py-responsive {
+    @apply py-4;
+  }
+
+  .p-responsive {
+    @apply p-4;
+  }
+
+  /* Grid adjustments */
+  .grid-responsive {
+    @apply grid-cols-1 gap-4;
+  }
+
+  /* Card adjustments */
+  .card-responsive {
+    @apply rounded-lg p-4;
+  }
+
+  /* Dialog/Modal adjustments */
+  .dialog-responsive {
+    @apply max-w-full mx-4;
+  }
+
+  /* Button adjustments */
+  .btn-responsive {
+    @apply text-sm px-3 py-2;
+  }
+
+  /* Hide on mobile */
+  .hide-mobile {
+    @apply hidden;
+  }
+
+  /* Show only on mobile */
+  .show-mobile {
+    @apply block;
+  }
+
+  /* Stack vertically on mobile */
+  .stack-mobile {
+    @apply flex-col;
+  }
+
+  /* Full width on mobile */
+  .full-mobile {
+    @apply w-full;
+  }
+}
+
+/* Tablet breakpoint */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .grid-responsive {
+    @apply grid-cols-2 gap-6;
+  }
+
+  .hide-tablet {
+    @apply hidden;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1025px) {
+  .grid-responsive {
+    @apply grid-cols-3 gap-8;
+  }
+
+  .show-mobile {
+    @apply hidden;
+  }
+}
+
+/* Touch-friendly styles */
+@media (hover: none) and (pointer: coarse) {
+  .btn-touch {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
+  .link-touch {
+    @apply py-2 px-4;
+  }
+
+  /* Larger tap targets */
+  button,
+  a {
+    @apply min-h-[40px];
+  }
+}
+
+/* Prevent text zoom on mobile */
+@media (max-width: 640px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}

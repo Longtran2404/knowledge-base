@@ -50,7 +50,7 @@ export function CartItem({
   };
 
   const getItemIcon = () => {
-    return item.item_type === 'course' ? (
+    return item.product_type === 'course' ? (
       <BookOpen size={16} className="text-blue-600" />
     ) : (
       <Package size={16} className="text-green-600" />
@@ -79,10 +79,10 @@ export function CartItem({
             </h4>
             <div className="flex items-center space-x-2 mt-1">
               <Badge variant="outline">
-                {item.item_type === 'course' ? 'Khóa học' : 'Sản phẩm'}
+                {item.product_type === 'course' ? 'Khóa học' : 'Sản phẩm'}
               </Badge>
               <span className="text-sm font-semibold text-blue-600">
-                {formatPrice(item.price)}
+                {formatPrice(item.product_price)}
               </span>
             </div>
           </div>
@@ -156,19 +156,19 @@ export function CartItem({
                 
                 <div className="flex items-center space-x-2 mt-1">
                   <Badge variant="outline">
-                    {item.item_type === 'course' ? 'Khóa học' : 'Sản phẩm'}
+                    {item.product_type === 'course' ? 'Khóa học' : 'Sản phẩm'}
                   </Badge>
                   <span className="text-sm text-gray-500">
-                    {item.item_type === 'course' ? 'course' : 'product'}
+                    {item.product_type === 'course' ? 'course' : 'product'}
                   </span>
                 </div>
                 
                 <div className="mt-2">
                   <span className="text-xl font-bold text-blue-600">
-                    {formatPrice(item.price)}
+                    {formatPrice(item.product_price)}
                   </span>
                   <span className="text-sm text-gray-500 ml-2">
-                    mỗi {item.item_type === 'course' ? 'khóa học' : 'sản phẩm'}
+                    mỗi {item.product_type === 'course' ? 'khóa học' : 'sản phẩm'}
                   </span>
                 </div>
               </div>
@@ -204,7 +204,7 @@ export function CartItem({
 
                 <div className="text-right">
                   <div className="text-lg font-bold text-gray-900">
-                    {formatPrice(item.quantity * item.price)}
+                    {formatPrice(item.quantity * item.product_price)}
                   </div>
                   <Button
                     size="sm"

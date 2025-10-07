@@ -3,9 +3,9 @@
  * Modern glassmorphism navigation with liquid effects
  */
 
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Home,
   BookOpen,
@@ -20,10 +20,10 @@ import {
   Bell,
   Settings,
   Upload,
-} from 'lucide-react';
-import { useAuth } from '../../contexts/UnifiedAuthContext';
-import { useCart } from '../../contexts/CartContext';
-import { ComponentWithIcon } from '../../types/common';
+} from "lucide-react";
+import { useAuth } from "../../contexts/UnifiedAuthContext";
+import { useCart } from "../../contexts/CartContext";
+import { ComponentWithIcon } from "../../types/common";
 
 interface NavItem extends ComponentWithIcon {
   label: string;
@@ -45,23 +45,28 @@ export default function LiquidGlassNavigation() {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const navigationItems: NavItem[] = [
-    { label: 'Trang chủ', href: '/', icon: Home },
-    { label: 'Khóa học', href: '/khoa-hoc', icon: BookOpen },
-    { label: 'Sản phẩm', href: '/san-pham', icon: Package },
-    { label: 'Tài nguyên', href: '/tai-nguyen', icon: FileText },
-    { label: 'Upload', href: '/tai-len', icon: Upload },
-    { label: 'Hợp tác', href: '/hop-tac', icon: Users },
-    { label: 'Marketplace', href: '/cho-mua-ban', icon: ShoppingBag, badge: cartCount },
+    { label: "Trang chủ", href: "/", icon: Home },
+    { label: "Khóa học", href: "/khoa-hoc", icon: BookOpen },
+    { label: "Sản phẩm", href: "/san-pham", icon: Package },
+    { label: "Tài nguyên", href: "/tai-nguyen", icon: FileText },
+    { label: "Upload", href: "/tai-len", icon: Upload },
+    { label: "Hợp tác", href: "/hop-tac", icon: Users },
+    {
+      label: "Marketplace",
+      href: "/cho-mua-ban",
+      icon: ShoppingBag,
+      badge: cartCount,
+    },
   ];
 
   const isActive = (href: string) => {
-    if (href === '/' && location.pathname === '/') return true;
-    if (href !== '/' && location.pathname.startsWith(href)) return true;
+    if (href === "/" && location.pathname === "/") return true;
+    if (href !== "/" && location.pathname.startsWith(href)) return true;
     return false;
   };
 
@@ -75,21 +80,25 @@ export default function LiquidGlassNavigation() {
         className="fixed top-6 left-6 z-50 p-4 rounded-2xl transition-all duration-500"
         style={{
           background: isCollapsed
-            ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(99, 102, 241, 0.8) 100%)'
-            : 'linear-gradient(135deg, rgba(239, 68, 68, 0.9) 0%, rgba(220, 38, 38, 0.8) 100%)',
-          backdropFilter: 'blur(24px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(24px) saturate(180%)',
-          border: '1px solid rgba(255, 255, 255, 0.3)',
+            ? "linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(99, 102, 241, 0.8) 100%)"
+            : "linear-gradient(135deg, rgba(239, 68, 68, 0.9) 0%, rgba(220, 38, 38, 0.8) 100%)",
+          backdropFilter: "blur(24px) saturate(180%)",
+          WebkitBackdropFilter: "blur(24px) saturate(180%)",
+          border: "1px solid rgba(255, 255, 255, 0.3)",
           boxShadow: isCollapsed
-            ? '0 20px 25px -5px rgba(59, 130, 246, 0.2), 0 10px 10px -5px rgba(59, 130, 246, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1) inset'
-            : '0 20px 25px -5px rgba(239, 68, 68, 0.2), 0 10px 10px -5px rgba(239, 68, 68, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1) inset',
+            ? "0 20px 25px -5px rgba(59, 130, 246, 0.2), 0 10px 10px -5px rgba(59, 130, 246, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1) inset"
+            : "0 20px 25px -5px rgba(239, 68, 68, 0.2), 0 10px 10px -5px rgba(239, 68, 68, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1) inset",
         }}
       >
         <motion.div
           animate={{ rotate: isCollapsed ? 0 : 180 }}
           transition={{ type: "spring", stiffness: 200, damping: 20 }}
         >
-          {isCollapsed ? <Menu className="w-6 h-6 text-white" /> : <X className="w-6 h-6 text-white" />}
+          {isCollapsed ? (
+            <Menu className="w-6 h-6 text-white" />
+          ) : (
+            <X className="w-6 h-6 text-white" />
+          )}
         </motion.div>
 
         {/* Ripple effect */}
@@ -116,18 +125,20 @@ export default function LiquidGlassNavigation() {
 
             {/* Main Sidebar */}
             <motion.div
-              initial={{ x: '-100%', opacity: 0 }}
+              initial={{ x: "-100%", opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              exit={{ x: '-100%', opacity: 0 }}
+              exit={{ x: "-100%", opacity: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
               className="fixed top-0 left-0 h-full w-80 lg:w-96 z-50 shadow-2xl overflow-hidden"
               onClick={(e) => e.stopPropagation()}
               style={{
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.90) 50%, rgba(240,245,251,0.95) 100%)',
-                backdropFilter: 'blur(32px) saturate(180%)',
-                WebkitBackdropFilter: 'blur(32px) saturate(180%)',
-                borderRight: '1px solid rgba(229, 231, 235, 0.3)',
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1) inset',
+                background:
+                  "linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.90) 50%, rgba(240,245,251,0.95) 100%)",
+                backdropFilter: "blur(32px) saturate(180%)",
+                WebkitBackdropFilter: "blur(32px) saturate(180%)",
+                borderRight: "1px solid rgba(229, 231, 235, 0.3)",
+                boxShadow:
+                  "0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1) inset",
               }}
             >
               <div className="flex flex-col h-full overflow-hidden">
@@ -141,8 +152,9 @@ export default function LiquidGlassNavigation() {
                       <div
                         className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-xl"
                         style={{
-                          background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(99, 102, 241, 0.8) 50%, rgba(168, 85, 247, 0.9) 100%)',
-                          boxShadow: '0 0 0 1px rgba(255, 255, 255, 0.3) inset',
+                          background:
+                            "linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(99, 102, 241, 0.8) 50%, rgba(168, 85, 247, 0.9) 100%)",
+                          boxShadow: "0 0 0 1px rgba(255, 255, 255, 0.3) inset",
                         }}
                       >
                         <span className="text-white font-bold text-xl">NL</span>
@@ -151,8 +163,9 @@ export default function LiquidGlassNavigation() {
                       <motion.div
                         className="absolute inset-0 rounded-2xl"
                         style={{
-                          background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(99, 102, 241, 0.2) 50%, rgba(168, 85, 247, 0.3) 100%)',
-                          filter: 'blur(8px)',
+                          background:
+                            "linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(99, 102, 241, 0.2) 50%, rgba(168, 85, 247, 0.3) 100%)",
+                          filter: "blur(8px)",
                         }}
                         initial={{ scale: 1, opacity: 0 }}
                         whileHover={{ scale: 1.3, opacity: 1 }}
@@ -160,8 +173,12 @@ export default function LiquidGlassNavigation() {
                       />
                     </motion.div>
                     <div>
-                      <h1 className="text-xl font-bold text-gray-900">Nam Long Center</h1>
-                      <p className="text-sm text-gray-600">Xây dựng tương lai</p>
+                      <h1 className="text-xl font-bold text-gray-900">
+                        Nam Long Center
+                      </h1>
+                      <p className="text-sm text-gray-600">
+                        Xây dựng tương lai
+                      </p>
                     </div>
                   </div>
 
@@ -172,23 +189,30 @@ export default function LiquidGlassNavigation() {
                       placeholder="Tìm kiếm..."
                       className="w-full h-11 pl-11 pr-4 rounded-2xl text-gray-800 placeholder-gray-500 text-sm transition-all duration-300 border-0"
                       style={{
-                        background: 'linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(248,250,252,0.6) 100%)',
-                        backdropFilter: 'blur(16px)',
-                        boxShadow: '0 0 0 1px rgba(255, 255, 255, 0.3) inset, 0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                        background:
+                          "linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(248,250,252,0.6) 100%)",
+                        backdropFilter: "blur(16px)",
+                        boxShadow:
+                          "0 0 0 1px rgba(255, 255, 255, 0.3) inset, 0 4px 6px -1px rgba(0, 0, 0, 0.1)",
                       }}
                       onFocus={(e) => {
-                        e.target.style.background = 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.8) 100%)';
-                        e.target.style.boxShadow = '0 0 0 2px rgba(59, 130, 246, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.3) inset';
+                        e.target.style.background =
+                          "linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.8) 100%)";
+                        e.target.style.boxShadow =
+                          "0 0 0 2px rgba(59, 130, 246, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.3) inset";
                       }}
                       onBlur={(e) => {
-                        e.target.style.background = 'linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(248,250,252,0.6) 100%)';
-                        e.target.style.boxShadow = '0 0 0 1px rgba(255, 255, 255, 0.3) inset, 0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+                        e.target.style.background =
+                          "linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(248,250,252,0.6) 100%)";
+                        e.target.style.boxShadow =
+                          "0 0 0 1px rgba(255, 255, 255, 0.3) inset, 0 4px 6px -1px rgba(0, 0, 0, 0.1)";
                       }}
                     />
                     <div
                       className="absolute left-3 top-1/2 transform -translate-y-1/2 p-1 rounded-lg"
                       style={{
-                        background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(99, 102, 241, 0.1) 100%)',
+                        background:
+                          "linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(99, 102, 241, 0.1) 100%)",
                       }}
                     >
                       <Search className="text-blue-600 w-4 h-4" />
@@ -210,22 +234,23 @@ export default function LiquidGlassNavigation() {
                         onClick={() => setIsCollapsed(true)}
                         className={`group flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 relative overflow-hidden ${
                           isActive(item.href)
-                            ? 'text-blue-700'
-                            : 'text-gray-700 hover:text-gray-900'
+                            ? "text-blue-700"
+                            : "text-gray-700 hover:text-gray-900"
                         }`}
                         style={{
                           background: isActive(item.href)
-                            ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(99, 102, 241, 0.08) 100%)'
-                            : 'transparent',
+                            ? "linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(99, 102, 241, 0.08) 100%)"
+                            : "transparent",
                         }}
                         onMouseEnter={(e) => {
                           if (!isActive(item.href)) {
-                            e.currentTarget.style.background = 'linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(248,250,252,0.4) 100%)';
+                            e.currentTarget.style.background =
+                              "linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(248,250,252,0.4) 100%)";
                           }
                         }}
                         onMouseLeave={(e) => {
                           if (!isActive(item.href)) {
-                            e.currentTarget.style.background = 'transparent';
+                            e.currentTarget.style.background = "transparent";
                           }
                         }}
                       >
@@ -234,26 +259,34 @@ export default function LiquidGlassNavigation() {
                           <motion.div
                             className="absolute inset-0 rounded-2xl"
                             style={{
-                              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, transparent 50%, rgba(255, 255, 255, 0.1) 100%)',
-                              boxShadow: '0 0 0 1px rgba(59, 130, 246, 0.2) inset',
+                              background:
+                                "linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, transparent 50%, rgba(255, 255, 255, 0.1) 100%)",
+                              boxShadow:
+                                "0 0 0 1px rgba(59, 130, 246, 0.2) inset",
                             }}
                             layoutId="activeGlass"
-                            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                            transition={{
+                              type: "spring",
+                              stiffness: 400,
+                              damping: 30,
+                            }}
                           />
                         )}
 
                         <item.icon className="w-6 h-6 relative z-10" />
-                        <span className="font-medium text-base relative z-10">{item.label}</span>
+                        <span className="font-medium text-base relative z-10">
+                          {item.label}
+                        </span>
                         {item.badge && item.badge > 0 && (
                           <motion.span
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             className="ml-auto h-6 w-6 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold relative z-10"
                             style={{
-                              boxShadow: '0 0 0 2px rgba(255, 255, 255, 0.8)',
+                              boxShadow: "0 0 0 2px rgba(255, 255, 255, 0.8)",
                             }}
                           >
-                            {item.badge > 99 ? '99+' : item.badge}
+                            {item.badge > 99 ? "99+" : item.badge}
                           </motion.span>
                         )}
                       </Link>
@@ -265,9 +298,10 @@ export default function LiquidGlassNavigation() {
                 <div
                   className="p-6 pt-4"
                   style={{
-                    background: 'linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.8) 20%, rgba(248,250,252,0.9) 100%)',
-                    backdropFilter: 'blur(16px)',
-                    borderTop: '1px solid rgba(255, 255, 255, 0.3)',
+                    background:
+                      "linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.8) 20%, rgba(248,250,252,0.9) 100%)",
+                    backdropFilter: "blur(16px)",
+                    borderTop: "1px solid rgba(255, 255, 255, 0.3)",
                   }}
                 >
                   {user ? (
@@ -278,15 +312,18 @@ export default function LiquidGlassNavigation() {
                         onClick={() => setIsCollapsed(true)}
                         className="flex items-center gap-3 p-3 rounded-2xl transition-all duration-300 relative overflow-hidden"
                         style={{
-                          background: 'linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(248,250,252,0.4) 100%)',
-                          backdropFilter: 'blur(12px)',
-                          boxShadow: '0 0 0 1px rgba(255, 255, 255, 0.3) inset',
+                          background:
+                            "linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(248,250,252,0.4) 100%)",
+                          backdropFilter: "blur(12px)",
+                          boxShadow: "0 0 0 1px rgba(255, 255, 255, 0.3) inset",
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(248,250,252,0.6) 100%)';
+                          e.currentTarget.style.background =
+                            "linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(248,250,252,0.6) 100%)";
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(248,250,252,0.4) 100%)';
+                          e.currentTarget.style.background =
+                            "linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(248,250,252,0.4) 100%)";
                         }}
                       >
                         {user.avatar_url ? (
@@ -299,18 +336,25 @@ export default function LiquidGlassNavigation() {
                           <div
                             className="w-10 h-10 rounded-xl flex items-center justify-center shadow-md"
                             style={{
-                              background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(168, 85, 247, 0.9) 100%)',
+                              background:
+                                "linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(168, 85, 247, 0.9) 100%)",
                             }}
                           >
                             <User className="w-5 h-5 text-white" />
                           </div>
                         )}
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium text-gray-900 text-sm truncate">{user.full_name || user.email}</p>
+                          <p className="font-medium text-gray-900 text-sm truncate">
+                            {user.full_name || user.email}
+                          </p>
                           <p className="text-xs text-gray-500">
-                            {user.role === "student" ? "Học viên" :
-                             user.role === "instructor" ? "Giảng viên" :
-                             user.role === "admin" ? "Admin" : "User"}
+                            {user.account_role === "sinh_vien"
+                              ? "Học viên"
+                              : user.account_role === "giang_vien"
+                              ? "Giảng viên"
+                              : user.account_role === "admin"
+                              ? "Admin"
+                              : "User"}
                           </p>
                         </div>
                       </Link>
@@ -322,13 +366,17 @@ export default function LiquidGlassNavigation() {
                           whileTap={{ scale: 0.98 }}
                           className="flex-1 flex items-center justify-center gap-2 p-3 rounded-2xl transition-all duration-300"
                           style={{
-                            background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(99, 102, 241, 0.08) 100%)',
-                            backdropFilter: 'blur(12px)',
-                            boxShadow: '0 0 0 1px rgba(59, 130, 246, 0.2) inset',
+                            background:
+                              "linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(99, 102, 241, 0.08) 100%)",
+                            backdropFilter: "blur(12px)",
+                            boxShadow:
+                              "0 0 0 1px rgba(59, 130, 246, 0.2) inset",
                           }}
                         >
                           <Bell className="w-4 h-4 text-blue-600" />
-                          <span className="text-xs font-medium text-blue-700">Thông báo</span>
+                          <span className="text-xs font-medium text-blue-700">
+                            Thông báo
+                          </span>
                         </motion.button>
                         <motion.button
                           whileHover={{ scale: 1.02 }}
@@ -339,13 +387,16 @@ export default function LiquidGlassNavigation() {
                           }}
                           className="flex-1 flex items-center justify-center gap-2 p-3 rounded-2xl transition-all duration-300"
                           style={{
-                            background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.08) 100%)',
-                            backdropFilter: 'blur(12px)',
-                            boxShadow: '0 0 0 1px rgba(239, 68, 68, 0.2) inset',
+                            background:
+                              "linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.08) 100%)",
+                            backdropFilter: "blur(12px)",
+                            boxShadow: "0 0 0 1px rgba(239, 68, 68, 0.2) inset",
                           }}
                         >
                           <Settings className="w-4 h-4 text-red-600" />
-                          <span className="text-xs font-medium text-red-700">Đăng xuất</span>
+                          <span className="text-xs font-medium text-red-700">
+                            Đăng xuất
+                          </span>
                         </motion.button>
                       </div>
                     </div>
@@ -356,10 +407,11 @@ export default function LiquidGlassNavigation() {
                         onClick={() => setIsCollapsed(true)}
                         className="block w-full p-3 text-center rounded-2xl font-medium transition-all duration-300 text-sm"
                         style={{
-                          background: 'linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(248,250,252,0.4) 100%)',
-                          backdropFilter: 'blur(12px)',
-                          boxShadow: '0 0 0 1px rgba(59, 130, 246, 0.3) inset',
-                          color: 'rgb(59, 130, 246)',
+                          background:
+                            "linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(248,250,252,0.4) 100%)",
+                          backdropFilter: "blur(12px)",
+                          boxShadow: "0 0 0 1px rgba(59, 130, 246, 0.3) inset",
+                          color: "rgb(59, 130, 246)",
                         }}
                       >
                         Đăng nhập
@@ -369,9 +421,11 @@ export default function LiquidGlassNavigation() {
                         onClick={() => setIsCollapsed(true)}
                         className="block w-full p-3 text-center rounded-2xl font-medium transition-all duration-300 text-white text-sm shadow-lg"
                         style={{
-                          background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(99, 102, 241, 0.8) 100%)',
-                          backdropFilter: 'blur(12px)',
-                          boxShadow: '0 0 0 1px rgba(255, 255, 255, 0.3) inset, 0 8px 25px -5px rgba(59, 130, 246, 0.3)',
+                          background:
+                            "linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(99, 102, 241, 0.8) 100%)",
+                          backdropFilter: "blur(12px)",
+                          boxShadow:
+                            "0 0 0 1px rgba(255, 255, 255, 0.3) inset, 0 8px 25px -5px rgba(59, 130, 246, 0.3)",
                         }}
                       >
                         Đăng ký ngay
@@ -384,7 +438,6 @@ export default function LiquidGlassNavigation() {
           </>
         )}
       </AnimatePresence>
-
 
       {/* Mobile Slide-out Menu with Liquid Glass */}
       <AnimatePresence>
@@ -401,16 +454,17 @@ export default function LiquidGlassNavigation() {
 
             {/* Mobile Menu */}
             <motion.div
-              initial={{ x: '100%', opacity: 0 }}
+              initial={{ x: "100%", opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              exit={{ x: '100%', opacity: 0 }}
+              exit={{ x: "100%", opacity: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
               className="fixed top-0 right-0 h-full w-80 z-50 lg:hidden shadow-2xl"
               onClick={(e) => e.stopPropagation()}
               style={{
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.95) 100%)',
-                backdropFilter: 'blur(24px)',
-                borderLeft: '1px solid rgba(229, 231, 235, 0.4)',
+                background:
+                  "linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.95) 100%)",
+                backdropFilter: "blur(24px)",
+                borderLeft: "1px solid rgba(229, 231, 235, 0.4)",
               }}
             >
               <div className="p-6 space-y-6">
@@ -434,7 +488,8 @@ export default function LiquidGlassNavigation() {
                     placeholder="Tìm kiếm..."
                     className="w-full h-12 pl-14 pr-4 rounded-xl bg-gray-50/80 backdrop-blur-lg border border-gray-200/60 focus:border-blue-300/60 focus:outline-none focus:ring-4 focus:ring-blue-100/50 transition-all duration-300 text-gray-800 placeholder-gray-500 font-medium shadow-sm"
                     style={{
-                      background: 'linear-gradient(135deg, rgba(249, 250, 251, 0.9) 0%, rgba(243, 244, 246, 0.8) 100%)',
+                      background:
+                        "linear-gradient(135deg, rgba(249, 250, 251, 0.9) 0%, rgba(243, 244, 246, 0.8) 100%)",
                     }}
                   />
                   <motion.div
@@ -460,15 +515,15 @@ export default function LiquidGlassNavigation() {
                         onClick={() => setIsOpen(false)}
                         className={`flex items-center gap-3 p-4 rounded-xl transition-all duration-300 ${
                           isActive(item.href)
-                            ? 'bg-gradient-to-r from-blue-50/80 to-indigo-50/60 text-blue-700 border border-blue-200/40 shadow-sm'
-                            : 'hover:bg-gray-50/60 text-gray-700 hover:text-gray-900'
+                            ? "bg-gradient-to-r from-blue-50/80 to-indigo-50/60 text-blue-700 border border-blue-200/40 shadow-sm"
+                            : "hover:bg-gray-50/60 text-gray-700 hover:text-gray-900"
                         }`}
                       >
                         <item.icon className="w-5 h-5" />
                         <span className="font-medium">{item.label}</span>
                         {item.badge && item.badge > 0 && (
                           <span className="ml-auto h-6 w-6 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
-                            {item.badge > 99 ? '99+' : item.badge}
+                            {item.badge > 99 ? "99+" : item.badge}
                           </span>
                         )}
                       </Link>

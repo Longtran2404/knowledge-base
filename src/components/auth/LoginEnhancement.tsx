@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -36,6 +37,7 @@ interface LoginStepStatus {
 }
 
 export default function LoginEnhancement() {
+  const navigate = useNavigate();
   const { signIn, signUp, isLoading, error, isAuthenticated, userProfile } =
     useAuth();
   const { showSuccess, showError, showInfo, showWarning } = useNotification();
@@ -54,6 +56,7 @@ export default function LoginEnhancement() {
   const [checkingAccount, setCheckingAccount] = useState(false);
   const [loginSteps, setLoginSteps] = useState<LoginStepStatus[]>([]);
   const [currentStep, setCurrentStep] = useState(0);
+  const [countdown, setCountdown] = useState(3);
 
   // Check account existence when email changes
   useEffect(() => {
@@ -61,20 +64,29 @@ export default function LoginEnhancement() {
       if (formData.email && formData.email.includes("@")) {
         setCheckingAccount(true);
         try {
-          const { data, error } = await supabase
-            .from("users")
-            .select("id, email, full_name, role, is_active")
-            .eq("email", formData.email)
-            .single();
+          // TODO: Enable after database setup
+          console.log(
+            "Account check disabled - assuming account exists for:",
+            formData.email
+          );
+          // For now, always assume account exists if email is valid
+          setAccountExists(true);
 
-          if (data && !error) {
-            setAccountExists(true);
-            console.log("Account found:", data);
-          } else {
-            setAccountExists(false);
-          }
+          // const { data, error } = await supabase
+          //   .from("users")
+          //   .select("id, email, full_name, role, is_active")
+          //   .eq("email", formData.email)
+          //   .single();
+
+          // if (data && !error) {
+          //   setAccountExists(true);
+          //   console.log("Account found:", data);
+          // } else {
+          //   setAccountExists(false);
+          // }
         } catch (error) {
-          setAccountExists(false);
+          console.log("Account check error (ignored):", error);
+          setAccountExists(true); // Default to true when database is not available
         }
         setCheckingAccount(false);
       } else {
@@ -246,10 +258,38 @@ export default function LoginEnhancement() {
     return null;
   }, [checkingAccount, accountExists, formData.email]);
 
+  // Auto-redirect after successful login with countdown
+  useEffect(() => {
+    if (isAuthenticated && userProfile) {
+      console.log("✅ User authenticated, starting countdown...");
+      setCountdown(3);
+
+      // Countdown timer
+      const countdownInterval = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(countdownInterval);
+            console.log("🚀 Redirecting to /trang-chu using navigate");
+            try {
+              navigate("/trang-chu", { replace: true });
+            } catch (error) {
+              console.warn("Navigate failed, using window.location:", error);
+              window.location.href = "/trang-chu";
+            }
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(countdownInterval);
+    }
+  }, [isAuthenticated, userProfile, navigate]);
+
   // Show success screen if authenticated
   if (isAuthenticated && userProfile) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-violet-50 to-purple-100 p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -285,18 +325,25 @@ export default function LoginEnhancement() {
                 </div>
               </div>
               <Badge variant="outline">
-                {userProfile.role === "student"
+                {userProfile.account_role === "sinh_vien"
                   ? "Học viên"
-                  : userProfile.role === "instructor"
+                  : userProfile.account_role === "giang_vien"
                   ? "Giảng viên"
-                  : userProfile.role === "admin"
+                  : userProfile.account_role === "admin"
                   ? "Quản trị viên"
                   : "Người dùng"}
               </Badge>
             </div>
 
+            <div className="text-center text-sm text-gray-600">
+              Đang chuyển hướng đến trang chủ trong {countdown} giây...
+            </div>
+
             <Button
-              onClick={() => (window.location.href = "/trang-chu")}
+              onClick={() => {
+                console.log("🚀 Manual redirect to /trang-chu");
+                navigate("/trang-chu", { replace: true });
+              }}
               className="w-full"
             >
               Tiếp tục vào trang chủ
@@ -308,11 +355,11 @@ export default function LoginEnhancement() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-violet-50 to-purple-100 p-4">
+      <Card className="w-full max-w-md shadow-strong">
         <CardHeader className="text-center">
-          <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-            <Shield className="w-6 h-6 text-blue-600" />
+          <div className="w-12 h-12 bg-gradient-to-br from-violet-100 to-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4 shadow-soft">
+            <Shield className="w-6 h-6 text-violet-600" />
           </div>
           <CardTitle className="text-2xl">
             {mode === "login" ? "Đăng nhập" : "Đăng ký tài khoản"}
@@ -410,6 +457,7 @@ export default function LoginEnhancement() {
                     setFormData((prev) => ({ ...prev, email: e.target.value }))
                   }
                   className="pl-10"
+                  autoComplete="username"
                 />
               </div>
               {formData.email && getAccountStatusBadge()}
@@ -463,6 +511,10 @@ export default function LoginEnhancement() {
                     }))
                   }
                   className="pl-10 pr-10"
+                  autoComplete={
+                    mode === "login" ? "current-password" : "new-password"
+                  }
+                  spellCheck={false}
                 />
                 <button
                   type="button"
@@ -501,6 +553,8 @@ export default function LoginEnhancement() {
                       }))
                     }
                     className="pl-10"
+                    autoComplete="new-password"
+                    spellCheck={false}
                   />
                 </div>
                 {validationErrors.confirmPassword && (

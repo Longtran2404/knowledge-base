@@ -1,15 +1,15 @@
 /**
- * Upload Page - Trang quản lý upload và file cá nhân
- * Mỗi tài khoản có thể upload và quản lý tài liệu/video riêng
+ * Upload Page - Modern Dark Theme với đầy đủ tính năng
+ * Upload, quản lý file với metadata, tags, settings
  */
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Upload,
   FileText,
   Video,
-  Image,
+  Image as ImageIcon,
   Download,
   Eye,
   Trash2,
@@ -21,44 +21,35 @@ import {
   Search,
   Grid,
   List,
-  Calendar,
-  User,
+  X,
+  Check,
   Tag,
-  BarChart3,
-  Star,
-  TrendingUp,
-  Users,
-  Play,
-  Pause,
-  MoreVertical,
-  FolderOpen,
-  Archive,
   Settings,
-  Shield,
-  Award,
+  FolderOpen,
+  File,
+  Plus,
+  Clock,
+  User,
+  BarChart3,
 } from "lucide-react";
-import { LiquidGlassButton } from "../components/ui/liquid-glass-button";
-import { LiquidGlassCard } from "../components/ui/liquid-glass-card";
+import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Badge } from "../components/ui/badge";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "../components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Switch } from "../components/ui/switch";
-import AdvancedFileUpload from "../components/upload/AdvancedFileUpload";
 import { useAuth } from "../contexts/UnifiedAuthContext";
-import { UserFile, supabase } from "../lib/supabase-config";
+import { NLCUserFile, supabase } from "../lib/supabase-config";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "../components/ui/dialog";
+import { Textarea } from "../components/ui/textarea";
+import { Label } from "../components/ui/label";
 
 interface UserStats {
   totalFiles: number;
@@ -68,18 +59,54 @@ interface UserStats {
   privateFiles: number;
   videoFiles: number;
   documentFiles: number;
+  imageFiles: number;
   storageUsed: number;
   storageLimit: number;
 }
 
+interface FileUploadState {
+  file: File | null;
+  progress: number;
+  uploading: boolean;
+  metadata: {
+    description: string;
+    tags: string[];
+    isPublic: boolean;
+    destinationPage: "library" | "course" | "product" | "profile";
+    associatedCourseId?: string;
+    lessonId?: string;
+    isProtected: boolean;
+    allowDownload: boolean;
+    allowShare: boolean;
+    watermarkText?: string;
+  };
+}
+
 export default function UploadPage() {
-  const { userProfile } = useAuth();
-  const [files, setFiles] = useState<UserFile[]>([]);
+  const { userProfile, isLoading: authLoading } = useAuth();
+  const [files, setFiles] = useState<NLCUserFile[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [currentTab, setCurrentTab] = useState("my-files");
+  const [uploadState, setUploadState] = useState<FileUploadState>({
+    file: null,
+    progress: 0,
+    uploading: false,
+    metadata: {
+      description: "",
+      tags: [],
+      isPublic: true,
+      destinationPage: "library",
+      isProtected: false,
+      allowDownload: true,
+      allowShare: true,
+    },
+  });
+  const [editingFile, setEditingFile] = useState<NLCUserFile | null>(null);
+  const [showUploadDialog, setShowUploadDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [tagInput, setTagInput] = useState("");
   const [stats, setStats] = useState<UserStats>({
     totalFiles: 0,
     totalSize: 0,
@@ -88,17 +115,23 @@ export default function UploadPage() {
     privateFiles: 0,
     videoFiles: 0,
     documentFiles: 0,
+    imageFiles: 0,
     storageUsed: 0,
-    storageLimit: 5 * 1024 * 1024 * 1024, // 5GB default limit
+    storageLimit: 5 * 1024 * 1024 * 1024, // 5GB
   });
 
   useEffect(() => {
+    if (authLoading) return;
+
     if (userProfile?.id) {
       loadUserFiles();
-      calculateStats();
+      const timer = setTimeout(() => calculateStats(), 100);
+      return () => clearTimeout(timer);
+    } else {
+      setLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userProfile?.id]);
+  }, [userProfile?.id, authLoading]);
 
   const loadUserFiles = useCallback(async () => {
     if (!userProfile?.id) return;
@@ -106,7 +139,7 @@ export default function UploadPage() {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from("user_files")
+        .from("nlc_user_files")
         .select("*")
         .eq("user_id", userProfile.id)
         .order("created_at", { ascending: false });
@@ -126,36 +159,26 @@ export default function UploadPage() {
 
     try {
       const { data, error } = await supabase
-        .from("user_files")
+        .from("nlc_user_files")
         .select("file_size, file_type, is_public, download_count")
         .eq("user_id", userProfile.id);
 
       if (error) throw error;
 
+      // Cast data to any[] to bypass TypeScript type inference issues
+      const statsData = (data || []) as any[];
+
       const newStats: UserStats = {
-        totalFiles: data?.length || 0,
-        totalSize:
-          data?.reduce(
-            (sum, file) => sum + ((file as any).file_size || 0),
-            0
-          ) || 0,
-        totalDownloads:
-          data?.reduce(
-            (sum, file) => sum + ((file as any).download_count || 0),
-            0
-          ) || 0,
-        publicFiles: data?.filter((f) => (f as any).is_public).length || 0,
-        privateFiles: data?.filter((f) => !(f as any).is_public).length || 0,
-        videoFiles:
-          data?.filter((f) => (f as any).file_type === "video").length || 0,
-        documentFiles:
-          data?.filter((f) => (f as any).file_type === "document").length || 0,
-        storageUsed:
-          data?.reduce(
-            (sum, file) => sum + ((file as any).file_size || 0),
-            0
-          ) || 0,
-        storageLimit: 5 * 1024 * 1024 * 1024, // 5GB
+        totalFiles: statsData.length,
+        totalSize: statsData.reduce((sum, file) => sum + (file.file_size || 0), 0),
+        totalDownloads: statsData.reduce((sum, file) => sum + (file.download_count || 0), 0),
+        publicFiles: statsData.filter((f) => f.is_public).length,
+        privateFiles: statsData.filter((f) => !f.is_public).length,
+        videoFiles: statsData.filter((f) => f.file_type === "video").length,
+        documentFiles: statsData.filter((f) => f.file_type === "document").length,
+        imageFiles: statsData.filter((f) => f.file_type === "image").length,
+        storageUsed: statsData.reduce((sum, file) => sum + (file.file_size || 0), 0),
+        storageLimit: 5 * 1024 * 1024 * 1024,
       };
 
       setStats(newStats);
@@ -164,545 +187,893 @@ export default function UploadPage() {
     }
   }, [userProfile?.id]);
 
-  const filteredFiles = files.filter((file) => {
-    const matchesSearch =
-      file.original_filename.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      file.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      selectedCategory === "all" || file.file_type === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setUploadState((prev) => ({ ...prev, file }));
+      setShowUploadDialog(true);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!uploadState.file || !userProfile?.id) return;
+
+    try {
+      setUploadState((prev) => ({ ...prev, uploading: true, progress: 0 }));
+
+      // Determine detailed file type
+      const mimeType = uploadState.file.type.toLowerCase();
+      const extension = uploadState.file.name.split('.').pop()?.toLowerCase() || '';
+
+      let fileType = "document";
+      let fileCategory = "other";
+
+      if (mimeType.startsWith("video/") || ["mp4", "webm", "ogg", "avi", "mov", "mkv", "flv", "wmv"].includes(extension)) {
+        fileType = "video";
+        fileCategory = "video";
+      } else if (mimeType.startsWith("audio/") || ["mp3", "wav", "ogg", "m4a", "flac", "aac", "wma"].includes(extension)) {
+        fileType = "audio";
+        fileCategory = "audio";
+      } else if (mimeType.startsWith("image/") || ["jpg", "jpeg", "png", "gif", "bmp", "svg", "webp", "ico"].includes(extension)) {
+        fileType = "image";
+        fileCategory = "image";
+      } else if (mimeType === "application/pdf" || extension === "pdf") {
+        fileType = "pdf";
+        fileCategory = "document";
+      } else if (["zip", "rar", "7z", "tar", "gz", "bz2", "xz"].includes(extension) ||
+                 mimeType.includes("zip") || mimeType.includes("rar") || mimeType.includes("compressed")) {
+        fileType = "archive";
+        fileCategory = "archive";
+      } else if (["doc", "docx", "xls", "xlsx", "ppt", "pptx", "odt", "ods", "odp"].includes(extension)) {
+        fileType = "office";
+        fileCategory = "document";
+      } else if (["txt", "md", "json", "xml", "csv", "log"].includes(extension)) {
+        fileType = "text";
+        fileCategory = "document";
+      } else {
+        fileType = "other";
+        fileCategory = "other";
+      }
+
+      // Upload to Supabase Storage
+      const fileName = `${userProfile.id}/${Date.now()}_${uploadState.file.name}`;
+      const { error: uploadError } = await supabase.storage
+        .from("user-files")
+        .upload(fileName, uploadState.file);
+
+      if (uploadError) throw uploadError;
+
+      // Simulate progress
+      setUploadState((prev) => ({ ...prev, progress: 100 }));
+
+      // Get public URL
+      const { data: urlData } = supabase.storage.from("user-files").getPublicUrl(fileName);
+
+      // Insert metadata into database with new fields
+      const { error: dbError } = await (supabase as any).from("nlc_user_files").insert({
+        user_id: userProfile.id,
+        filename: fileName,
+        original_filename: uploadState.file.name,
+        file_path: urlData.publicUrl,
+        file_type: fileType,
+        file_category: fileCategory,
+        file_extension: extension,
+        mime_type: uploadState.file.type,
+        file_size: uploadState.file.size,
+        description: uploadState.metadata.description,
+        tags: uploadState.metadata.tags,
+        is_public: uploadState.metadata.isPublic,
+
+        // Destination and association
+        destination_page: uploadState.metadata.destinationPage,
+        associated_course_id: uploadState.metadata.associatedCourseId || null,
+        lesson_id: uploadState.metadata.lessonId || null,
+
+        // Security settings for videos
+        is_protected: fileCategory === "video" ? uploadState.metadata.isProtected : false,
+        allow_download: uploadState.metadata.allowDownload,
+        allow_share: uploadState.metadata.allowShare,
+        watermark_text: uploadState.metadata.watermarkText || (userProfile.email || "Nam Long Center"),
+
+        status: "ready",
+        upload_progress: 100,
+      });
+
+      if (dbError) throw dbError;
+
+      toast.success("Upload thành công!");
+      setShowUploadDialog(false);
+      setUploadState({
+        file: null,
+        progress: 0,
+        uploading: false,
+        metadata: {
+          description: "",
+          tags: [],
+          isPublic: true,
+          destinationPage: "library",
+          isProtected: false,
+          allowDownload: true,
+          allowShare: true,
+        },
+      });
+      loadUserFiles();
+      calculateStats();
+    } catch (error: any) {
+      console.error("Upload error:", error);
+      toast.error(error.message || "Lỗi khi upload file");
+    } finally {
+      setUploadState((prev) => ({ ...prev, uploading: false }));
+    }
+  };
+
+  const handleDelete = async (fileId: string) => {
+    if (!window.confirm("Bạn có chắc muốn xóa file này?")) return;
+
+    try {
+      const { error } = await supabase.from("nlc_user_files").delete().eq("id", fileId);
+      if (error) throw error;
+
+      toast.success("Đã xóa file");
+      loadUserFiles();
+      calculateStats();
+    } catch (error) {
+      toast.error("Không thể xóa file");
+    }
+  };
+
+  const handleTogglePrivacy = async (file: NLCUserFile) => {
+    try {
+      const { error } = await (supabase as any)
+        .from("nlc_user_files")
+        .update({ is_public: !file.is_public })
+        .eq("id", file.id);
+
+      if (error) throw error;
+
+      toast.success(file.is_public ? "Chuyển thành riêng tư" : "Chuyển thành công khai");
+      loadUserFiles();
+      calculateStats();
+    } catch (error) {
+      toast.error("Không thể cập nhật quyền riêng tư");
+    }
+  };
+
+  const handleEditFile = (file: NLCUserFile) => {
+    setEditingFile(file);
+    setShowEditDialog(true);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingFile) return;
+
+    try {
+      const { error } = await (supabase as any)
+        .from("nlc_user_files")
+        .update({
+          description: editingFile.description,
+          tags: editingFile.tags,
+        })
+        .eq("id", editingFile.id);
+
+      if (error) throw error;
+
+      toast.success("Đã cập nhật thông tin file");
+      setShowEditDialog(false);
+      setEditingFile(null);
+      loadUserFiles();
+    } catch (error) {
+      toast.error("Không thể cập nhật file");
+    }
+  };
+
+  const addTag = (tag: string) => {
+    if (!tag.trim()) return;
+
+    if (editingFile) {
+      setEditingFile({
+        ...editingFile,
+        tags: [...(editingFile.tags || []), tag.trim()],
+      });
+    } else {
+      setUploadState((prev) => ({
+        ...prev,
+        metadata: {
+          ...prev.metadata,
+          tags: [...prev.metadata.tags, tag.trim()],
+        },
+      }));
+    }
+    setTagInput("");
+  };
+
+  const removeTag = (index: number) => {
+    if (editingFile) {
+      setEditingFile({
+        ...editingFile,
+        tags: editingFile.tags?.filter((_, i) => i !== index) || [],
+      });
+    } else {
+      setUploadState((prev) => ({
+        ...prev,
+        metadata: {
+          ...prev.metadata,
+          tags: prev.metadata.tags.filter((_, i) => i !== index),
+        },
+      }));
+    }
+  };
+
+  const filteredFiles = useMemo(() => {
+    return files.filter((file) => {
+      const matchesSearch =
+        file.original_filename.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        file.description?.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesCategory =
+        selectedCategory === "all" ||
+        (selectedCategory === "public" && file.is_public) ||
+        (selectedCategory === "private" && !file.is_public) ||
+        (selectedCategory === "video" && file.file_type === "video") ||
+        (selectedCategory === "document" && file.file_type === "document") ||
+        (selectedCategory === "image" && file.file_type === "image");
+
+      return matchesSearch && matchesCategory;
+    });
+  }, [files, searchTerm, selectedCategory]);
 
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return "0 Bytes";
     const k = 1024;
     const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + " " + sizes[i];
   };
 
-  const getFileIcon = (type: string, size: string = "h-8 w-8") => {
-    switch (type) {
+  const getFileIcon = (fileType: string) => {
+    switch (fileType) {
       case "video":
-        return <Video className={`${size} text-purple-500`} />;
+        return <Video className="h-5 w-5" />;
       case "image":
-        return <Image className={`${size} text-green-500`} />;
-      case "document":
-        return <FileText className={`${size} text-blue-500`} />;
+        return <ImageIcon className="h-5 w-5" />;
       default:
-        return <FileText className={`${size} text-gray-500`} />;
-    }
-  };
-
-  const handleFileAction = async (
-    fileId: string,
-    action: "delete" | "toggle-privacy" | "download"
-  ) => {
-    try {
-      const file = files.find((f) => f.id === fileId);
-      if (!file) return;
-
-      switch (action) {
-        case "delete":
-          const { error: deleteError } = await supabase
-            .from("user_files")
-            .delete()
-            .eq("id", fileId);
-
-          if (deleteError) throw deleteError;
-          setFiles((prev) => prev.filter((f) => f.id !== fileId));
-          toast.success("Đã xóa file thành công");
-          break;
-
-        case "toggle-privacy":
-          const updateData = { is_public: !(file as any).is_public };
-          const { error: updateError } = await (supabase as any)
-            .from("user_files")
-            .update(updateData as any)
-            .eq("id", fileId);
-
-          if (updateError) throw updateError;
-          setFiles((prev) =>
-            prev.map((f) =>
-              f.id === fileId ? { ...f, is_public: !f.is_public } : f
-            )
-          );
-          toast.success(
-            file.is_public ? "Chuyển thành riêng tư" : "Chuyển thành công khai"
-          );
-          break;
-
-        case "download":
-          // Simulate download
-          const downloadData = {
-            download_count: (file as any).download_count + 1,
-          };
-          const { error: downloadError } = await (supabase as any)
-            .from("user_files")
-            .update(downloadData as any)
-            .eq("id", fileId);
-
-          if (downloadError) throw downloadError;
-          setFiles((prev) =>
-            prev.map((f) =>
-              f.id === fileId
-                ? { ...f, download_count: f.download_count + 1 }
-                : f
-            )
-          );
-          toast.success("Đang tải xuống...");
-          break;
-      }
-
-      calculateStats();
-    } catch (error) {
-      console.error("Error handling file action:", error);
-      toast.error("Có lỗi xảy ra");
+        return <FileText className="h-5 w-5" />;
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Đang tải...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-300 text-lg">Đang tải dữ liệu...</p>
         </div>
       </div>
     );
   }
 
-  const storagePercentage = (stats.storageUsed / stats.storageLimit) * 100;
+  const storagePercent = (stats.storageUsed / stats.storageLimit) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <LiquidGlassCard
-          variant="gradient"
-          glow={true}
-          className="mb-8 p-8 text-center text-white"
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
         >
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <Upload className="h-8 w-8" />
-            <h1 className="text-3xl font-bold">Quản lý Tài liệu & Video</h1>
-          </div>
-          <p className="text-lg opacity-90">
-            Upload, quản lý và chia sẻ tài liệu cá nhân một cách an toàn
-          </p>
+          <div className="bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 backdrop-blur-xl rounded-2xl p-8 border border-white/10 shadow-2xl">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="p-3 bg-blue-500/20 rounded-xl">
+                <Upload className="h-8 w-8 text-blue-400" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                  Quản lý Tài liệu & Video
+                </h1>
+                <p className="text-gray-400">Upload và chia sẻ tài liệu một cách an toàn</p>
+              </div>
+            </div>
 
-          {/* User Info & Storage */}
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-            <div className="bg-white/10 rounded-lg p-3">
-              <User className="h-5 w-5 mx-auto mb-1" />
-              <p className="font-medium">
-                {userProfile?.full_name || userProfile?.email}
-              </p>
+            {/* Stats Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+              <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+                <div className="flex items-center gap-2 mb-2">
+                  <File className="h-5 w-5 text-blue-400" />
+                  <span className="text-gray-400 text-sm">Tổng files</span>
+                </div>
+                <p className="text-2xl font-bold">{stats.totalFiles}</p>
+              </div>
+
+              <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+                <div className="flex items-center gap-2 mb-2">
+                  <Eye className="h-5 w-5 text-green-400" />
+                  <span className="text-gray-400 text-sm">Công khai</span>
+                </div>
+                <p className="text-2xl font-bold text-green-400">{stats.publicFiles}</p>
+              </div>
+
+              <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+                <div className="flex items-center gap-2 mb-2">
+                  <Lock className="h-5 w-5 text-orange-400" />
+                  <span className="text-gray-400 text-sm">Riêng tư</span>
+                </div>
+                <p className="text-2xl font-bold text-orange-400">{stats.privateFiles}</p>
+              </div>
+
+              <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+                <div className="flex items-center gap-2 mb-2">
+                  <Download className="h-5 w-5 text-purple-400" />
+                  <span className="text-gray-400 text-sm">Lượt tải</span>
+                </div>
+                <p className="text-2xl font-bold text-purple-400">{stats.totalDownloads}</p>
+              </div>
             </div>
-            <div className="bg-white/10 rounded-lg p-3">
-              <BarChart3 className="h-5 w-5 mx-auto mb-1" />
-              <p className="font-medium">{stats.totalFiles} files</p>
-            </div>
-            <div className="bg-white/10 rounded-lg p-3">
-              <Archive className="h-5 w-5 mx-auto mb-1" />
-              <p className="font-medium">
-                {formatFileSize(stats.storageUsed)} /{" "}
-                {formatFileSize(stats.storageLimit)}
-              </p>
-              <div className="w-full bg-white/20 rounded-full h-2 mt-2">
-                <div
-                  className="bg-white rounded-full h-2 transition-all duration-300"
-                  style={{ width: `${Math.min(storagePercentage, 100)}%` }}
+
+            {/* Storage Bar */}
+            <div className="mt-6">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm text-gray-400">Dung lượng</span>
+                <span className="text-sm font-medium">
+                  {formatFileSize(stats.storageUsed)} / {formatFileSize(stats.storageLimit)}
+                </span>
+              </div>
+              <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${Math.min(storagePercent, 100)}%` }}
+                  className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"
+                  transition={{ duration: 1, ease: "easeOut" }}
                 />
               </div>
             </div>
           </div>
-        </LiquidGlassCard>
+        </motion.div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <LiquidGlassCard
-            variant="interactive"
-            hover={true}
-            className="p-6 text-center"
-          >
-            <TrendingUp className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-gray-900">
-              {stats.totalDownloads}
-            </p>
-            <p className="text-sm text-gray-600">Lượt tải</p>
-          </LiquidGlassCard>
+        {/* Controls */}
+        <div className="mb-6 flex flex-col md:flex-row gap-4">
+          {/* Search */}
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Tìm kiếm file..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-blue-500"
+            />
+          </div>
 
-          <LiquidGlassCard
-            variant="interactive"
-            hover={true}
-            className="p-6 text-center"
-          >
-            <Eye className="h-8 w-8 text-green-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-gray-900">
-              {stats.publicFiles}
-            </p>
-            <p className="text-sm text-gray-600">Công khai</p>
-          </LiquidGlassCard>
+          {/* Filter */}
+          <div className="flex gap-2">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-blue-500"
+            >
+              <option value="all">Tất cả</option>
+              <option value="public">Công khai</option>
+              <option value="private">Riêng tư</option>
+              <option value="video">Video</option>
+              <option value="image">Hình ảnh</option>
+              <option value="document">Tài liệu</option>
+            </select>
 
-          <LiquidGlassCard
-            variant="interactive"
-            hover={true}
-            className="p-6 text-center"
-          >
-            <Lock className="h-8 w-8 text-red-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-gray-900">
-              {stats.privateFiles}
-            </p>
-            <p className="text-sm text-gray-600">Riêng tư</p>
-          </LiquidGlassCard>
+            {/* View Mode */}
+            <div className="flex gap-2 bg-white/5 border border-white/10 rounded-lg p-1">
+              <button
+                onClick={() => setViewMode("grid")}
+                className={`p-2 rounded-md transition-colors ${
+                  viewMode === "grid" ? "bg-blue-500 text-white" : "text-gray-400 hover:text-white"
+                }`}
+              >
+                <Grid className="h-5 w-5" />
+              </button>
+              <button
+                onClick={() => setViewMode("list")}
+                className={`p-2 rounded-md transition-colors ${
+                  viewMode === "list" ? "bg-blue-500 text-white" : "text-gray-400 hover:text-white"
+                }`}
+              >
+                <List className="h-5 w-5" />
+              </button>
+            </div>
 
-          <LiquidGlassCard
-            variant="interactive"
-            hover={true}
-            className="p-6 text-center"
-          >
-            <Video className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-gray-900">
-              {stats.videoFiles}
-            </p>
-            <p className="text-sm text-gray-600">Video</p>
-          </LiquidGlassCard>
+            {/* Upload Button */}
+            <label className="cursor-pointer">
+              <input
+                type="file"
+                onChange={handleFileSelect}
+                className="hidden"
+                accept="*/*"
+              />
+              <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-lg font-medium transition-all">
+                <Plus className="h-5 w-5" />
+                Upload
+              </div>
+            </label>
+          </div>
         </div>
 
-        {/* Main Content */}
-        <LiquidGlassCard variant="default" className="p-6">
-          <Tabs value={currentTab} onValueChange={setCurrentTab}>
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="my-files" className="flex items-center gap-2">
-                <FolderOpen className="h-4 w-4" />
-                File của tôi
-              </TabsTrigger>
-              <TabsTrigger value="upload" className="flex items-center gap-2">
-                <Upload className="h-4 w-4" />
-                Upload mới
-              </TabsTrigger>
-              <TabsTrigger value="settings" className="flex items-center gap-2">
-                <Settings className="h-4 w-4" />
-                Cài đặt
-              </TabsTrigger>
-            </TabsList>
-
-            {/* My Files Tab */}
-            <TabsContent value="my-files" className="space-y-6">
-              {/* Search and Filters */}
-              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-                <div className="flex-1 max-w-md">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                    <Input
-                      placeholder="Tìm kiếm file..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <Select
-                    value={selectedCategory}
-                    onValueChange={setSelectedCategory}
-                  >
-                    <SelectTrigger className="w-32">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Tất cả</SelectItem>
-                      <SelectItem value="document">Tài liệu</SelectItem>
-                      <SelectItem value="video">Video</SelectItem>
-                      <SelectItem value="image">Hình ảnh</SelectItem>
-                      <SelectItem value="other">Khác</SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  <LiquidGlassButton
-                    variant={viewMode === "grid" ? "primary" : "ghost"}
-                    onClick={() => setViewMode("grid")}
-                  >
-                    <Grid className="h-4 w-4" />
-                  </LiquidGlassButton>
-
-                  <LiquidGlassButton
-                    variant={viewMode === "list" ? "primary" : "ghost"}
-                    onClick={() => setViewMode("list")}
-                  >
-                    <List className="h-4 w-4" />
-                  </LiquidGlassButton>
-                </div>
-              </div>
-
-              {/* Files Display */}
-              {filteredFiles.length === 0 ? (
-                <div className="text-center py-12">
-                  <FolderOpen className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    {files.length === 0
-                      ? "Chưa có file nào"
-                      : "Không tìm thấy file"}
-                  </h3>
-                  <p className="text-gray-500 mb-4">
-                    {files.length === 0
-                      ? "Bắt đầu bằng cách upload file đầu tiên của bạn"
-                      : "Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc"}
-                  </p>
-                  {files.length === 0 && (
-                    <LiquidGlassButton
-                      onClick={() => setCurrentTab("upload")}
-                      variant="primary"
-                      glow={true}
-                    >
-                      <Upload className="h-4 w-4 mr-2" />
-                      Upload file đầu tiên
-                    </LiquidGlassButton>
-                  )}
-                </div>
-              ) : (
-                <div
-                  className={
-                    viewMode === "grid"
-                      ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                      : "space-y-4"
-                  }
+        {/* Files Grid/List */}
+        {filteredFiles.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="bg-white/5 backdrop-blur-sm rounded-2xl p-12 border border-white/10 text-center"
+          >
+            <FolderOpen className="h-16 w-16 mx-auto mb-4 text-gray-600" />
+            <p className="text-xl text-gray-400 mb-2">Chưa có file nào</p>
+            <p className="text-gray-500">Bắt đầu upload file đầu tiên của bạn</p>
+          </motion.div>
+        ) : (
+          <div
+            className={
+              viewMode === "grid"
+                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+                : "space-y-3"
+            }
+          >
+            <AnimatePresence>
+              {filteredFiles.map((file, index) => (
+                <motion.div
+                  key={file.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ delay: index * 0.05 }}
+                  className={`bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:border-blue-500/50 transition-all group ${
+                    viewMode === "list" ? "flex items-center gap-4" : ""
+                  }`}
                 >
-                  <AnimatePresence>
-                    {filteredFiles.map((file, index) => (
-                      <motion.div
-                        key={file.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ delay: index * 0.1 }}
+                  {/* File Icon */}
+                  <div className={`${viewMode === "grid" ? "mb-3" : ""}`}>
+                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-lg flex items-center justify-center text-blue-400">
+                      {getFileIcon(file.file_type)}
+                    </div>
+                  </div>
+
+                  {/* File Info */}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-medium text-white truncate mb-1">
+                      {file.original_filename}
+                    </h3>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Badge
+                        variant={file.is_public ? "default" : "secondary"}
+                        className="text-xs"
                       >
-                        <LiquidGlassCard
-                          variant="interactive"
-                          hover={true}
-                          className="p-4"
-                        >
-                          <div className="flex items-start gap-4">
-                            <div className="flex-shrink-0">
-                              {file.thumbnail_url ? (
-                                <img
-                                  src={file.thumbnail_url}
-                                  alt="Thumbnail"
-                                  className="w-12 h-12 rounded-lg object-cover"
-                                />
-                              ) : (
-                                getFileIcon(file.file_type, "h-12 w-12")
-                              )}
-                            </div>
-
-                            <div className="flex-1 min-w-0">
-                              <h4 className="font-medium text-gray-900 truncate">
-                                {file.original_filename}
-                              </h4>
-                              <p className="text-sm text-gray-500 mb-2">
-                                {formatFileSize((file as any).file_size)} •{" "}
-                                {new Date(
-                                  (file as any).created_at
-                                ).toLocaleDateString()}
-                              </p>
-
-                              {file.description && (
-                                <p className="text-sm text-gray-600 mb-2 line-clamp-2">
-                                  {file.description}
-                                </p>
-                              )}
-
-                              <div className="flex items-center gap-2 mb-2">
-                                <Badge
-                                  variant={
-                                    file.is_public ? "default" : "secondary"
-                                  }
-                                >
-                                  {file.is_public ? (
-                                    <>
-                                      <Eye className="h-3 w-3 mr-1" />
-                                      Công khai
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Lock className="h-3 w-3 mr-1" />
-                                      Riêng tư
-                                    </>
-                                  )}
-                                </Badge>
-
-                                {file.download_count > 0 && (
-                                  <Badge variant="outline">
-                                    <Download className="h-3 w-3 mr-1" />
-                                    {file.download_count}
-                                  </Badge>
-                                )}
-                              </div>
-
-                              <div className="flex items-center gap-2">
-                                <LiquidGlassButton
-                                  variant="ghost"
-                                  onClick={() =>
-                                    handleFileAction(file.id, "download")
-                                  }
-                                  className="text-blue-600"
-                                >
-                                  <Download className="h-4 w-4" />
-                                </LiquidGlassButton>
-
-                                <LiquidGlassButton
-                                  variant="ghost"
-                                  onClick={() =>
-                                    handleFileAction(file.id, "toggle-privacy")
-                                  }
-                                  className="text-green-600"
-                                >
-                                  {file.is_public ? (
-                                    <Lock className="h-4 w-4" />
-                                  ) : (
-                                    <Unlock className="h-4 w-4" />
-                                  )}
-                                </LiquidGlassButton>
-
-                                <LiquidGlassButton
-                                  variant="ghost"
-                                  onClick={() =>
-                                    handleFileAction(file.id, "delete")
-                                  }
-                                  className="text-red-600"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </LiquidGlassButton>
-                              </div>
-                            </div>
-                          </div>
-                        </LiquidGlassCard>
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
-                </div>
-              )}
-            </TabsContent>
-
-            {/* Upload Tab */}
-            <TabsContent value="upload">
-              <AdvancedFileUpload />
-            </TabsContent>
-
-            {/* Settings Tab */}
-            <TabsContent value="settings" className="space-y-6">
-              <LiquidGlassCard variant="default" className="p-6">
-                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                  <Shield className="h-5 w-5" />
-                  Cài đặt bảo mật
-                </h3>
-
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium">
-                        Tự động công khai file mới
-                      </h4>
-                      <p className="text-sm text-gray-600">
-                        File mới sẽ mặc định được đặt ở chế độ công khai
+                        {file.is_public ? (
+                          <Eye className="h-3 w-3 mr-1" />
+                        ) : (
+                          <Lock className="h-3 w-3 mr-1" />
+                        )}
+                        {file.is_public ? "Công khai" : "Riêng tư"}
+                      </Badge>
+                      <span className="text-xs text-gray-500">
+                        {formatFileSize(file.file_size)}
+                      </span>
+                    </div>
+                    {file.description && (
+                      <p className="text-sm text-gray-400 line-clamp-2 mb-2">
+                        {file.description}
                       </p>
-                    </div>
-                    <Switch defaultChecked={true} />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium">
-                        Cho phép download file công khai
-                      </h4>
-                      <p className="text-sm text-gray-600">
-                        Người khác có thể tải về file công khai của bạn
-                      </p>
-                    </div>
-                    <Switch defaultChecked={true} />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium">
-                        Thông báo khi có người tải file
-                      </h4>
-                      <p className="text-sm text-gray-600">
-                        Nhận thông báo qua email khi có người tải file của bạn
-                      </p>
-                    </div>
-                    <Switch defaultChecked={false} />
-                  </div>
-                </div>
-              </LiquidGlassCard>
-
-              <LiquidGlassCard variant="default" className="p-6">
-                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                  <Award className="h-5 w-5" />
-                  Gói dung lượng
-                </h3>
-
-                <div className="space-y-4">
-                  <div className="text-center p-4 bg-blue-50 rounded-lg">
-                    <h4 className="font-medium text-lg">
-                      Gói hiện tại: Miễn phí
-                    </h4>
-                    <p className="text-sm text-gray-600 mb-2">
-                      {formatFileSize(stats.storageUsed)} /{" "}
-                      {formatFileSize(stats.storageLimit)} đã sử dụng
-                    </p>
-                    <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
-                      <div
-                        className="bg-blue-600 h-3 rounded-full"
-                        style={{
-                          width: `${Math.min(storagePercentage, 100)}%`,
-                        }}
-                      />
-                    </div>
-
-                    {storagePercentage > 80 && (
-                      <div className="mb-4">
-                        <p className="text-yellow-600 text-sm mb-2">
-                          ⚠️ Dung lượng của bạn sắp đầy
-                        </p>
-                        <LiquidGlassButton variant="primary" glow={true}>
-                          Nâng cấp gói Premium
-                        </LiquidGlassButton>
+                    )}
+                    {file.tags && file.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        {file.tags.map((tag, i) => (
+                          <span
+                            key={i}
+                            className="text-xs px-2 py-0.5 bg-blue-500/20 text-blue-300 rounded-full"
+                          >
+                            {tag}
+                          </span>
+                        ))}
                       </div>
                     )}
                   </div>
 
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div className="border rounded-lg p-4 text-center">
-                      <h4 className="font-medium">Gói Student</h4>
-                      <p className="text-2xl font-bold text-blue-600 my-2">
-                        50GB
-                      </p>
-                      <p className="text-sm text-gray-600 mb-4">299,000đ/năm</p>
-                      <LiquidGlassButton variant="primary" className="w-full">
-                        Nâng cấp
-                      </LiquidGlassButton>
-                    </div>
+                  {/* Actions */}
+                  <div className={`flex gap-2 ${viewMode === "grid" ? "mt-3" : ""}`}>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleEditFile(file)}
+                      className="text-gray-400 hover:text-blue-400"
+                    >
+                      <Edit3 className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleTogglePrivacy(file)}
+                      className="text-gray-400 hover:text-green-400"
+                    >
+                      {file.is_public ? (
+                        <Unlock className="h-4 w-4" />
+                      ) : (
+                        <Lock className="h-4 w-4" />
+                      )}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => window.open(file.file_path, "_blank")}
+                      className="text-gray-400 hover:text-purple-400"
+                    >
+                      <Download className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleDelete(file.id)}
+                      className="text-gray-400 hover:text-red-400"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        )}
+      </div>
 
-                    <div className="border rounded-lg p-4 text-center">
-                      <h4 className="font-medium">Gói Business</h4>
-                      <p className="text-2xl font-bold text-purple-600 my-2">
-                        200GB
-                      </p>
-                      <p className="text-sm text-gray-600 mb-4">999,000đ/năm</p>
-                      <LiquidGlassButton variant="primary" className="w-full">
-                        Nâng cấp
-                      </LiquidGlassButton>
-                    </div>
+      {/* Upload Dialog */}
+      <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
+        <DialogContent className="bg-gray-900 border-white/10 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">Upload File</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Thêm thông tin và metadata cho file của bạn
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            {/* File Info */}
+            {uploadState.file && (
+              <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                    <File className="h-6 w-6 text-blue-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate">{uploadState.file.name}</p>
+                    <p className="text-sm text-gray-400">
+                      {formatFileSize(uploadState.file.size)}
+                    </p>
                   </div>
                 </div>
-              </LiquidGlassCard>
-            </TabsContent>
-          </Tabs>
-        </LiquidGlassCard>
-      </div>
+              </div>
+            )}
+
+            {/* Description */}
+            <div>
+              <Label className="text-white mb-2 block">Mô tả</Label>
+              <Textarea
+                placeholder="Thêm mô tả cho file..."
+                value={uploadState.metadata.description}
+                onChange={(e) =>
+                  setUploadState((prev) => ({
+                    ...prev,
+                    metadata: { ...prev.metadata, description: e.target.value },
+                  }))
+                }
+                className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                rows={3}
+              />
+            </div>
+
+            {/* Tags */}
+            <div>
+              <Label className="text-white mb-2 block">Tags</Label>
+              <div className="flex gap-2 mb-2">
+                <Input
+                  placeholder="Thêm tag..."
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addTag(tagInput))}
+                  className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                />
+                <Button
+                  onClick={() => addTag(tagInput)}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {uploadState.metadata.tags.map((tag, i) => (
+                  <span
+                    key={i}
+                    className="inline-flex items-center gap-1 px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm"
+                  >
+                    {tag}
+                    <button
+                      onClick={() => removeTag(i)}
+                      className="hover:text-red-400 transition-colors"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Destination Page */}
+            <div>
+              <Label className="text-white mb-2 block">Đích đến</Label>
+              <select
+                value={uploadState.metadata.destinationPage}
+                onChange={(e) =>
+                  setUploadState((prev) => ({
+                    ...prev,
+                    metadata: { ...prev.metadata, destinationPage: e.target.value as any },
+                  }))
+                }
+                className="w-full bg-white/5 border border-white/10 text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="library" className="bg-gray-800">Thư viện tài liệu</option>
+                <option value="course" className="bg-gray-800">Khóa học</option>
+                <option value="product" className="bg-gray-800">Sản phẩm</option>
+                <option value="profile" className="bg-gray-800">Hồ sơ cá nhân</option>
+              </select>
+              {uploadState.metadata.destinationPage === "course" && (
+                <p className="text-xs text-gray-400 mt-1">
+                  File sẽ được thêm vào khóa học. Bạn có thể chọn khóa học cụ thể sau khi upload.
+                </p>
+              )}
+            </div>
+
+            {/* Video Protection Settings */}
+            {uploadState.file?.type.startsWith("video/") && (
+              <div className="space-y-3 p-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                <h4 className="font-medium text-blue-300 flex items-center gap-2">
+                  <Lock className="h-4 w-4" />
+                  Bảo vệ Video
+                </h4>
+
+                {/* Protected Video Toggle */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium">Bật bảo vệ DRM</p>
+                    <p className="text-xs text-gray-400">
+                      Ngăn chặn quay màn hình, screenshot, tải xuống
+                    </p>
+                  </div>
+                  <Switch
+                    checked={uploadState.metadata.isProtected}
+                    onCheckedChange={(checked) =>
+                      setUploadState((prev) => ({
+                        ...prev,
+                        metadata: { ...prev.metadata, isProtected: checked },
+                      }))
+                    }
+                  />
+                </div>
+
+                {/* Allow Download */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium">Cho phép tải xuống</p>
+                    <p className="text-xs text-gray-400">
+                      Người xem có thể tải video về máy
+                    </p>
+                  </div>
+                  <Switch
+                    checked={uploadState.metadata.allowDownload}
+                    onCheckedChange={(checked) =>
+                      setUploadState((prev) => ({
+                        ...prev,
+                        metadata: { ...prev.metadata, allowDownload: checked },
+                      }))
+                    }
+                    disabled={uploadState.metadata.isProtected}
+                  />
+                </div>
+
+                {/* Allow Share */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium">Cho phép chia sẻ</p>
+                    <p className="text-xs text-gray-400">
+                      Người xem có thể chia sẻ link video
+                    </p>
+                  </div>
+                  <Switch
+                    checked={uploadState.metadata.allowShare}
+                    onCheckedChange={(checked) =>
+                      setUploadState((prev) => ({
+                        ...prev,
+                        metadata: { ...prev.metadata, allowShare: checked },
+                      }))
+                    }
+                    disabled={uploadState.metadata.isProtected}
+                  />
+                </div>
+
+                {/* Watermark */}
+                <div>
+                  <Label className="text-white mb-2 block text-sm">Watermark (tùy chọn)</Label>
+                  <Input
+                    placeholder="VD: Nam Long Center - Khóa học XYZ"
+                    value={uploadState.metadata.watermarkText || ""}
+                    onChange={(e) =>
+                      setUploadState((prev) => ({
+                        ...prev,
+                        metadata: { ...prev.metadata, watermarkText: e.target.value },
+                      }))
+                    }
+                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 text-sm"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Privacy */}
+            <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10">
+              <div className="flex items-center gap-2">
+                {uploadState.metadata.isPublic ? (
+                  <Eye className="h-5 w-5 text-green-400" />
+                ) : (
+                  <Lock className="h-5 w-5 text-orange-400" />
+                )}
+                <div>
+                  <p className="font-medium">
+                    {uploadState.metadata.isPublic ? "Công khai" : "Riêng tư"}
+                  </p>
+                  <p className="text-sm text-gray-400">
+                    {uploadState.metadata.isPublic
+                      ? "Mọi người có thể xem file này"
+                      : "Chỉ bạn có thể xem file này"}
+                  </p>
+                </div>
+              </div>
+              <Switch
+                checked={uploadState.metadata.isPublic}
+                onCheckedChange={(checked) =>
+                  setUploadState((prev) => ({
+                    ...prev,
+                    metadata: { ...prev.metadata, isPublic: checked },
+                  }))
+                }
+              />
+            </div>
+
+            {/* Progress */}
+            {uploadState.uploading && (
+              <div>
+                <div className="flex justify-between mb-2">
+                  <span className="text-sm text-gray-400">Đang upload...</span>
+                  <span className="text-sm font-medium">{Math.round(uploadState.progress)}%</span>
+                </div>
+                <div className="w-full bg-white/10 rounded-full h-2">
+                  <div
+                    className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all"
+                    style={{ width: `${uploadState.progress}%` }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowUploadDialog(false)}
+              disabled={uploadState.uploading}
+              className="border-white/10 text-white hover:bg-white/5"
+            >
+              Hủy
+            </Button>
+            <Button
+              onClick={handleUpload}
+              disabled={uploadState.uploading || !uploadState.file}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+            >
+              {uploadState.uploading ? "Đang upload..." : "Upload"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Dialog */}
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+        <DialogContent className="bg-gray-900 border-white/10 text-white max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">Chỉnh sửa File</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Cập nhật thông tin metadata
+            </DialogDescription>
+          </DialogHeader>
+
+          {editingFile && (
+            <div className="space-y-4 py-4">
+              {/* File Info */}
+              <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                    {getFileIcon(editingFile.file_type)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate">{editingFile.original_filename}</p>
+                    <p className="text-sm text-gray-400">
+                      {formatFileSize(editingFile.file_size)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Description */}
+              <div>
+                <Label className="text-white mb-2 block">Mô tả</Label>
+                <Textarea
+                  placeholder="Thêm mô tả..."
+                  value={editingFile.description || ""}
+                  onChange={(e) =>
+                    setEditingFile({ ...editingFile, description: e.target.value })
+                  }
+                  className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                  rows={3}
+                />
+              </div>
+
+              {/* Tags */}
+              <div>
+                <Label className="text-white mb-2 block">Tags</Label>
+                <div className="flex gap-2 mb-2">
+                  <Input
+                    placeholder="Thêm tag..."
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addTag(tagInput))}
+                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                  />
+                  <Button
+                    onClick={() => addTag(tagInput)}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {(editingFile.tags || []).map((tag, i) => (
+                    <span
+                      key={i}
+                      className="inline-flex items-center gap-1 px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm"
+                    >
+                      {tag}
+                      <button
+                        onClick={() => removeTag(i)}
+                        className="hover:text-red-400 transition-colors"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowEditDialog(false)}
+              className="border-white/10 text-white hover:bg-white/5"
+            >
+              Hủy
+            </Button>
+            <Button
+              onClick={handleSaveEdit}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+            >
+              Lưu thay đổi
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

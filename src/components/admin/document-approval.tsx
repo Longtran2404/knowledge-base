@@ -67,7 +67,7 @@ interface UploadedDocument {
 }
 
 export function DocumentApproval() {
-  const { user } = useAuth();
+  const { userProfile: user } = useAuth();
   const [documents, setDocuments] = useState<UploadedDocument[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDocument, setSelectedDocument] =
@@ -79,7 +79,7 @@ export function DocumentApproval() {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   // Check if user has permission to approve documents
-  const canApprove = user?.role === "admin";
+  const canApprove = user?.account_role === "admin";
 
   useEffect(() => {
     loadDocuments();

@@ -19,8 +19,11 @@ import {
   CheckCircle,
   AlertCircle,
   Loader2,
+  LogIn,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/UnifiedAuthContext";
 import {
   uploadFile,
   deleteFile,
@@ -31,7 +34,7 @@ import {
 } from "../lib/file-service";
 
 interface FileUploadProps {
-  fileType: "personal" | "public" | "course_material";
+  fileType: "document" | "video" | "image" | "other";
   courseId?: string;
   onUploadComplete?: (file: FileUploadType) => void;
   onFileDelete?: (fileId: string) => void;
@@ -45,10 +48,12 @@ export default function FileUpload({
   courseId,
   onUploadComplete,
   onFileDelete,
-  maxFileSize = 10, // 10MB default
+  maxFileSize = 50, // 50MB default - tăng lên để support nhiều loại file hơn
   acceptedTypes = ["*"],
   className = "",
 }: FileUploadProps) {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -166,6 +171,29 @@ export default function FileUpload({
     }
   };
 
+  // Check if user is logged in - After all hooks
+  if (!user) {
+    return (
+      <Card className={className}>
+        <CardContent className="py-12 text-center">
+          <div className="mx-auto w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
+            <LogIn className="h-8 w-8 text-blue-600" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            Vui lòng đăng nhập để upload file
+          </h3>
+          <p className="text-gray-600 mb-6 max-w-md mx-auto">
+            Bạn cần đăng nhập vào tài khoản để có thể upload và quản lý file
+          </p>
+          <Button onClick={() => navigate("/dang-nhap")}>
+            <LogIn className="mr-2 h-4 w-4" />
+            Đăng nhập
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <div className={`space-y-4 ${className}`}>
       {/* Upload Area */}
@@ -196,7 +224,7 @@ export default function FileUpload({
               ref={fileInputRef}
               type="file"
               multiple
-              accept={acceptedTypes.join(",")}
+              accept={acceptedTypes[0] === "*" ? "*" : acceptedTypes.join(",")}
               onChange={handleFileSelect}
               className="hidden"
             />
@@ -224,10 +252,13 @@ export default function FileUpload({
 
               {uploading && (
                 <div className="space-y-2">
-                  <Progress value={uploadProgress} className="h-2" />
-                  <p className="text-sm text-gray-600">
-                    Đang upload... {Math.round(uploadProgress)}%
-                  </p>
+                  <Progress value={uploadProgress} className="h-3" />
+                  <div className="flex items-center justify-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <p className="text-sm text-gray-600">
+                      Đang upload... {Math.round(uploadProgress)}%
+                    </p>
+                  </div>
                 </div>
               )}
             </div>

@@ -1,82 +1,104 @@
-# Database Setup Instructions
+# Database Schema - Nam Long Center
 
-## Overview
-This directory contains the SQL schema and sample data for the Nam Long Center learning management system. The database is designed to work with Supabase PostgreSQL.
+Thư mục này chứa schema database hoàn chỉnh cho Nam Long Center.
 
-## Database Structure
+## 📁 Files
 
-### Core Tables
-- **users**: Extended user profiles (linked to Supabase auth.users)
-- **categories**: Course categories
-- **courses**: Course information and content
-- **purchases**: User course purchases and transactions
-- **user_course_progress**: Learning progress tracking
-- **course_reviews**: Course ratings and reviews
-- **user_certificates**: Generated certificates for completed courses
+- **`setup.sql`** - **File chính duy nhất** để setup database hoàn chỉnh
+- **`README.md`** - Hướng dẫn này
 
-### Key Features
-- Row Level Security (RLS) enabled on all tables
-- Automatic user profile creation on registration
-- Comprehensive course management system
-- Progress tracking and certification
-- Secure purchase and payment tracking
+## 🚀 Cách sử dụng
 
-## Setup Instructions
+### 1. Mở Supabase Dashboard
 
-### 1. Connect to Supabase
-1. Go to your Supabase project dashboard
-2. Navigate to the SQL editor
-3. Run the schema and sample data scripts
+- Truy cập: https://supabase.com/dashboard
+- Chọn project của bạn
+- Vào **SQL Editor** (biểu tượng SQL ở sidebar trái)
 
-### 2. Run Database Schema
-```sql
--- Copy and paste the contents of schema.sql into Supabase SQL editor
--- This will create all tables, policies, and functions
-```
+### 2. Chạy SQL Setup
 
-### 3. Setup Storage for Avatar Uploads
-```sql
--- Copy and paste the contents of storage-setup.sql into Supabase SQL editor
--- This will create the storage bucket and policies for user avatars
-```
+- Copy toàn bộ nội dung file `setup.sql`
+- Paste vào SQL Editor
+- Click **"Run"** để thực thi
 
-### 4. Insert Sample Data (Optional)
-```sql
--- Copy and paste the contents of sample-data.sql into Supabase SQL editor
--- This will populate the database with sample courses and categories
-```
+### 3. Kiểm tra kết quả
 
-### 5. Verify Setup
-After running the scripts, you should have:
-- 5 categories (BIM & Revit, AutoCAD, Kết cấu, Quản lý dự án, Kiến trúc)
-- 7 sample courses with detailed information
-- Complete RLS policies for data security
-- Automatic triggers for user creation and timestamps
-- Storage bucket 'user-avatars' with appropriate policies for avatar uploads
+Sau khi chạy thành công, bạn sẽ thấy:
 
-## Environment Variables Required
-Make sure your `.env.local` file contains:
+- ✅ 7 bảng NLC được tạo
+- ✅ Admin account: `tranminhlong2404@gmail.com`
+- ✅ 3 sample courses
+- ✅ Indexes và triggers được thiết lập
+
+## 🗄️ Database Structure
+
+### 7 Bảng chính:
+
+1. **`nlc_accounts`** - Thông tin người dùng chính
+2. **`nlc_courses`** - Danh sách khóa học
+3. **`nlc_enrollments`** - Đăng ký khóa học của user
+4. **`nlc_managers`** - Quản lý và admin
+5. **`nlc_user_approvals`** - Phê duyệt nâng cấp role
+6. **`nlc_notifications`** - Hệ thống thông báo
+7. **`nlc_activity_log`** - Log hoạt động của user
+
+### Features:
+
+- ✅ **Foreign Keys** - Liên kết chặt chẽ giữa các bảng
+- ✅ **Indexes** - Tối ưu performance
+- ✅ **Triggers** - Tự động cập nhật timestamps
+- ✅ **Sample Data** - Dữ liệu mẫu sẵn sàng
+- ✅ **Admin Account** - Tài khoản admin đầy đủ quyền
+
+## 🔧 Environment Variables
+
+Đảm bảo file `.env.local` có:
+
 ```env
 REACT_APP_SUPABASE_URL=https://your-project.supabase.co
 REACT_APP_SUPABASE_ANON_KEY=your-anon-key
 ```
 
-## Testing the Database
-1. Register a new user through the application
-2. Check if user profile is automatically created
-3. Purchase a course and verify the transaction
-4. Test course progress tracking
-5. Leave a review and check if it appears
+## 🧪 Testing
 
-## Security Notes
-- All tables use Row Level Security (RLS)
-- Users can only access their own data
-- Course data is publicly readable but only admin-writable
-- Purchase data is strictly user-restricted
-- Authentication is handled by Supabase Auth
+Sau khi setup database:
 
-## Maintenance
-- Regular backups are handled by Supabase
-- Monitor database performance through Supabase dashboard
-- Update course content through the courses table
-- User data is automatically cleaned up when users delete their accounts
+1. **Test đăng ký user mới** - Kiểm tra tạo account tự động
+2. **Test đăng ký khóa học** - Kiểm tra enrollment system
+3. **Test admin dashboard** - Kiểm tra quyền admin
+4. **Test notifications** - Kiểm tra hệ thống thông báo
+
+## 🔒 Security
+
+- Tất cả bảng sử dụng **Row Level Security (RLS)**
+- User chỉ có thể truy cập dữ liệu của mình
+- Admin có quyền truy cập toàn bộ
+- Authentication được xử lý bởi Supabase Auth
+
+## 📊 Admin Account
+
+Sau khi setup, admin account:
+
+- **Email**: `tranminhlong2404@gmail.com`
+- **Role**: `admin`
+- **Plan**: `business`
+- **Permissions**: Toàn quyền quản lý
+
+## ⚠️ Lưu ý
+
+- File `setup.sql` sẽ **XÓA tất cả bảng cũ** trước khi tạo mới
+- Backup dữ liệu quan trọng trước khi chạy (nếu có)
+- Test kỹ sau khi setup để đảm bảo mọi thứ hoạt động
+
+## 🎯 Kết quả mong đợi
+
+Sau khi chạy thành công:
+
+- ❌ Không còn lỗi 406/400
+- ✅ Account Management page hoạt động
+- ✅ Tất cả tính năng sẵn sàng
+- ✅ Database đồng bộ với code
+
+---
+
+**🎉 Database sẵn sàng cho production!**

@@ -1,18 +1,47 @@
 /**
- * Payment Processor Component
- * Handles payment flow for orders
+ * Direct Card Payment Component - READY FOR REAL TESTING
+ * Visa/Mastercard payment with Stripe Elements
  */
 
-import React, { useState, useEffect } from 'react';
-import { Button } from '../ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Badge } from '../ui/badge';
-import { Loader2, CreditCard, Smartphone, CheckCircle, XCircle } from 'lucide-react';
-import { orderManager } from '../../lib/order/order-manager';
-import { vnPayService } from '../../lib/payment/vnpay';
-import { momoService } from '../../lib/payment/momo';
-import { formatPrice, formatDate } from '../../lib/shared/formatters';
-import type { Order, PaymentMethod } from '../../lib/order/order-manager';
+import React, { useState, useEffect } from "react";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Badge } from "../ui/badge";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import {
+  Loader2,
+  CreditCard,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  X,
+  RefreshCw,
+  Clock,
+} from "lucide-react";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  Elements,
+  CardElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
+import {
+  stripeService,
+  StripeService,
+  STRIPE_CONFIG,
+} from "../../lib/payment/stripe";
+import { orderManager } from "../../lib/order/order-manager";
+import { formatDate } from "../../lib/shared/formatters";
+import { usePaymentStatus } from "../../hooks/usePaymentStatus";
+import {
+  useFadeIn,
+  useSlideUp,
+  useScale,
+  useProgressBar,
+} from "../../hooks/useAnimations";
+import { usePaymentNotifications } from "../NotificationSystem";
+import type { Order } from "../../lib/order/order-manager";
 
 interface PaymentProcessorProps {
   order: Order;
@@ -21,107 +50,313 @@ interface PaymentProcessorProps {
   className?: string;
 }
 
-export function PaymentProcessor({
+// Stripe Elements wrapper
+const stripePromise = loadStripe(STRIPE_CONFIG.PUBLISHABLE_KEY);
+
+// Card Payment Form Component
+function CardPaymentForm({
   order,
   onPaymentSuccess,
   onPaymentFailed,
-  className = ''
-}: PaymentProcessorProps) {
-  const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>('vnpay');
+}: {
+  order: Order;
+  onPaymentSuccess?: (transactionId: string) => void;
+  onPaymentFailed?: (error: string) => void;
+}) {
+  const stripe = useStripe();
+  const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
-  const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'success' | 'failed'>('idle');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [error, setError] = useState("");
+  const [customerInfo, setCustomerInfo] = useState({
+    email: "",
+    name: "",
+    phone: "",
+  });
 
-  // Available payment methods
-  const paymentMethods = [
-    {
-      id: 'vnpay' as PaymentMethod,
-      name: 'VNPay',
-      description: 'Thanh toán qua cổng VNPay',
-      icon: CreditCard,
-      color: 'bg-blue-500',
-      fees: '0₫ phí giao dịch'
-    },
-    {
-      id: 'momo' as PaymentMethod,
-      name: 'MoMo',
-      description: 'Thanh toán qua ví điện tử MoMo',
-      icon: Smartphone,
-      color: 'bg-pink-500',
-      fees: '0₫ phí giao dịch'
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    if (!stripe || !elements) {
+      return;
     }
-  ];
 
-  const handlePayment = async () => {
-    if (order.status !== 'pending') {
-      setErrorMessage('Đơn hàng không ở trạng thái chờ thanh toán');
+    const cardElement = elements.getElement(CardElement);
+    if (!cardElement) {
+      setError("Không tìm thấy thông tin thẻ");
       return;
     }
 
     setIsProcessing(true);
-    setPaymentStatus('processing');
-    setErrorMessage('');
+    setError("");
 
     try {
-      // Create payment request
-      const paymentResponse = await orderManager.createPayment({
+      // Create Payment Intent
+      const paymentIntent = await stripeService.createPaymentIntent({
         orderId: order.id,
-        paymentMethod: selectedMethod,
-        returnUrl: `${window.location.origin}/payment/${selectedMethod}/return`,
-        customerInfo: {
-          name: order.shippingInfo?.recipientName || 'Khách hàng',
-          email: order.shippingInfo?.email || '',
-          phone: order.shippingInfo?.phone || '',
-        }
+        amount: StripeService.convertToCents(order.total, "USD"),
+        currency: "USD",
+        orderDescription: `Payment for Order #${order.id}`,
+        customerEmail: customerInfo.email,
+        customerName: customerInfo.name,
+        metadata: {
+          order_id: order.id,
+          customer_email: customerInfo.email,
+        },
       });
 
-      // Redirect to payment gateway
-      if (paymentResponse.paymentUrl) {
-        window.location.href = paymentResponse.paymentUrl;
-      } else {
-        throw new Error('Không nhận được URL thanh toán');
-      }
+      // Confirm payment
+      const { error: confirmError } = await stripe.confirmCardPayment(
+        paymentIntent.client_secret,
+        {
+          payment_method: {
+            card: cardElement,
+            billing_details: {
+              name: customerInfo.name,
+              email: customerInfo.email,
+            },
+          },
+        }
+      );
 
-    } catch (error) {
-      console.error('Payment initiation failed:', error);
-      setPaymentStatus('failed');
-      setErrorMessage(error instanceof Error ? error.message : 'Lỗi khởi tạo thanh toán');
-      onPaymentFailed?.(error instanceof Error ? error.message : 'Payment failed');
+      if (confirmError) {
+        setError(confirmError.message || "Payment failed");
+        onPaymentFailed?.(confirmError.message || "Payment failed");
+      } else {
+        onPaymentSuccess?.(paymentIntent.id);
+      }
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Payment failed";
+      setError(errorMessage);
+      onPaymentFailed?.(errorMessage);
     } finally {
       setIsProcessing(false);
     }
   };
 
-  // Check payment status from URL params (when returning from gateway)
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const status = urlParams.get('status');
-    const orderId = urlParams.get('orderId');
-    const transactionId = urlParams.get('transactionId');
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Customer Information */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Thông tin khách hàng</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="email">Email *</Label>
+            <Input
+              id="email"
+              type="email"
+              value={customerInfo.email}
+              onChange={(e) =>
+                setCustomerInfo((prev) => ({ ...prev, email: e.target.value }))
+              }
+              placeholder="your@email.com"
+              required
+            />
+          </div>
+          <div>
+            <Label htmlFor="name">Họ tên</Label>
+            <Input
+              id="name"
+              value={customerInfo.name}
+              onChange={(e) =>
+                setCustomerInfo((prev) => ({ ...prev, name: e.target.value }))
+              }
+              placeholder="Nguyễn Văn A"
+            />
+          </div>
+        </div>
+      </div>
 
-    if (status && orderId === order.id) {
-      if (status === 'success' && transactionId) {
-        setPaymentStatus('success');
-        onPaymentSuccess?.(transactionId);
-      } else if (status === 'failed') {
-        setPaymentStatus('failed');
-        setErrorMessage(urlParams.get('message') || 'Thanh toán thất bại');
-        onPaymentFailed?.(urlParams.get('message') || 'Payment failed');
+      {/* Card Information */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Thông tin thẻ</h3>
+        <div className="p-4 border rounded-lg">
+          <CardElement
+            options={{
+              style: {
+                base: {
+                  fontSize: "16px",
+                  color: "#424770",
+                  "::placeholder": {
+                    color: "#aab7c4",
+                  },
+                },
+                invalid: {
+                  color: "#9e2146",
+                },
+              },
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Error Display */}
+      {error && (
+        <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
+          <AlertCircle className="w-5 h-5 text-red-500" />
+          <span className="text-red-700">{error}</span>
+        </div>
+      )}
+
+      {/* Submit Button */}
+      <Button
+        type="submit"
+        disabled={!stripe || !customerInfo.email || isProcessing}
+        className="w-full"
+        size="lg"
+      >
+        {isProcessing ? (
+          <>
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            Đang xử lý thanh toán...
+          </>
+        ) : (
+          <>
+            <CreditCard className="w-4 h-4 mr-2" />
+            Thanh toán ${(order.total / 100).toFixed(2)}
+          </>
+        )}
+      </Button>
+    </form>
+  );
+}
+
+// Main Payment Processor Component
+export function PaymentProcessor({
+  order,
+  onPaymentSuccess,
+  onPaymentFailed,
+  className = "",
+}: PaymentProcessorProps) {
+  const [paymentStatus, setPaymentStatus] = useState<
+    "idle" | "processing" | "success" | "failed" | "pending"
+  >("idle");
+  const [transactionId, setTransactionId] = useState("");
+  const [error, setError] = useState("");
+
+  // Real-time order status updates
+  const {
+    order: currentOrder,
+    isLoading: isStatusLoading,
+    paymentStatus: realTimeStatus,
+    refreshOrder,
+    stopPolling,
+  } = usePaymentStatus({
+    orderId: order.id,
+    pollInterval: 2000, // Check every 2 seconds
+    onStatusChange: (updatedOrder) => {
+      if (
+        updatedOrder.status === "paid" ||
+        updatedOrder.status === "completed"
+      ) {
+        setPaymentStatus("success");
+        setTransactionId(updatedOrder.transactionId || "");
+        onPaymentSuccess?.(updatedOrder.transactionId || "");
+        stopPolling();
+      } else if (
+        updatedOrder.status === "failed" ||
+        updatedOrder.status === "cancelled"
+      ) {
+        setPaymentStatus("failed");
+        onPaymentFailed?.("Payment was cancelled or failed");
+        stopPolling();
       }
+    },
+  });
+
+  // Animation hooks
+  const fadeIn = useFadeIn(100);
+  const slideUp = useSlideUp(200);
+  const scale = useScale(300);
+  const progress = useProgressBar(30000); // 30 second progress bar
+
+  // Notification hooks
+  const { notifyPaymentSuccess, notifyPaymentFailed, notifyPaymentProcessing } =
+    usePaymentNotifications();
+
+  const handlePaymentSuccess = (txId: string) => {
+    setTransactionId(txId);
+    setPaymentStatus("success");
+    notifyPaymentSuccess(txId);
+    onPaymentSuccess?.(txId);
+  };
+
+  const handlePaymentFailed = (error: string) => {
+    setPaymentStatus("failed");
+    notifyPaymentFailed(error);
+    onPaymentFailed?.(error);
+  };
+
+  // Show processing notification when payment starts
+  useEffect(() => {
+    if (paymentStatus === "processing") {
+      notifyPaymentProcessing();
     }
-  }, [order.id, onPaymentSuccess, onPaymentFailed]);
+  }, [paymentStatus, notifyPaymentProcessing]);
 
   return (
     <div className={`space-y-6 ${className}`}>
+      {/* Real-time Status Indicator */}
+      {(paymentStatus === "processing" || realTimeStatus === "processing") && (
+        <Card className="border-blue-200 bg-blue-50" {...fadeIn}>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <RefreshCw className="w-5 h-5 text-blue-600 animate-spin" />
+                <div>
+                  <div className="font-medium text-blue-900">
+                    Đang xử lý thanh toán...
+                  </div>
+                  <div className="text-sm text-blue-700">
+                    Vui lòng chờ trong giây lát
+                  </div>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={refreshOrder}
+                disabled={isStatusLoading}
+                className="text-blue-600 hover:text-blue-800"
+              >
+                <RefreshCw
+                  className={`w-4 h-4 ${isStatusLoading ? "animate-spin" : ""}`}
+                />
+              </Button>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="mt-4">
+              <div className="w-full bg-blue-200 rounded-full h-2">
+                <div
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <div className="flex justify-between text-xs text-blue-600 mt-1">
+                <span>Đang xử lý</span>
+                <span>{Math.round(progress)}%</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Order Summary */}
-      <Card>
+      <Card {...slideUp}>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>Thông tin đơn hàng</span>
-            <Badge variant={order.status === 'pending' ? 'secondary' : 'default'}>
-              {order.status === 'pending' ? 'Chờ thanh toán' :
-               order.status === 'paid' ? 'Đã thanh toán' :
-               order.status === 'completed' ? 'Hoàn thành' : order.status}
+            <Badge
+              variant={order.status === "pending" ? "secondary" : "default"}
+            >
+              {order.status === "pending"
+                ? "Chờ thanh toán"
+                : order.status === "paid"
+                ? "Đã thanh toán"
+                : order.status === "completed"
+                ? "Hoàn thành"
+                : order.status}
             </Badge>
           </CardTitle>
         </CardHeader>
@@ -129,7 +364,9 @@ export function PaymentProcessor({
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <span className="text-gray-600">Mã đơn hàng:</span>
-              <div className="font-semibold">{order.orderNumber}</div>
+              <div className="font-semibold">
+                {order.orderNumber || order.id}
+              </div>
             </div>
             <div>
               <span className="text-gray-600">Ngày tạo:</span>
@@ -139,164 +376,179 @@ export function PaymentProcessor({
 
           <div className="border-t pt-4">
             <div className="space-y-2">
-              {order.items.map((item, index) => (
+              {order.items?.map((item, index) => (
                 <div key={index} className="flex justify-between items-center">
                   <div>
                     <div className="font-medium">{item.title}</div>
-                    {item.description && (
-                      <div className="text-sm text-gray-600">{item.description}</div>
-                    )}
-                    <div className="text-sm text-gray-500">
-                      {formatPrice(item.price)} × {item.quantity}
+                    <div className="text-sm text-gray-600">
+                      Số lượng: {item.quantity}
                     </div>
                   </div>
                   <div className="font-semibold">
-                    {formatPrice(item.price * item.quantity)}
+                    ${((item.price * item.quantity) / 100).toFixed(2)}
                   </div>
                 </div>
-              ))}
+              )) || <div className="text-gray-600">Không có sản phẩm nào</div>}
             </div>
           </div>
 
           <div className="border-t pt-4 space-y-2">
             <div className="flex justify-between">
               <span>Tạm tính:</span>
-              <span>{formatPrice(order.subtotal)}</span>
+              <span>${((order.subtotal || order.total) / 100).toFixed(2)}</span>
             </div>
-            {order.discount > 0 && (
-              <div className="flex justify-between text-green-600">
-                <span>Giảm giá:</span>
-                <span>-{formatPrice(order.discount)}</span>
-              </div>
-            )}
             {order.shippingFee > 0 && (
               <div className="flex justify-between">
                 <span>Phí vận chuyển:</span>
-                <span>{formatPrice(order.shippingFee)}</span>
+                <span>${(order.shippingFee / 100).toFixed(2)}</span>
               </div>
             )}
             {order.tax > 0 && (
               <div className="flex justify-between">
-                <span>Thuế VAT (10%):</span>
-                <span>{formatPrice(order.tax)}</span>
+                <span>Thuế:</span>
+                <span>${(order.tax / 100).toFixed(2)}</span>
               </div>
             )}
-            <div className="flex justify-between text-lg font-bold border-t pt-2">
+            <div className="flex justify-between font-semibold text-lg border-t pt-2">
               <span>Tổng cộng:</span>
-              <span className="text-blue-600">{formatPrice(order.total)}</span>
+              <span>${(order.total / 100).toFixed(2)}</span>
             </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Payment Status */}
-      {paymentStatus !== 'idle' && (
-        <Card>
+      {paymentStatus === "success" && (
+        <Card className="border-green-200 bg-green-50">
           <CardContent className="pt-6">
-            {paymentStatus === 'processing' && (
-              <div className="flex items-center justify-center space-x-2 text-blue-600">
-                <Loader2 className="h-5 w-5 animate-spin" />
-                <span>Đang chuyển hướng đến cổng thanh toán...</span>
-              </div>
-            )}
-
-            {paymentStatus === 'success' && (
-              <div className="flex items-center justify-center space-x-2 text-green-600">
-                <CheckCircle className="h-5 w-5" />
-                <span>Thanh toán thành công!</span>
-              </div>
-            )}
-
-            {paymentStatus === 'failed' && (
-              <div className="space-y-2">
-                <div className="flex items-center justify-center space-x-2 text-red-600">
-                  <XCircle className="h-5 w-5" />
-                  <span>Thanh toán thất bại</span>
+            <div className="flex items-center gap-3 text-green-700">
+              <CheckCircle className="w-6 h-6" />
+              <div>
+                <div className="font-semibold">Thanh toán thành công!</div>
+                <div className="text-sm">Transaction ID: {transactionId}</div>
+                <div className="text-sm">
+                  Đơn hàng của bạn đã được xử lý thành công.
                 </div>
-                {errorMessage && (
-                  <div className="text-center text-sm text-red-600">
-                    {errorMessage}
-                  </div>
-                )}
               </div>
-            )}
+            </div>
           </CardContent>
         </Card>
       )}
 
-      {/* Payment Methods - Only show if order is pending */}
-      {order.status === 'pending' && paymentStatus !== 'success' && (
+      {paymentStatus === "success" && (
+        <Card className="border-green-200 bg-green-50" {...scale}>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-center gap-3 text-green-700">
+              <CheckCircle className="w-8 h-8 animate-pulse" />
+              <div className="font-semibold text-lg">
+                🎉 Thanh toán thành công!
+              </div>
+            </div>
+            {transactionId && (
+              <div className="mt-4 p-3 bg-white rounded-lg border border-green-200">
+                <div className="text-sm text-gray-600">Mã giao dịch:</div>
+                <div className="font-mono text-sm text-green-800">
+                  {transactionId}
+                </div>
+              </div>
+            )}
+            <div className="mt-4 text-center">
+              <Button
+                onClick={() => window.location.reload()}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Tải lại trang
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {paymentStatus === "failed" && (
+        <Card className="border-red-200 bg-red-50" {...scale}>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-3 text-red-700">
+              <XCircle className="w-6 h-6 animate-pulse" />
+              <div>
+                <div className="font-semibold">Thanh toán thất bại</div>
+                <div className="text-sm">
+                  Có lỗi xảy ra trong quá trình thanh toán.
+                </div>
+              </div>
+                  </div>
+            {error && (
+              <div className="mt-3 text-sm text-red-600 text-center">
+                {error}
+              </div>
+            )}
+            <Button
+              onClick={() => setPaymentStatus("idle")}
+              variant="outline"
+              className="w-full mt-4"
+            >
+              Thử lại
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Card Payment Form */}
+      {paymentStatus === "idle" && order.status === "pending" && (
         <Card>
           <CardHeader>
-            <CardTitle>Chọn phương thức thanh toán</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <CreditCard className="w-5 h-5" />
+              Thanh toán bằng thẻ Visa/Mastercard
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-3">
-              {paymentMethods.map((method) => {
-                const Icon = method.icon;
-                return (
-                  <div
-                    key={method.id}
-                    className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
-                      selectedMethod === method.id
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                    onClick={() => setSelectedMethod(method.id)}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div className={`p-2 rounded-lg ${method.color} text-white`}>
-                        <Icon className="h-5 w-5" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="font-semibold">{method.name}</div>
-                        <div className="text-sm text-gray-600">{method.description}</div>
-                        <div className="text-xs text-green-600">{method.fees}</div>
-                      </div>
-                      <div className={`w-4 h-4 rounded-full border-2 ${
-                        selectedMethod === method.id
-                          ? 'border-blue-500 bg-blue-500'
-                          : 'border-gray-300'
-                      }`}>
-                        {selectedMethod === method.id && (
-                          <div className="w-2 h-2 bg-white rounded-full m-0.5" />
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+          <CardContent>
+            <Elements stripe={stripePromise}>
+              <CardPaymentForm
+                order={order}
+                onPaymentSuccess={handlePaymentSuccess}
+                onPaymentFailed={handlePaymentFailed}
+              />
+            </Elements>
+          </CardContent>
+        </Card>
+      )}
 
+      {paymentStatus === "processing" && (
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-center gap-3 text-blue-700">
+              <Loader2 className="w-6 h-6 animate-spin" />
+              <div className="font-semibold">Đang xử lý thanh toán...</div>
+                      </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {paymentStatus === "failed" && (
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-center gap-3 text-red-700">
+              <X className="w-6 h-6" />
+              <div className="font-semibold">Thanh toán thất bại</div>
+            </div>
+            {error && (
+              <div className="mt-3 text-sm text-red-600 text-center">
+                {error}
+              </div>
+            )}
             <Button
-              onClick={handlePayment}
-              disabled={isProcessing || paymentStatus === 'processing'}
-              className="w-full"
-              size="lg"
+              onClick={() => setPaymentStatus("pending")}
+              variant="outline"
+              className="w-full mt-4"
             >
-              {isProcessing ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Đang xử lý...
-                </>
-              ) : (
-                <>
-                  <CreditCard className="h-4 w-4 mr-2" />
-                  Thanh toán {formatPrice(order.total)}
-                </>
-              )}
+              Thử lại
             </Button>
-
-            <div className="text-xs text-gray-500 text-center">
-              Bằng cách nhấn "Thanh toán", bạn đồng ý với{' '}
-              <a href="/terms" className="text-blue-600 hover:underline">
-                điều khoản dịch vụ
-              </a>{' '}
-              của chúng tôi.
-            </div>
           </CardContent>
         </Card>
       )}
     </div>
   );
 }
+
+export default PaymentProcessor;

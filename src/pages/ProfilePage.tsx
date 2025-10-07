@@ -54,13 +54,16 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import { ProfileCard } from "../components/ui/profile-card";
+import { FluidGlass } from "../components/ui/fluid-glass";
+import { supabase } from "../lib/supabase-config";
 
 interface ExtendedUser {
   id: string;
   email: string;
   full_name: string;
   avatar_url?: string;
-  role: "student" | "instructor" | "admin";
+  role: "sinh_vien" | "giang_vien" | "quan_ly" | "admin";
   created_at: string;
   phone?: string;
   bio?: string;
@@ -99,7 +102,7 @@ export default function ProfilePage() {
     email: user?.email || "",
     full_name: user?.full_name || "",
     avatar_url: user?.avatar_url || "",
-    role: user?.role || "student",
+    role: user?.account_role || "sinh_vien",
     created_at: user?.created_at || new Date().toISOString(),
     phone: "",
     bio: "",
@@ -272,9 +275,9 @@ export default function ProfilePage() {
     }
   };
 
-  const handleAvatarUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file || !user) return;
 
     if (file.size > 5 * 1024 * 1024) { // 5MB limit
       toast.error("File ảnh không được vượt quá 5MB");
@@ -286,13 +289,71 @@ export default function ProfilePage() {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const result = e.target?.result as string;
-      setProfileData(prev => ({ ...prev, avatar_url: result }));
+    setLoading(true);
+    try {
+      // Show preview immediately
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        setProfileData(prev => ({ ...prev, avatar_url: result }));
+      };
+      reader.readAsDataURL(file);
+
+      // Upload to Supabase Storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/avatar_${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('user-files')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('user-files')
+        .getPublicUrl(fileName);
+
+      // Update database - both nlc_user_files and nlc_accounts
+      const { error: filesError } = await (supabase as any)
+        .from('nlc_user_files')
+        .insert({
+          user_id: user.id,
+          filename: fileName,
+          original_filename: file.name,
+          file_path: urlData.publicUrl,
+          file_type: 'image',
+          file_category: 'image',
+          file_extension: fileExt,
+          mime_type: file.type,
+          file_size: file.size,
+          destination_page: 'profile',
+          is_public: false,
+          status: 'ready',
+          upload_progress: 100,
+        });
+
+      if (filesError) console.error('Files table update error:', filesError);
+
+      // Update user avatar_url in accounts table
+      const { error: accountError } = await (supabase as any)
+        .from('nlc_accounts')
+        .update({ avatar_url: urlData.publicUrl })
+        .eq('id', user.id);
+
+      if (accountError) throw accountError;
+
+      setProfileData(prev => ({ ...prev, avatar_url: urlData.publicUrl }));
       toast.success("Cập nhật ảnh đại diện thành công!");
-    };
-    reader.readAsDataURL(file);
+    } catch (error: any) {
+      console.error("Avatar upload error:", error);
+      toast.error(error.message || "Không thể upload ảnh đại diện");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getInitials = (name: string) => {
@@ -319,21 +380,46 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-black text-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Profile Card Preview */}
+        <motion.div
+          className="mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <ProfileCard
+            name={profileData.full_name || user.email || "User"}
+            email={profileData.email}
+            phone={profileData.phone}
+            avatar={profileData.avatar_url}
+            role={profileData.role === "sinh_vien" ? "Học viên" : profileData.role === "giang_vien" ? "Giảng viên" : profileData.role === "admin" ? "Quản trị viên" : "Member"}
+            location={profileData.location}
+            joinDate={new Date(profileData.created_at).toLocaleDateString("vi-VN")}
+            stats={[
+              { label: "Khóa học", value: "12", icon: <BookOpen className="h-5 w-5" /> },
+              { label: "Chứng chỉ", value: "8", icon: <Award className="h-5 w-5" /> },
+              { label: "Giờ học", value: "124", icon: <Clock className="h-5 w-5" /> },
+            ]}
+            badges={profileData.skills?.slice(0, 3) || ["verified"]}
+            onEdit={() => setEditMode(true)}
+          />
+        </motion.div>
+
         {/* Header */}
         <motion.div
           className="mb-8"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
         >
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
+              <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent mb-2">
                 Hồ sơ cá nhân
               </h1>
-              <p className="text-gray-600 text-lg">
+              <p className="text-gray-400 text-lg">
                 Quản lý thông tin và tùy chỉnh tài khoản của bạn
               </p>
               {hasUnsavedChanges && (
@@ -431,14 +517,14 @@ export default function ProfilePage() {
                       className={`${
                         profileData.role === "admin"
                           ? "bg-red-100 text-red-800"
-                          : profileData.role === "instructor"
+                          : profileData.role === "giang_vien"
                           ? "bg-blue-100 text-blue-800"
                           : "bg-green-100 text-green-800"
                       }`}
                     >
                       {profileData.role === "admin"
                         ? "Quản trị viên"
-                        : profileData.role === "instructor"
+                        : profileData.role === "giang_vien"
                         ? "Giảng viên"
                         : "Học viên"
                       }

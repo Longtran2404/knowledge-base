@@ -54,7 +54,7 @@ export default function BlogPostPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-white/5 backdrop-blur-sm border border-white/10-sm border-b">
         <div className="container max-w-4xl mx-auto px-4 py-6">
           <Button
             variant="ghost"

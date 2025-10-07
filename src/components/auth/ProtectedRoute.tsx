@@ -7,7 +7,7 @@ interface ProtectedRouteProps {
   children: React.ReactNode;
   requireAuth?: boolean;
   redirectTo?: string;
-  allowedRoles?: ("student" | "instructor" | "admin")[];
+  allowedRoles?: ("sinh_vien" | "giang_vien" | "quan_ly" | "admin")[];
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
@@ -16,8 +16,15 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   redirectTo = "/dang-nhap",
   allowedRoles,
 }) => {
-  const { userProfile: user, isAuthenticated, isLoading } = useAuth();
+  const { userProfile: user, isAuthenticated, isLoading, error } = useAuth();
   const location = useLocation();
+
+  console.log("ProtectedRoute check:", {
+    isLoading,
+    isAuthenticated,
+    user: user?.email,
+    error,
+  });
 
   if (isLoading) {
     return (
@@ -29,26 +36,18 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // Check authentication requirement
   if (requireAuth && !isAuthenticated) {
-    return (
-      <Navigate
-        to={redirectTo}
-        state={{ from: location }}
-        replace
-      />
-    );
+    console.log("User not authenticated, redirecting to:", redirectTo);
+    return <Navigate to={redirectTo} state={{ from: location }} replace />;
   }
 
   // Check role permissions if specified
-  if (allowedRoles && user && !allowedRoles.includes(user.role)) {
+  if (allowedRoles && user && !allowedRoles.includes(user.account_role)) {
     // Store error message for display
-    localStorage.setItem("nlc_auth_error", "Bạn không có quyền truy cập trang này");
-    return (
-      <Navigate
-        to="/dang-nhap"
-        state={{ from: location }}
-        replace
-      />
+    localStorage.setItem(
+      "nlc_auth_error",
+      "Bạn không có quyền truy cập trang này"
     );
+    return <Navigate to="/dang-nhap" state={{ from: location }} replace />;
   }
 
   return <>{children}</>;
@@ -59,9 +58,7 @@ export const StudentRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   return (
-    <ProtectedRoute allowedRoles={["student"]}>
-      {children}
-    </ProtectedRoute>
+    <ProtectedRoute allowedRoles={["sinh_vien"]}>{children}</ProtectedRoute>
   );
 };
 
@@ -69,7 +66,7 @@ export const InstructorRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   return (
-    <ProtectedRoute allowedRoles={["instructor", "admin"]}>
+    <ProtectedRoute allowedRoles={["giang_vien", "admin"]}>
       {children}
     </ProtectedRoute>
   );
@@ -78,21 +75,13 @@ export const InstructorRoute: React.FC<{ children: React.ReactNode }> = ({
 export const ManagerRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  return (
-    <ProtectedRoute allowedRoles={["admin"]}>
-      {children}
-    </ProtectedRoute>
-  );
+  return <ProtectedRoute allowedRoles={["admin"]}>{children}</ProtectedRoute>;
 };
 
 export const AdminRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  return (
-    <ProtectedRoute allowedRoles={["admin"]}>
-      {children}
-    </ProtectedRoute>
-  );
+  return <ProtectedRoute allowedRoles={["admin"]}>{children}</ProtectedRoute>;
 };
 
 export default ProtectedRoute;

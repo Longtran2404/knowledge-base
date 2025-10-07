@@ -390,7 +390,7 @@ export const getManagerApprovals = async (
 // Course helper functions
 export const getCourses = async () => {
   const { data, error } = await supabase
-    .from("courses")
+    .from("nlc_courses")
     .select("*")
     .eq("is_published", true)
     .order("created_at", { ascending: false });
@@ -503,9 +503,9 @@ export const uploadAvatar = async (
 
 export const updateUserAvatar = async (userId: string, avatarUrl: string) => {
   const { error } = await supabase
-    .from("users")
+    .from("nlc_accounts")
     .update({ avatar_url: avatarUrl })
-    .eq("id", userId);
+    .eq("user_id", userId);
 
   if (error) {
     console.error("Error updating user avatar:", error);
@@ -535,9 +535,9 @@ export const deleteOldAvatar = async (avatarUrl: string) => {
 // Get user profile data
 export const getUserProfile = async (userId: string) => {
   const { data, error } = await supabase
-    .from("users")
+    .from("nlc_accounts")
     .select("*")
-    .eq("id", userId)
+    .eq("user_id", userId)
     .single();
 
   if (error) {
@@ -557,12 +557,12 @@ export const updateUserProfile = async (
   updates: Partial<User>
 ) => {
   const { data, error } = await supabase
-    .from("users")
+    .from("nlc_accounts")
     .update({
       ...updates,
       updated_at: new Date().toISOString(),
     })
-    .eq("id", userId)
+    .eq("user_id", userId)
     .select()
     .single();
 
@@ -571,5 +571,5 @@ export const updateUserProfile = async (
     throw error;
   }
 
-  return data;
+  // return data;
 };

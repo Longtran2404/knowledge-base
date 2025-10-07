@@ -5,7 +5,7 @@
 
 import { supabase } from "../supabase-config";
 import { vnPayService } from "../payment/vnpay";
-import { momoService } from "../payment/momo";
+import { stripeService } from "../payment/stripe";
 
 // Order Types
 export type OrderStatus =
@@ -249,7 +249,7 @@ class OrderManager {
 
       switch (paymentRequest.paymentMethod) {
         case "vnpay":
-          const vnpayResponse = vnPayService.createPaymentUrl({
+          const vnpayResponse = await vnPayService.createPaymentUrl({
             orderId: order.orderNumber,
             amount: order.total,
             orderDescription: `Thanh toán đơn hàng ${order.orderNumber}`,
@@ -265,29 +265,25 @@ class OrderManager {
           break;
 
         case "momo":
-          const momoResponse = await momoService.createPayment({
+          const stripeResponse = await stripeService.createPaymentIntent({
             orderId: order.orderNumber,
             amount: order.total,
-            orderInfo: `Thanh toán đơn hàng ${order.orderNumber}`,
-            userInfo: paymentRequest.customerInfo
-              ? {
-                  name: paymentRequest.customerInfo.name,
-                  phoneNumber: paymentRequest.customerInfo.phone,
-                  email: paymentRequest.customerInfo.email,
-                }
-              : undefined,
+            currency: "USD",
+            orderDescription: `Thanh toán đơn hàng ${order.orderNumber}`,
+            customerEmail: paymentRequest.customerInfo?.email,
+            customerName: paymentRequest.customerInfo?.name,
+            customerPhone: paymentRequest.customerInfo?.phone,
           });
 
-          if (momoResponse.resultCode !== 0) {
-            throw new Error(`MoMo payment failed: ${momoResponse.message}`);
+          if (stripeResponse.status !== "requires_payment_method") {
+            throw new Error(`Stripe payment failed: ${stripeResponse.status}`);
           }
 
           paymentResponse = {
-            paymentUrl: momoResponse.payUrl,
-            qrCode: momoResponse.qrCodeUrl,
-            paymentReference: momoResponse.requestId,
+            paymentUrl: `#stripe-payment-${stripeResponse.id}`,
+            paymentReference: stripeResponse.id,
           };
-          paymentReference = momoResponse.requestId;
+          paymentReference = stripeResponse.id;
           break;
 
         default:

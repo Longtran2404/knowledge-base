@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear Supabase Auth Storage</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .status {
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .status.info {
+            background: #ebf8ff;
+            border: 1px solid #90cdf4;
+            color: #2c5282;
+        }
+        
+        .status.success {
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            color: #22543d;
+        }
+        
+        .status.error {
+            background: #fff5f5;
+            border: 1px solid #fc8181;
+            color: #742a2a;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button.secondary {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+        
+        button.secondary:hover {
+            background: #cbd5e0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .results {
+            margin-top: 20px;
+        }
+        
+        .results ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .results li {
+            padding: 10px;
+            margin: 5px 0;
+            background: #f7fafc;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #4a5568;
+        }
+        
+        .icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #a0aec0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🧹</div>
+        <h1>Clear Supabase Auth Storage</h1>
+        <p class="subtitle">Fix authentication errors by clearing expired tokens</p>
+        
+        <div id="status" class="status info">
+            <strong>ℹ️ Ready to clean</strong><br>
+            Click the button below to clear all Supabase authentication tokens from your browser.
+        </div>
+        
+        <button id="clearBtn" onclick="clearStorage()">
+            🗑️ Clear Auth Storage
+        </button>
+        
+        <button class="secondary" onclick="window.location.href='/'">
+            🏠 Back to App
+        </button>
+        
+        <div id="results" class="results"></div>
+        
+        <div class="footer">
+            Nam Long Center v1.0.0
+        </div>
+    </div>
+    
+    <script>
+        function clearStorage() {
+            const statusDiv = document.getElementById('status');
+            const resultsDiv = document.getElementById('results');
+            const clearBtn = document.getElementById('clearBtn');
+            
+            try {
+                // Get all localStorage keys
+                const keys = Object.keys(localStorage);
+                
+                // Find Supabase-related keys
+                const supabaseKeys = keys.filter(key => 
+                    key.includes('supabase') || 
+                    key.includes('sb-') || 
+                    key.includes('auth-token')
+                );
+                
+                if (supabaseKeys.length === 0) {
+                    statusDiv.className = 'status success';
+                    statusDiv.innerHTML = `
+                        <strong>✅ Already clean</strong><br>
+                        No Supabase auth tokens found in storage.
+                    `;
+                    return;
+                }
+                
+                // Show found keys
+                let resultHTML = '<ul>';
+                supabaseKeys.forEach(key => {
+                    localStorage.removeItem(key);
+                    resultHTML += `<li>✅ Removed: ${key}</li>`;
+                });
+                resultHTML += '</ul>';
+                
+                resultsDiv.innerHTML = '<h3 style="margin-bottom: 10px; color: #2d3748;">Removed Keys:</h3>' + resultHTML;
+                
+                // Update status
+                statusDiv.className = 'status success';
+                statusDiv.innerHTML = `
+                    <strong>✅ Success!</strong><br>
+                    Cleared ${supabaseKeys.length} Supabase auth token(s).<br>
+                    <br>
+                    <strong>Next steps:</strong><br>
+                    1. Make sure you have a .env file with valid Supabase credentials<br>
+                    2. Restart your development server<br>
+                    3. Reload the application
+                `;
+                
+                // Disable button
+                clearBtn.disabled = true;
+                clearBtn.textContent = '✅ Storage Cleared';
+                clearBtn.style.background = '#48bb78';
+                
+                // Auto reload after 3 seconds
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 3000);
+                
+            } catch (error) {
+                statusDiv.className = 'status error';
+                statusDiv.innerHTML = `
+                    <strong>❌ Error</strong><br>
+                    ${error.message}
+                `;
+                console.error('Error clearing storage:', error);
+            }
+        }
+        
+        // Check on page load
+        window.addEventListener('load', () => {
+            const keys = Object.keys(localStorage);
+            const supabaseKeys = keys.filter(key => 
+                key.includes('supabase') || 
+                key.includes('sb-') || 
+                key.includes('auth-token')
+            );
+            
+            if (supabaseKeys.length > 0) {
+                const statusDiv = document.getElementById('status');
+                statusDiv.innerHTML = `
+                    <strong>⚠️ Found ${supabaseKeys.length} auth token(s)</strong><br>
+                    These expired tokens are causing authentication errors.<br>
+                    Click the button below to clear them.
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
+
+

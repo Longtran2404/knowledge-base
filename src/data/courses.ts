@@ -1,91 +1,133 @@
 import { Course } from "../types/course";
+import { nlcApi } from "../lib/api/nlc-database-api";
+import type { NLCCourse } from "../types/database";
 
-export const coursesData: Course[] = [
+// Convert NLCCourse to legacy Course format for compatibility
+function convertNLCCourseToLegacyCourse(nlcCourse: NLCCourse): Course {
+  return {
+    id: nlcCourse.id,
+    slug: nlcCourse.course_slug,
+    title: nlcCourse.title,
+    level:
+      nlcCourse.course_level === "Cơ bản"
+        ? "Beginner"
+        : nlcCourse.course_level === "Trung cấp"
+        ? "Intermediate"
+        : "Advanced",
+    domain: nlcCourse.course_category,
+    year: new Date(nlcCourse.created_at).getFullYear(),
+    tags: nlcCourse.course_tags || [],
+    ratingAvg: nlcCourse.avg_rating || 0,
+    ratingCount: nlcCourse.review_count,
+    thumbnail:
+      nlcCourse.thumbnail_url ||
+      nlcCourse.course_image_url ||
+      "/images/courses/default.jpg",
+    price: nlcCourse.course_price,
+    isHot: nlcCourse.is_featured,
+    createdAt: nlcCourse.created_at,
+  };
+}
+
+// Legacy mock data as fallback
+const fallbackCoursesData: Course[] = [
   {
-    id: "c-bim-001",
-    slug: "bim-automation",
-    title: "BIM Automation cho Kỹ sư",
-    level: "Intermediate",
-    domain: "BIM",
-    year: 2025,
-    tags: ["BIM", "Automation", "Revit", "Dynamo"],
+    id: "c-react-001",
+    slug: "react-co-ban-2024",
+    title: "React.js Cơ bản 2024",
+    level: "Beginner",
+    domain: "Lập trình",
+    year: 2024,
+    tags: ["React", "JavaScript", "Frontend"],
     ratingAvg: 4.8,
     ratingCount: 121,
-    thumbnail: "/images/courses/bim-auto.jpg",
-    price: 1490000,
+    thumbnail: "/images/courses/react-basic.jpg",
+    price: 299000,
     isHot: true,
-    createdAt: "2025-08-01T00:00:00.000Z"
+    createdAt: "2024-12-01T00:00:00.000Z",
   },
   {
-    id: "c-ktxd-101",
-    slug: "ket-cau-can-ban",
-    title: "Kết cấu căn bản cho Kỹ sư",
-    level: "Beginner",
-    domain: "Kết cấu",
+    id: "c-node-002",
+    slug: "nodejs-backend-api",
+    title: "Node.js Backend Development",
+    level: "Intermediate",
+    domain: "Lập trình",
     year: 2024,
-    tags: ["Kết cấu", "Bê tông cốt thép", "Thép"],
+    tags: ["Node.js", "Express", "API", "Backend"],
     ratingAvg: 4.6,
     ratingCount: 86,
-    thumbnail: "/images/courses/ket-cau.jpg",
-    price: 990000,
-    createdAt: "2024-12-10T00:00:00.000Z"
+    thumbnail: "/images/courses/nodejs-backend.jpg",
+    price: 399000,
+    createdAt: "2024-11-15T00:00:00.000Z",
   },
   {
-    id: "c-cad-201",
-    slug: "autocad-nang-cao",
-    title: "AutoCAD Nâng cao & Tối ưu",
+    id: "c-fullstack-003",
+    slug: "fullstack-javascript",
+    title: "Full-stack JavaScript",
     level: "Advanced",
-    domain: "CAD",
-    year: 2025,
-    tags: ["AutoCAD", "LISP", "Automation"],
+    domain: "Lập trình",
+    year: 2024,
+    tags: ["Full-stack", "React", "Node.js", "MongoDB"],
     ratingAvg: 4.9,
     ratingCount: 203,
-    thumbnail: "/images/courses/autocad-advanced.jpg",
-    price: 1290000,
+    thumbnail: "/images/courses/fullstack-js.jpg",
+    price: 599000,
     isHot: true,
-    createdAt: "2025-07-15T00:00:00.000Z"
+    createdAt: "2024-10-20T00:00:00.000Z",
   },
-  {
-    id: "c-pm-301",
-    slug: "quan-ly-du-an-xay-dung",
-    title: "Quản lý Dự án Xây dựng",
-    level: "Intermediate",
-    domain: "Project Management",
-    year: 2025,
-    tags: ["PM", "Primavera P6", "MS Project"],
-    ratingAvg: 4.7,
-    ratingCount: 95,
-    thumbnail: "/images/courses/project-mgmt.jpg",
-    price: 1190000,
-    createdAt: "2025-06-20T00:00:00.000Z"
-  },
-  {
-    id: "c-green-401",
-    slug: "xay-dung-xanh",
-    title: "Xây dựng Xanh & Bền vững",
-    level: "Advanced",
-    domain: "Green Building",
-    year: 2025,
-    tags: ["LEED", "Green Building", "Sustainability"],
-    ratingAvg: 4.5,
-    ratingCount: 67,
-    thumbnail: "/images/courses/green-building.jpg",
-    price: 1590000,
-    createdAt: "2025-05-10T00:00:00.000Z"
-  },
-  {
-    id: "c-drone-501",
-    slug: "drone-khao-sat-xay-dung",
-    title: "Drone trong Khảo sát Xây dựng",
-    level: "Intermediate",
-    domain: "Survey Technology",
-    year: 2025,
-    tags: ["Drone", "Survey", "Photogrammetry"],
-    ratingAvg: 4.4,
-    ratingCount: 42,
-    thumbnail: "/images/courses/drone-survey.jpg",
-    price: 890000,
-    isHot: true,
-    createdAt: "2025-04-25T00:00:00.000Z"
-  }
 ];
+
+// Main function to get courses data
+export async function getCoursesData(): Promise<Course[]> {
+  try {
+    const response = await nlcApi.courses.getCourses();
+
+    if (response.success && response.data) {
+      // Convert NLC courses to legacy format
+      return response.data.map(convertNLCCourseToLegacyCourse);
+    } else {
+      console.warn("Failed to load courses from database, using fallback data");
+      return fallbackCoursesData;
+    }
+  } catch (error) {
+    console.error("Error loading courses from database:", error);
+    return fallbackCoursesData;
+  }
+}
+
+// Export coursesData for immediate use (synchronous fallback)
+export const coursesData: Course[] = fallbackCoursesData;
+
+// Export function to get featured courses
+export async function getFeaturedCoursesData(): Promise<Course[]> {
+  try {
+    const response = await nlcApi.courses.getFeaturedCourses();
+
+    if (response.success && response.data) {
+      return response.data.map(convertNLCCourseToLegacyCourse);
+    } else {
+      // Return featured courses from fallback
+      return fallbackCoursesData.filter((course) => course.isHot);
+    }
+  } catch (error) {
+    console.error("Error loading featured courses:", error);
+    return fallbackCoursesData.filter((course) => course.isHot);
+  }
+}
+
+// Export function to get course by slug
+export async function getCourseBySlug(slug: string): Promise<Course | null> {
+  try {
+    const response = await nlcApi.courses.getCourseBySlug(slug);
+
+    if (response.success && response.data) {
+      return convertNLCCourseToLegacyCourse(response.data);
+    } else {
+      // Fallback to mock data
+      return fallbackCoursesData.find((course) => course.slug === slug) || null;
+    }
+  } catch (error) {
+    console.error("Error loading course by slug:", error);
+    return fallbackCoursesData.find((course) => course.slug === slug) || null;
+  }
+}

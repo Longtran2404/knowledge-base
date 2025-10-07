@@ -1,0 +1,26 @@
+<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="90" cy="90" r="90" fill="#3b82f6"/>
+
+  <!-- Main logo - stylized "NLC" letters -->
+  <g transform="translate(30, 40)">
+    <!-- N -->
+    <path d="M10 20 L10 80 L15 80 L15 35 L35 80 L40 80 L40 20 L35 20 L35 65 L15 20 Z" fill="white" stroke="white" stroke-width="1"/>
+
+    <!-- L -->
+    <path d="M50 20 L50 80 L75 80 L75 75 L55 75 L55 20 Z" fill="white" stroke="white" stroke-width="1"/>
+
+    <!-- C -->
+    <path d="M85 30 Q85 20 95 20 Q105 20 105 30 L100 30 Q100 25 95 25 Q90 25 90 30 L90 70 Q90 75 95 75 Q100 75 100 70 L105 70 Q105 80 95 80 Q85 80 85 70 Z" fill="white" stroke="white" stroke-width="1"/>
+  </g>
+
+  <!-- Decorative elements -->
+  <circle cx="150" cy="45" r="8" fill="white" opacity="0.3"/>
+  <circle cx="30" cy="135" r="6" fill="white" opacity="0.2"/>
+  <circle cx="150" cy="135" r="4" fill="white" opacity="0.4"/>
+
+  <!-- Bottom text -->
+  <text x="90" y="155" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
+    CENTER
+  </text>
+</svg>

@@ -11,12 +11,23 @@ import React, {
   useCallback,
   ReactNode,
 } from "react";
-import { CartItem, Product, Course } from "../lib/supabase-config";
+import { NLCCartItem, Product, Course } from "../lib/supabase-config";
 import { supabase } from "../lib/supabase-config";
 import { useAuth } from "./UnifiedAuthContext";
 
 // Types
-export interface CartItemWithDetails extends CartItem {
+export interface CartItemWithDetails {
+  id: string;
+  user_id: string;
+  product_id: string;
+  product_type: string;
+  product_name: string;
+  product_price: number;
+  quantity: number;
+  product_image?: string;
+  product_metadata?: any;
+  created_at: string;
+  updated_at: string;
   product?: Product;
   course?: Course;
   name: string;
@@ -77,7 +88,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
 
     case "SET_ITEMS":
       const total = action.payload.reduce(
-        (sum, item) => sum + item.quantity * item.price,
+        (sum, item) => sum + item.quantity * item.product_price,
         0
       );
       const count = action.payload.reduce(
@@ -94,11 +105,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
 
     case "ADD_ITEM": {
       const existingItem = state.items.find(
-        (item) =>
-          (action.payload.product_id &&
-            item.product_id === action.payload.product_id) ||
-          (action.payload.course_id &&
-            item.course_id === action.payload.course_id)
+        (item) => item.product_id === action.payload.product_id
       );
 
       if (existingItem) {
@@ -108,7 +115,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
             : item
         );
         const total = updatedItems.reduce(
-          (sum, item) => sum + item.quantity * item.price,
+          (sum, item) => sum + item.quantity * item.product_price,
           0
         );
         const count = updatedItems.reduce(
@@ -119,7 +126,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       } else {
         const newItems = [...state.items, action.payload];
         const total = newItems.reduce(
-          (sum, item) => sum + item.quantity * item.price,
+          (sum, item) => sum + item.quantity * item.product_price,
           0
         );
         const count = newItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -136,7 +143,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         )
         .filter((item) => item.quantity > 0);
       const total = updatedItems.reduce(
-        (sum, item) => sum + item.quantity * item.price,
+        (sum, item) => sum + item.quantity * item.product_price,
         0
       );
       const count = updatedItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -148,7 +155,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         (item) => item.id !== action.payload
       );
       const totalAfterRemove = filteredItems.reduce(
-        (sum, item) => sum + item.quantity * item.price,
+        (sum, item) => sum + item.quantity * item.product_price,
         0
       );
       const countAfterRemove = filteredItems.reduce(
@@ -179,41 +186,33 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, initialState);
   const { user } = useAuth();
 
+  // Stable syncCart function to prevent infinite re-renders
   const syncCart = useCallback(async () => {
     if (!user) return;
 
-    // Temporarily disable cart loading to avoid 404 errors
-    console.log("Cart loading disabled - database tables not set up");
-    dispatch({ type: "SET_LOADING", payload: false });
-    dispatch({ type: "SET_ERROR", payload: null });
-    dispatch({ type: "SET_ITEMS", payload: [] });
-    
-    /* TODO: Re-enable when database tables are set up
+    console.log("Syncing cart for user:", user.id);
+    dispatch({ type: "SET_LOADING", payload: true });
+
     try {
-      dispatch({ type: "SET_LOADING", payload: true });
       dispatch({ type: "SET_ERROR", payload: null });
 
       // Load cart from Supabase
       const { data: cartItems, error } = await supabase
-        .from("cart_items")
+        .from("nlc_cart_items")
         .select("*")
         .eq("user_id", user.id);
 
       if (error) throw error;
 
-      // Transform data
+      // Transform data from nlc_cart_items schema
       const itemsWithDetails: CartItemWithDetails[] = (cartItems || []).map(
-        (item) => ({
-          ...(item as any),
-          name:
-            (item as any).product?.name ||
-            (item as any).course?.title ||
-            "Unknown Item",
-          image_url:
-            (item as any).product?.image_url || (item as any).course?.image_url,
-          product: (item as any).product,
-          course: (item as any).course,
-        })
+        (item: any) => {
+          return {
+            ...item,
+            name: item.product_name || "Unknown Item",
+            image_url: item.product_image,
+          } as CartItemWithDetails;
+        }
       );
 
       dispatch({ type: "SET_ITEMS", payload: itemsWithDetails });
@@ -223,8 +222,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     } finally {
       dispatch({ type: "SET_LOADING", payload: false });
     }
-    */
-  }, [user]);
+  }, [user]); // Include user dependency but memoize properly
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -251,7 +249,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       // Clear cart when user logs out
       dispatch({ type: "CLEAR_CART" });
     }
-  }, [user, syncCart]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]); // Only depend on user, syncCart is memoized with useCallback
 
   // Save cart to localStorage whenever items change
   useEffect(() => {
@@ -276,17 +275,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
       dispatch({ type: "SET_ERROR", payload: null });
 
       if (user) {
-        // Sync with Supabase
-        const { data, error } = await supabase
-          .from("cart_items")
-          .upsert({
-            user_id: user.id,
-            product_id: item.product_id,
+        // Sync with Supabase - nlc_cart_items schema
+        const cartInsertData = {
+          user_id: user.id,
+          product_id: item.product_id || item.course_id || '',
+          product_type: item.item_type,
+          product_name: item.name,
+          product_price: item.price,
+          quantity: 1,
+          product_image: item.image_url,
+          product_metadata: {
             course_id: item.course_id,
-            item_type: item.item_type,
-            quantity: 1,
-            price: item.price,
-          } as any)
+            original_product_id: item.product_id
+          },
+        };
+
+        const { data, error } = await (supabase as any)
+          .from("nlc_cart_items")
+          .upsert(cartInsertData)
           .select()
           .single();
 
@@ -294,7 +300,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
         // Add to local state
         const cartItem: CartItemWithDetails = {
-          ...((data as any) || {}),
+          ...data,
           name: item.name,
           image_url: item.image_url,
         };
@@ -305,11 +311,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
         const cartItem: CartItemWithDetails = {
           id: `temp_${Date.now()}`,
           user_id: "",
-          product_id: item.product_id,
-          course_id: item.course_id,
-          item_type: item.item_type,
+          product_id: item.product_id || item.course_id || '',
+          product_type: item.item_type,
+          product_name: item.name,
+          product_price: item.price,
           quantity: 1,
-          price: item.price,
+          product_image: item.image_url,
+          product_metadata: {},
           name: item.name,
           image_url: item.image_url,
           created_at: new Date().toISOString(),
@@ -333,7 +341,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       if (user) {
         // Remove from Supabase
         const { error } = await supabase
-          .from("cart_items")
+          .from("nlc_cart_items")
           .delete()
           .eq("id", itemId);
 
@@ -362,7 +370,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       if (user) {
         // Update in Supabase
         const { error } = await (supabase as any)
-          .from("cart_items")
+          .from("nlc_cart_items")
           .update({ quantity: quantity })
           .eq("id", itemId);
 
@@ -386,7 +394,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       if (user) {
         // Clear from Supabase
         const { error } = await supabase
-          .from("cart_items")
+          .from("nlc_cart_items")
           .delete()
           .eq("user_id", user.id);
 

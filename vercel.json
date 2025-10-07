@@ -1,5 +1,8 @@
 {
   "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "build",
+  "framework": "create-react-app",
   "builds": [
     {
       "src": "package.json",
@@ -21,8 +24,49 @@
       "dest": "/index.html"
     }
   ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-DNS-Prefetch-Control",
+          "value": "on"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "geolocation=(), microphone=(), camera=()"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://*.supabase.co; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; connect-src 'self' https://*.supabase.co https://api.stripe.com https://api.ipify.org; frame-src https://js.stripe.com;"
+        }
+      ]
+    }
+  ],
   "env": {
     "REACT_APP_SUPABASE_URL": "@react_app_supabase_url",
-    "REACT_APP_SUPABASE_ANON_KEY": "@react_app_supabase_anon_key"
+    "REACT_APP_SUPABASE_ANON_KEY": "@react_app_supabase_anon_key",
+    "REACT_APP_VERSION": "1.0.0",
+    "REACT_APP_ENVIRONMENT": "production"
   }
 }

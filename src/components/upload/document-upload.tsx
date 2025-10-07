@@ -1,12 +1,25 @@
 import React, { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/UnifiedAuthContext";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Separator } from "../ui/separator";
 import { Progress } from "../ui/progress";
@@ -30,6 +43,7 @@ import {
   Download,
   Eye,
   Shield,
+  LogIn,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -60,16 +74,19 @@ const initialData: DocumentUploadData = {
 };
 
 export function DocumentUpload() {
-  const { userProfile: user } = useAuth();
+  const { user: authUser, userProfile: user } = useAuth();
+  const navigate = useNavigate();
   const [uploadData, setUploadData] = useState<DocumentUploadData>(initialData);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [tagInput, setTagInput] = useState("");
 
-  // Check user permissions
-  const canSetPrice = user?.role === "instructor" || user?.role === "admin";
-  const canUploadPublic = user?.role === "admin";
-  const needsApproval = user?.role === "student" || user?.role === "instructor";
+  // Check user permissions - Must be before early return
+  const canSetPrice =
+    user?.account_role === "giang_vien" || user?.account_role === "admin";
+  const canUploadPublic = user?.account_role === "admin";
+  const needsApproval =
+    user?.account_role === "sinh_vien" || user?.account_role === "giang_vien";
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -87,11 +104,11 @@ export function DocumentUpload() {
       preview = URL.createObjectURL(file);
     }
 
-    setUploadData(prev => ({
+    setUploadData((prev) => ({
       ...prev,
       file,
       preview,
-      title: prev.title || file.name.split('.')[0],
+      title: prev.title || file.name.split(".")[0],
     }));
 
     toast.success(`Đã chọn file: ${file.name}`);
@@ -100,14 +117,17 @@ export function DocumentUpload() {
   // Simple drag and drop implementation to replace useDropzone
   const [isDragActive, setIsDragActive] = useState(false);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragActive(false);
-    const files = Array.from(e.dataTransfer.files);
-    if (files.length > 0) {
-      onDrop(files);
-    }
-  }, [onDrop]);
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      setIsDragActive(false);
+      const files = Array.from(e.dataTransfer.files);
+      if (files.length > 0) {
+        onDrop(files);
+      }
+    },
+    [onDrop]
+  );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -119,25 +139,29 @@ export function DocumentUpload() {
     setIsDragActive(false);
   }, []);
 
-  const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length > 0) {
-      onDrop(files);
-    }
-  }, [onDrop]);
+  const handleFileInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = Array.from(e.target.files || []);
+      if (files.length > 0) {
+        onDrop(files);
+      }
+    },
+    [onDrop]
+  );
 
   const getRootProps = () => ({
     onDrop: handleDrop,
     onDragOver: handleDragOver,
     onDragLeave: handleDragLeave,
-    style: { outline: 'none' }
+    style: { outline: "none" },
   });
 
   const getInputProps = () => ({
-    type: 'file' as const,
+    type: "file" as const,
     onChange: handleFileInputChange,
-    accept: '.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.png,.jpg,.jpeg,.gif,.webp,.mp4,.mov,.avi,.mkv,.mp3,.wav,.flac,.txt,.zip,.rar',
-    style: { display: 'none' as const }
+    accept:
+      ".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.png,.jpg,.jpeg,.gif,.webp,.mp4,.mov,.avi,.mkv,.mp3,.wav,.flac,.txt,.zip,.rar",
+    style: { display: "none" as const },
   });
 
   const getFileIcon = (file: File | null) => {
@@ -146,25 +170,26 @@ export function DocumentUpload() {
     if (file.type.startsWith("image/")) return <Image className="w-8 h-8" />;
     if (file.type.startsWith("video/")) return <Video className="w-8 h-8" />;
     if (file.type.startsWith("audio/")) return <Music className="w-8 h-8" />;
-    if (file.type.includes("zip") || file.type.includes("rar")) return <Archive className="w-8 h-8" />;
+    if (file.type.includes("zip") || file.type.includes("rar"))
+      return <Archive className="w-8 h-8" />;
     return <FileText className="w-8 h-8" />;
   };
 
   const addTag = () => {
     const tag = tagInput.trim();
     if (tag && !uploadData.tags.includes(tag)) {
-      setUploadData(prev => ({
+      setUploadData((prev) => ({
         ...prev,
-        tags: [...prev.tags, tag]
+        tags: [...prev.tags, tag],
       }));
       setTagInput("");
     }
   };
 
   const removeTag = (tagToRemove: string) => {
-    setUploadData(prev => ({
+    setUploadData((prev) => ({
       ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
+      tags: prev.tags.filter((tag) => tag !== tagToRemove),
     }));
   };
 
@@ -182,7 +207,7 @@ export function DocumentUpload() {
     try {
       // Simulate upload progress
       const progressInterval = setInterval(() => {
-        setUploadProgress(prev => {
+        setUploadProgress((prev) => {
           if (prev >= 90) {
             clearInterval(progressInterval);
             return 90;
@@ -192,7 +217,7 @@ export function DocumentUpload() {
       }, 200);
 
       // Mock API call
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      await new Promise((resolve) => setTimeout(resolve, 3000));
 
       // Final data preparation
       const finalData = {
@@ -209,9 +234,14 @@ export function DocumentUpload() {
       };
 
       // Save to localStorage (in real app, this would be API call)
-      const existingDocs = JSON.parse(localStorage.getItem("nlc_uploaded_documents") || "[]");
+      const existingDocs = JSON.parse(
+        localStorage.getItem("nlc_uploaded_documents") || "[]"
+      );
       existingDocs.push(finalData);
-      localStorage.setItem("nlc_uploaded_documents", JSON.stringify(existingDocs));
+      localStorage.setItem(
+        "nlc_uploaded_documents",
+        JSON.stringify(existingDocs)
+      );
 
       clearInterval(progressInterval);
       setUploadProgress(100);
@@ -226,7 +256,6 @@ export function DocumentUpload() {
         setUploading(false);
         setUploadProgress(0);
       }, 500);
-
     } catch (error) {
       toast.error("Có lỗi xảy ra khi tải lên");
       setUploading(false);
@@ -235,12 +264,35 @@ export function DocumentUpload() {
   };
 
   const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
+
+  // Check if user is logged in - After all hooks
+  if (!authUser) {
+    return (
+      <Card className="max-w-4xl mx-auto">
+        <CardContent className="py-12 text-center">
+          <div className="mx-auto w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
+            <LogIn className="h-8 w-8 text-blue-600" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            Vui lòng đăng nhập để upload tài liệu
+          </h3>
+          <p className="text-gray-600 mb-6 max-w-md mx-auto">
+            Bạn cần đăng nhập vào tài khoản để có thể upload và chia sẻ tài liệu
+          </p>
+          <Button onClick={() => navigate("/dang-nhap")}>
+            <LogIn className="mr-2 h-4 w-4" />
+            Đăng nhập
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="max-w-4xl mx-auto">
@@ -265,14 +317,26 @@ export function DocumentUpload() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
             <div className="flex items-center gap-2">
-              <Check className={`w-4 h-4 ${canSetPrice ? "text-green-600" : "text-gray-400"}`} />
-              <span className={canSetPrice ? "text-green-700" : "text-gray-500"}>
+              <Check
+                className={`w-4 h-4 ${
+                  canSetPrice ? "text-green-600" : "text-gray-400"
+                }`}
+              />
+              <span
+                className={canSetPrice ? "text-green-700" : "text-gray-500"}
+              >
                 Đặt giá bán
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Check className={`w-4 h-4 ${canUploadPublic ? "text-green-600" : "text-gray-400"}`} />
-              <span className={canUploadPublic ? "text-green-700" : "text-gray-500"}>
+              <Check
+                className={`w-4 h-4 ${
+                  canUploadPublic ? "text-green-600" : "text-gray-400"
+                }`}
+              />
+              <span
+                className={canUploadPublic ? "text-green-700" : "text-gray-500"}
+              >
                 Xuất bản trực tiếp
               </span>
             </div>
@@ -282,7 +346,9 @@ export function DocumentUpload() {
               ) : (
                 <Check className="w-4 h-4 text-green-600" />
               )}
-              <span className={needsApproval ? "text-yellow-700" : "text-green-700"}>
+              <span
+                className={needsApproval ? "text-yellow-700" : "text-green-700"}
+              >
                 {needsApproval ? "Cần duyệt" : "Tự động duyệt"}
               </span>
             </div>
@@ -312,8 +378,12 @@ export function DocumentUpload() {
                   <div className="flex items-center justify-center gap-3">
                     {getFileIcon(uploadData.file)}
                     <div className="text-left">
-                      <p className="font-medium text-gray-900">{uploadData.file.name}</p>
-                      <p className="text-sm text-gray-500">{formatFileSize(uploadData.file.size)}</p>
+                      <p className="font-medium text-gray-900">
+                        {uploadData.file.name}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {formatFileSize(uploadData.file.size)}
+                      </p>
                     </div>
                   </div>
 
@@ -331,7 +401,13 @@ export function DocumentUpload() {
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={() => setUploadData(prev => ({ ...prev, file: null, preview: null }))}
+                    onClick={() =>
+                      setUploadData((prev) => ({
+                        ...prev,
+                        file: null,
+                        preview: null,
+                      }))
+                    }
                   >
                     <X className="w-4 h-4 mr-2" />
                     Chọn file khác
@@ -341,10 +417,13 @@ export function DocumentUpload() {
                 <div className="space-y-2">
                   <Upload className="w-12 h-12 text-gray-400 mx-auto" />
                   <p className="text-lg font-medium">
-                    {isDragActive ? "Thả file vào đây..." : "Kéo thả file hoặc click để chọn"}
+                    {isDragActive
+                      ? "Thả file vào đây..."
+                      : "Kéo thả file hoặc click để chọn"}
                   </p>
                   <p className="text-sm text-gray-500">
-                    Hỗ trợ: PDF, Word, Excel, PowerPoint, hình ảnh, video, audio (max 50MB)
+                    Hỗ trợ: PDF, Word, Excel, PowerPoint, hình ảnh, video, audio
+                    (max 50MB)
                   </p>
                 </div>
               )}
@@ -378,7 +457,9 @@ export function DocumentUpload() {
               <Input
                 id="title"
                 value={uploadData.title}
-                onChange={(e) => setUploadData(prev => ({ ...prev, title: e.target.value }))}
+                onChange={(e) =>
+                  setUploadData((prev) => ({ ...prev, title: e.target.value }))
+                }
                 placeholder="Nhập tiêu đề tài liệu"
                 required
               />
@@ -388,7 +469,9 @@ export function DocumentUpload() {
               <Label htmlFor="category">Danh mục *</Label>
               <Select
                 value={uploadData.category}
-                onValueChange={(value) => setUploadData(prev => ({ ...prev, category: value }))}
+                onValueChange={(value) =>
+                  setUploadData((prev) => ({ ...prev, category: value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Chọn danh mục" />
@@ -410,7 +493,9 @@ export function DocumentUpload() {
               <Label htmlFor="type">Loại tài liệu</Label>
               <Select
                 value={uploadData.type}
-                onValueChange={(value: any) => setUploadData(prev => ({ ...prev, type: value }))}
+                onValueChange={(value: any) =>
+                  setUploadData((prev) => ({ ...prev, type: value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -436,7 +521,12 @@ export function DocumentUpload() {
                     type="number"
                     min="0"
                     value={uploadData.price}
-                    onChange={(e) => setUploadData(prev => ({ ...prev, price: parseInt(e.target.value) || 0 }))}
+                    onChange={(e) =>
+                      setUploadData((prev) => ({
+                        ...prev,
+                        price: parseInt(e.target.value) || 0,
+                      }))
+                    }
                     placeholder="0 = Miễn phí"
                     className="pl-10"
                   />
@@ -454,7 +544,12 @@ export function DocumentUpload() {
             <Textarea
               id="description"
               value={uploadData.description}
-              onChange={(e) => setUploadData(prev => ({ ...prev, description: e.target.value }))}
+              onChange={(e) =>
+                setUploadData((prev) => ({
+                  ...prev,
+                  description: e.target.value,
+                }))
+              }
               placeholder="Mô tả chi tiết về tài liệu..."
               rows={4}
             />
@@ -508,7 +603,10 @@ export function DocumentUpload() {
                   id="isPublic"
                   checked={uploadData.isPublic}
                   onCheckedChange={(checked) =>
-                    setUploadData(prev => ({ ...prev, isPublic: checked as boolean }))
+                    setUploadData((prev) => ({
+                      ...prev,
+                      isPublic: checked as boolean,
+                    }))
                   }
                 />
                 <Label htmlFor="isPublic" className="text-sm">
@@ -533,7 +631,9 @@ export function DocumentUpload() {
           <div className="flex gap-3">
             <Button
               type="submit"
-              disabled={uploading || !uploadData.file || !uploadData.title.trim()}
+              disabled={
+                uploading || !uploadData.file || !uploadData.title.trim()
+              }
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 flex-1"
             >
               {uploading ? (

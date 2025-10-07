@@ -3,9 +3,20 @@ import { motion } from "framer-motion";
 import { useAuth } from "../contexts/UnifiedAuthContext";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
 import { DocumentApproval } from "../components/admin/document-approval";
 import { DocumentUpload } from "../components/upload/document-upload";
 import { FloatingScrollToTop } from "../components/ui/scroll-to-top";
@@ -57,12 +68,12 @@ export default function ManagerDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!isLoading && (!user || user.role !== "admin")) {
+    if (!isLoading && (!user || user.account_role !== "admin")) {
       navigate("/auth");
       return;
     }
 
-    if (user?.role === "admin") {
+    if (user?.account_role === "admin") {
       loadDashboardData();
     }
   }, [user, isLoading, navigate]);
@@ -78,24 +89,36 @@ export default function ManagerDashboard() {
       const users = usersData ? JSON.parse(usersData) : [];
 
       // Calculate stats
-      const pendingApprovals = documents.filter((doc: any) => doc.status === "pending_approval").length;
-      const approvedDocuments = documents.filter((doc: any) => doc.status === "approved").length;
-      const rejectedDocuments = documents.filter((doc: any) => doc.status === "rejected").length;
+      const pendingApprovals = documents.filter(
+        (doc: any) => doc.status === "pending_approval"
+      ).length;
+      const approvedDocuments = documents.filter(
+        (doc: any) => doc.status === "approved"
+      ).length;
+      const rejectedDocuments = documents.filter(
+        (doc: any) => doc.status === "rejected"
+      ).length;
 
       // Calculate revenue (mock data for demonstration)
       const totalRevenue = documents
         .filter((doc: any) => doc.status === "approved" && doc.price > 0)
-        .reduce((sum: number, doc: any) => sum + (doc.price * (doc.downloads || 0)), 0);
+        .reduce(
+          (sum: number, doc: any) => sum + doc.price * (doc.downloads || 0),
+          0
+        );
 
       // Monthly uploads (last 30 days)
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      const monthlyUploads = documents.filter((doc: any) =>
-        new Date(doc.uploadedAt) > thirtyDaysAgo
+      const monthlyUploads = documents.filter(
+        (doc: any) => new Date(doc.uploadedAt) > thirtyDaysAgo
       ).length;
 
       // Total downloads (mock data)
-      const downloadCount = documents.reduce((sum: number, doc: any) => sum + (doc.downloads || 0), 0);
+      const downloadCount = documents.reduce(
+        (sum: number, doc: any) => sum + (doc.downloads || 0),
+        0
+      );
 
       setStats({
         totalDocuments: documents.length,
@@ -139,14 +162,18 @@ export default function ManagerDashboard() {
     );
   }
 
-  if (!user || user.role !== "admin") {
+  if (!user || user.account_role !== "admin") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50">
         <Card className="max-w-md">
           <CardContent className="text-center p-8">
             <Shield className="w-16 h-16 text-red-500 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Không có quyền truy cập</h3>
-            <p className="text-gray-500 mb-4">Bạn cần quyền quản trị để truy cập trang này</p>
+            <h3 className="text-lg font-semibold mb-2">
+              Không có quyền truy cập
+            </h3>
+            <p className="text-gray-500 mb-4">
+              Bạn cần quyền quản trị để truy cập trang này
+            </p>
             <Button onClick={() => navigate("/")} variant="outline">
               Về trang chủ
             </Button>
@@ -189,7 +216,11 @@ export default function ManagerDashboard() {
         </motion.div>
 
         {/* Main Content */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-6"
+        >
           <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:grid-cols-4">
             <TabsTrigger value="overview" className="text-xs sm:text-sm">
               <BarChart3 className="w-4 h-4 mr-1 sm:mr-2" />
@@ -226,7 +257,9 @@ export default function ManagerDashboard() {
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">Tổng tài liệu</p>
-                        <p className="text-2xl font-bold text-gray-900">{stats.totalDocuments}</p>
+                        <p className="text-2xl font-bold text-gray-900">
+                          {stats.totalDocuments}
+                        </p>
                       </div>
                     </div>
                   </CardContent>
@@ -240,7 +273,9 @@ export default function ManagerDashboard() {
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">Chờ duyệt</p>
-                        <p className="text-2xl font-bold text-yellow-600">{stats.pendingApprovals}</p>
+                        <p className="text-2xl font-bold text-yellow-600">
+                          {stats.pendingApprovals}
+                        </p>
                       </div>
                     </div>
                   </CardContent>
@@ -254,7 +289,9 @@ export default function ManagerDashboard() {
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">Đã duyệt</p>
-                        <p className="text-2xl font-bold text-green-600">{stats.approvedDocuments}</p>
+                        <p className="text-2xl font-bold text-green-600">
+                          {stats.approvedDocuments}
+                        </p>
                       </div>
                     </div>
                   </CardContent>
@@ -268,7 +305,9 @@ export default function ManagerDashboard() {
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">Từ chối</p>
-                        <p className="text-2xl font-bold text-red-600">{stats.rejectedDocuments}</p>
+                        <p className="text-2xl font-bold text-red-600">
+                          {stats.rejectedDocuments}
+                        </p>
                       </div>
                     </div>
                   </CardContent>
@@ -285,7 +324,9 @@ export default function ManagerDashboard() {
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">Người dùng</p>
-                        <p className="text-2xl font-bold text-purple-600">{stats.totalUsers}</p>
+                        <p className="text-2xl font-bold text-purple-600">
+                          {stats.totalUsers}
+                        </p>
                       </div>
                     </div>
                   </CardContent>
@@ -315,7 +356,9 @@ export default function ManagerDashboard() {
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">Upload tháng</p>
-                        <p className="text-2xl font-bold text-orange-600">{stats.monthlyUploads}</p>
+                        <p className="text-2xl font-bold text-orange-600">
+                          {stats.monthlyUploads}
+                        </p>
                       </div>
                     </div>
                   </CardContent>
@@ -329,7 +372,9 @@ export default function ManagerDashboard() {
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">Lượt tải</p>
-                        <p className="text-2xl font-bold text-indigo-600">{stats.downloadCount}</p>
+                        <p className="text-2xl font-bold text-indigo-600">
+                          {stats.downloadCount}
+                        </p>
                       </div>
                     </div>
                   </CardContent>
@@ -396,7 +441,8 @@ export default function ManagerDashboard() {
                             Có {stats.pendingApprovals} tài liệu đang chờ duyệt
                           </p>
                           <p className="text-sm text-yellow-700">
-                            Hãy kiểm tra và duyệt các tài liệu để người dùng có thể truy cập
+                            Hãy kiểm tra và duyệt các tài liệu để người dùng có
+                            thể truy cập
                           </p>
                         </div>
                         <Button
@@ -460,7 +506,8 @@ export default function ManagerDashboard() {
                       Đang phát triển
                     </h3>
                     <p className="text-gray-500">
-                      Tính năng cài đặt hệ thống sẽ được bổ sung trong phiên bản tiếp theo
+                      Tính năng cài đặt hệ thống sẽ được bổ sung trong phiên bản
+                      tiếp theo
                     </p>
                   </div>
                 </CardContent>

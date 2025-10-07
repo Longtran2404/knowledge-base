@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xóa LocalStorage - Nam Long Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        
+        .subtitle {
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        .status {
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-size: 16px;
+            line-height: 1.8;
+        }
+        
+        .status.info {
+            background: #ebf8ff;
+            border: 2px solid #90cdf4;
+            color: #2c5282;
+        }
+        
+        .status.success {
+            background: #f0fff4;
+            border: 2px solid #9ae6b4;
+            color: #22543d;
+        }
+        
+        .status.warning {
+            background: #fffbeb;
+            border: 2px solid #fbd38d;
+            color: #7c2d12;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin: 10px 0;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button.secondary {
+            background: #e2e8f0;
+            color: #2d3748;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        button.secondary:hover {
+            background: #cbd5e0;
+        }
+        
+        .results {
+            margin-top: 20px;
+            text-align: left;
+        }
+        
+        .results ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .results li {
+            padding: 12px;
+            margin: 8px 0;
+            background: #f7fafc;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #4a5568;
+            border-left: 4px solid #48bb78;
+        }
+        
+        .steps {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .steps h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .steps ol {
+            padding-left: 25px;
+        }
+        
+        .steps li {
+            margin: 10px 0;
+            line-height: 1.6;
+            color: #4a5568;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            color: #a0aec0;
+            font-size: 14px;
+        }
+        
+        code {
+            background: #2d3748;
+            color: #68d391;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🧹</div>
+        <h1>Xóa LocalStorage</h1>
+        <p class="subtitle">
+            Giải quyết lỗi kết nối Supabase bằng cách xóa auth tokens cũ
+        </p>
+        
+        <div id="status" class="status warning">
+            <strong>⚠️ Lưu ý quan trọng!</strong><br>
+            Bạn đang gặp lỗi vì Supabase project không tồn tại hoặc bị pause.<br>
+            Xóa localStorage là bước đầu tiên để fix lỗi này.
+        </div>
+        
+        <button id="clearBtn" onclick="clearAllStorage()">
+            🗑️ Xóa Tất Cả Storage
+        </button>
+        
+        <button class="secondary" onclick="clearSupabaseOnly()">
+            🎯 Chỉ Xóa Supabase Tokens
+        </button>
+        
+        <div id="results" class="results"></div>
+        
+        <div class="steps">
+            <h3>📋 Các bước tiếp theo:</h3>
+            <ol>
+                <li>✅ <strong>Đã làm:</strong> Xóa localStorage (bước này)</li>
+                <li>🔧 <strong>Tiếp theo:</strong> Tạo Supabase project mới tại 
+                    <a href="https://app.supabase.com/new" target="_blank">app.supabase.com/new</a>
+                </li>
+                <li>📝 <strong>Sau đó:</strong> Cập nhật file <code>.env</code> với credentials mới</li>
+                <li>🚀 <strong>Cuối cùng:</strong> Restart server: <code>npm start</code></li>
+            </ol>
+        </div>
+        
+        <button class="secondary" onclick="openDocs()">
+            📚 Xem Hướng Dẫn Chi Tiết
+        </button>
+        
+        <div class="footer">
+            Nam Long Center v1.0.0<br>
+            Supabase Connection Fix Tool
+        </div>
+    </div>
+    
+    <script>
+        // Function to clear all storage
+        function clearAllStorage() {
+            const statusDiv = document.getElementById('status');
+            const resultsDiv = document.getElementById('results');
+            const clearBtn = document.getElementById('clearBtn');
+            
+            try {
+                // Get all keys before clearing
+                const keys = Object.keys(localStorage);
+                const count = keys.length;
+                
+                // Clear everything
+                localStorage.clear();
+                sessionStorage.clear();
+                
+                // Show results
+                let resultHTML = '<h3 style="margin-bottom: 10px; color: #2d3748;">✅ Đã xóa thành công!</h3>';
+                resultHTML += '<ul>';
+                resultHTML += `<li>🗑️ Đã xóa ${count} items từ localStorage</li>`;
+                resultHTML += `<li>🗑️ Đã xóa sessionStorage</li>`;
+                resultHTML += '</ul>';
+                
+                resultsDiv.innerHTML = resultHTML;
+                
+                // Update status
+                statusDiv.className = 'status success';
+                statusDiv.innerHTML = `
+                    <strong>✅ Hoàn thành!</strong><br>
+                    Đã xóa ${count} items từ browser storage.<br>
+                    <br>
+                    <strong>Bước tiếp theo:</strong><br>
+                    1. Tạo Supabase project mới<br>
+                    2. Cập nhật file .env<br>
+                    3. Restart dev server
+                `;
+                
+                // Disable button
+                clearBtn.disabled = true;
+                clearBtn.textContent = '✅ Đã Xóa Xong';
+                clearBtn.style.background = '#48bb78';
+                
+                console.log('✅ Storage cleared successfully!');
+                
+            } catch (error) {
+                statusDiv.className = 'status warning';
+                statusDiv.innerHTML = `
+                    <strong>❌ Lỗi</strong><br>
+                    ${error.message}
+                `;
+                console.error('Error clearing storage:', error);
+            }
+        }
+        
+        // Function to clear only Supabase tokens
+        function clearSupabaseOnly() {
+            const statusDiv = document.getElementById('status');
+            const resultsDiv = document.getElementById('results');
+            
+            try {
+                const keys = Object.keys(localStorage);
+                const supabaseKeys = keys.filter(key => 
+                    key.includes('supabase') || 
+                    key.includes('sb-') || 
+                    key.includes('auth-token')
+                );
+                
+                if (supabaseKeys.length === 0) {
+                    statusDiv.className = 'status success';
+                    statusDiv.innerHTML = `
+                        <strong>ℹ️ Không tìm thấy</strong><br>
+                        Không có Supabase tokens nào trong storage.
+                    `;
+                    return;
+                }
+                
+                // Remove each Supabase key
+                let resultHTML = '<h3 style="margin-bottom: 10px; color: #2d3748;">✅ Đã xóa Supabase tokens:</h3><ul>';
+                supabaseKeys.forEach(key => {
+                    localStorage.removeItem(key);
+                    resultHTML += `<li>✅ ${key}</li>`;
+                });
+                resultHTML += '</ul>';
+                
+                resultsDiv.innerHTML = resultHTML;
+                
+                statusDiv.className = 'status success';
+                statusDiv.innerHTML = `
+                    <strong>✅ Thành công!</strong><br>
+                    Đã xóa ${supabaseKeys.length} Supabase token(s).<br>
+                    Các dữ liệu khác được giữ nguyên.
+                `;
+                
+                console.log(`✅ Removed ${supabaseKeys.length} Supabase tokens`);
+                
+            } catch (error) {
+                statusDiv.className = 'status warning';
+                statusDiv.innerHTML = `
+                    <strong>❌ Lỗi</strong><br>
+                    ${error.message}
+                `;
+                console.error('Error:', error);
+            }
+        }
+        
+        // Open documentation
+        function openDocs() {
+            window.open('HƯỚNG_DẪN_NHANH_SUPABASE.md', '_blank');
+        }
+        
+        // Auto-check on load
+        window.addEventListener('load', () => {
+            const keys = Object.keys(localStorage);
+            const supabaseKeys = keys.filter(key => 
+                key.includes('supabase') || 
+                key.includes('sb-') || 
+                key.includes('auth-token')
+            );
+            
+            const statusDiv = document.getElementById('status');
+            
+            if (supabaseKeys.length > 0) {
+                statusDiv.innerHTML = `
+                    <strong>⚠️ Tìm thấy ${supabaseKeys.length} Supabase token(s)</strong><br>
+                    Các tokens cũ này đang gây ra lỗi kết nối.<br>
+                    Click nút bên dưới để xóa chúng.
+                `;
+            } else {
+                statusDiv.className = 'status success';
+                statusDiv.innerHTML = `
+                    <strong>✅ Storage sạch</strong><br>
+                    Không tìm thấy Supabase tokens cũ.<br>
+                    <br>
+                    Nếu vẫn gặp lỗi, hãy kiểm tra:<br>
+                    1. File .env có đúng credentials chưa<br>
+                    2. Supabase project có đang active không
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+

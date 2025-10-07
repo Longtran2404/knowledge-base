@@ -237,11 +237,11 @@ export default function MarketplacePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-black">
         <div className="max-w-7xl mx-auto px-4 py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Đang tải khóa học...</p>
+            <p className="mt-4 text-gray-400">Đang tải khóa học...</p>
           </div>
         </div>
       </div>
@@ -249,7 +249,7 @@ export default function MarketplacePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-black">
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16">
         <div className="max-w-7xl mx-auto px-4">
@@ -280,7 +280,7 @@ export default function MarketplacePage() {
       </div>
 
       {/* Filters Section */}
-      <div className="bg-white border-b">
+      <div className="bg-white/5 backdrop-blur-sm border border-white/10-b">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
             {/* Search */}
@@ -343,10 +343,10 @@ export default function MarketplacePage() {
       {/* Courses Grid */}
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <h2 className="text-2xl font-bold text-white mb-2">
             Tìm thấy {filteredCourses.length} khóa học
           </h2>
-          <p className="text-gray-600">
+          <p className="text-gray-400">
             Chọn khóa học phù hợp với nhu cầu học tập của bạn
           </p>
         </div>
@@ -393,7 +393,7 @@ export default function MarketplacePage() {
                 <CardTitle className="text-lg mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
                   {course.title}
                 </CardTitle>
-                <CardDescription className="text-sm text-gray-600 mb-4 line-clamp-3">
+                <CardDescription className="text-sm text-gray-400 mb-4 line-clamp-3">
                   {course.description}
                 </CardDescription>
 
@@ -458,10 +458,10 @@ export default function MarketplacePage() {
             <div className="text-gray-400 mb-4">
               <BookOpen className="w-16 h-16 mx-auto" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            <h3 className="text-xl font-semibold text-white mb-2">
               Không tìm thấy khóa học nào
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-400 mb-6">
               Hãy thử thay đổi bộ lọc hoặc từ khóa tìm kiếm
             </p>
             <Button

@@ -96,11 +96,6 @@ export function useValidatedMutation<TData, TVariables, TError = Error>(
 
       return data;
     },
-    onSuccess: (data, variables, context) => {
-      // Invalidate related queries
-      queryClient.invalidateQueries();
-      options?.onSuccess?.(data, variables, context);
-    },
     ...options,
   });
 }

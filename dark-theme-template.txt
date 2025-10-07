@@ -1,0 +1,18 @@
+# Dark Theme Update Template
+
+## Replace patterns:
+1. bg-white -> bg-black
+2. bg-gray-50 -> bg-black
+3. bg-gradient-to-b from-blue-50 to-white -> bg-black relative (add gradient orbs)
+4. text-gray-900 -> text-white or gradient text
+5. text-gray-600 -> text-gray-400
+6. text-gray-700 -> text-gray-300
+7. border-gray-200 -> border-white/10
+8. bg-white shadow -> bg-white/5 backdrop-blur-sm border border-white/10
+
+## Add to top of return:
+<div className="min-h-screen bg-black text-white relative">
+
+## Add gradient orbs to hero:
+<div className="absolute top-20 left-20 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse" />
+<div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />

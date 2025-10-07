@@ -70,7 +70,7 @@ const categories = [
 export default function ResourcesPage() {
   return (
     <AppProviders>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="min-h-screen bg-black">
         {/* Hero Section */}
         <section className="relative bg-gradient-to-br from-purple-900 via-violet-800 to-indigo-900 py-20">
           <div className="absolute inset-0 bg-grid-white/10 bg-grid-16 [mask-image:radial-gradient(ellipse_at_center,white,transparent)]" />
@@ -205,11 +205,11 @@ export default function ResourcesPage() {
                       .map((resource) => (
                         <Card
                           key={resource.id}
-                          className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                          className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white/5 backdrop-blur-sm border-white/10 text-white"
                         >
                           <CardHeader className="pb-4">
                             <div className="flex items-start justify-between">
-                              <Badge variant="outline" className="text-xs">
+                              <Badge variant="outline" className="text-xs border-purple-400/30 text-purple-400">
                                 {resource.type === "pdf" ||
                                 resource.type === "doc"
                                   ? "Tài liệu"
@@ -220,15 +220,15 @@ export default function ResourcesPage() {
                                   : "Công cụ"}
                               </Badge>
                               {resource.accessLevel === "free" && (
-                                <Badge variant="secondary" className="text-xs">
+                                <Badge variant="secondary" className="text-xs bg-green-500/20 text-green-400 border-green-400/30">
                                   Miễn phí
                                 </Badge>
                               )}
                             </div>
-                            <CardTitle className="text-lg group-hover:text-purple-600 transition-colors line-clamp-2">
+                            <CardTitle className="text-lg text-white group-hover:text-purple-400 transition-colors line-clamp-2">
                               {resource.title}
                             </CardTitle>
-                            <CardDescription className="line-clamp-2">
+                            <CardDescription className="line-clamp-2 text-gray-400">
                               {resource.field} - {resource.type}
                             </CardDescription>
                           </CardHeader>
@@ -347,19 +347,19 @@ export default function ResourcesPage() {
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Featured Document */}
-                <Card className="bg-gradient-to-r from-purple-50 to-violet-50 border-purple-200">
+                <Card className="bg-gradient-to-r from-purple-500/20 to-violet-500/20 border-purple-400/30 backdrop-blur-sm">
                   <CardHeader>
                     <Badge
                       variant="outline"
-                      className="w-fit border-purple-400 text-purple-700"
+                      className="w-fit border-purple-400/50 text-purple-300"
                     >
                       <FileText className="h-4 w-4 mr-2" />
                       Tài liệu nổi bật
                     </Badge>
-                    <CardTitle className="text-2xl text-purple-900">
+                    <CardTitle className="text-2xl text-white">
                       Hướng dẫn BIM cho Dự án Xây dựng
                     </CardTitle>
-                    <CardDescription className="text-purple-700">
+                    <CardDescription className="text-purple-200">
                       Tài liệu toàn diện về quy trình BIM từ thiết kế đến thi
                       công
                     </CardDescription>
@@ -367,16 +367,16 @@ export default function ResourcesPage() {
                   <CardContent className="pb-6">
                     <div className="space-y-4">
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-purple-700">Độ dày:</span>
-                        <span className="font-semibold">150 trang</span>
+                        <span className="text-purple-300">Độ dày:</span>
+                        <span className="font-semibold text-white">150 trang</span>
                       </div>
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-purple-700">Định dạng:</span>
-                        <span className="font-semibold">PDF + Word</span>
+                        <span className="text-purple-300">Định dạng:</span>
+                        <span className="font-semibold text-white">PDF + Word</span>
                       </div>
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-purple-700">Cập nhật:</span>
-                        <span className="font-semibold">Tháng 12/2024</span>
+                        <span className="text-purple-300">Cập nhật:</span>
+                        <span className="font-semibold text-white">Tháng 12/2024</span>
                       </div>
                     </div>
                   </CardContent>
@@ -388,19 +388,19 @@ export default function ResourcesPage() {
                 </Card>
 
                 {/* Featured Video Series */}
-                <Card className="bg-gradient-to-r from-violet-50 to-indigo-50 border-violet-200">
+                <Card className="bg-gradient-to-r from-violet-500/20 to-indigo-500/20 border-violet-400/30 backdrop-blur-sm">
                   <CardHeader>
                     <Badge
                       variant="outline"
-                      className="w-fit border-violet-400 text-violet-700"
+                      className="w-fit border-violet-400/50 text-violet-300"
                     >
                       <Video className="h-4 w-4 mr-2" />
                       Video series
                     </Badge>
-                    <CardTitle className="text-2xl text-violet-900">
+                    <CardTitle className="text-2xl text-white">
                       Khóa học AutoCAD từ Cơ bản đến Nâng cao
                     </CardTitle>
-                    <CardDescription className="text-violet-700">
+                    <CardDescription className="text-violet-200">
                       Series video 20 bài giảng với hơn 10 giờ nội dung chất
                       lượng
                     </CardDescription>
@@ -408,16 +408,16 @@ export default function ResourcesPage() {
                   <CardContent className="pb-6">
                     <div className="space-y-4">
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-violet-700">Số bài:</span>
-                        <span className="font-semibold">20 bài</span>
+                        <span className="text-violet-300">Số bài:</span>
+                        <span className="font-semibold text-white">20 bài</span>
                       </div>
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-violet-700">Thời lượng:</span>
-                        <span className="font-semibold">10+ giờ</span>
+                        <span className="text-violet-300">Thời lượng:</span>
+                        <span className="font-semibold text-white">10+ giờ</span>
                       </div>
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-violet-700">Đánh giá:</span>
-                        <span className="font-semibold">
+                        <span className="text-violet-300">Đánh giá:</span>
+                        <span className="font-semibold text-white">
                           4.9★ (500+ đánh giá)
                         </span>
                       </div>

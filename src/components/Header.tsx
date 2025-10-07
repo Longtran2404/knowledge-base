@@ -1,12 +1,14 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Search, User, Menu, X, Bell, Settings, Activity } from "lucide-react";
+import { Search, User, Menu, X, Bell, Settings, Activity, Home, BookOpen, Package, FileText, MessageSquare, Handshake, Mail, ShoppingCart } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { CartIcon, MobileCartIcon } from "./cart/CartIcon";
 import { CartDrawer, MobileCartDrawer } from "./cart/CartDrawer";
 import { useAuth } from "../contexts/UnifiedAuthContext";
 import { Badge } from "./ui/badge";
+import { GooeyNav, GooeyNavMobile } from "./ui/gooey-nav";
+import { motion } from "framer-motion";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -17,39 +19,14 @@ const Header = () => {
   // Memoize navigation items để tránh re-render không cần thiết
   const navigationItems = useMemo(
     () => [
-      { label: "Trang chủ", href: "/", isActive: location.pathname === "/" },
-      {
-        label: "Khóa học",
-        href: "/courses",
-        isActive: location.pathname.startsWith("/courses"),
-      },
-      {
-        label: "Thư viện",
-        href: "/resources",
-        isActive: location.pathname.startsWith("/resources"),
-      },
-      {
-        label: "Marketplace",
-        href: "/marketplace",
-        isActive: location.pathname.startsWith("/marketplace"),
-      },
-      {
-        label: "Blog",
-        href: "/blog",
-        isActive: location.pathname.startsWith("/blog"),
-      },
-      {
-        label: "Hợp tác",
-        href: "/collaboration",
-        isActive: location.pathname.startsWith("/collaboration"),
-      },
-      {
-        label: "Liên hệ",
-        href: "/contact",
-        isActive: location.pathname.startsWith("/contact"),
-      },
+      { label: "Trang chủ", href: "/trang-chu", icon: <Home className="w-4 h-4" /> },
+      { label: "Khóa học", href: "/khoa-hoc", icon: <BookOpen className="w-4 h-4" /> },
+      { label: "Sản phẩm", href: "/san-pham", icon: <Package className="w-4 h-4" /> },
+      { label: "Tài nguyên", href: "/tai-nguyen", icon: <FileText className="w-4 h-4" /> },
+      { label: "Blog", href: "/bai-viet", icon: <MessageSquare className="w-4 h-4" /> },
+      { label: "Hợp tác", href: "/hop-tac", icon: <Handshake className="w-4 h-4" /> },
     ],
-    [location.pathname]
+    []
   );
 
   // Memoize handlers để tránh re-render
@@ -70,40 +47,35 @@ const Header = () => {
   }, [signOut]);
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
+    <motion.header
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      className="bg-black/80 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <div className="flex items-center">
+          <motion.div
+            className="flex items-center"
+            whileHover={{ scale: 1.05 }}
+          >
             <Link to="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">NL</span>
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/50">
+                <span className="text-white font-bold text-xl">NL</span>
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-xl font-bold text-gray-900">
+                <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                   Nam Long Center
                 </h1>
-                <p className="text-xs text-gray-500">Xây dựng tương lai</p>
+                <p className="text-xs text-gray-400">Xây dựng tương lai</p>
               </div>
             </Link>
-          </div>
+          </motion.div>
 
-          {/* Navigation - Desktop */}
-          <nav className="hidden lg:flex items-center space-x-8">
-            {navigationItems.map((item) => (
-              <Link
-                key={item.label}
-                to={item.href}
-                className={`text-sm font-medium transition-colors hover:text-blue-600 ${
-                  item.isActive
-                    ? "text-blue-600 border-b-2 border-blue-600 pb-1"
-                    : "text-gray-700"
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
+          {/* Navigation - Desktop with GooeyNav */}
+          <div className="hidden lg:block">
+            <GooeyNav items={navigationItems} />
+          </div>
 
           {/* Search and Actions */}
           <div className="flex items-center gap-4">
@@ -111,90 +83,108 @@ const Header = () => {
             <div className="hidden md:block relative">
               <Input
                 type="text"
-                placeholder="Tìm kiếm khóa học, sản phẩm..."
-                className="w-64 pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Tìm kiếm..."
+                className="w-64 pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-full text-white placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 backdrop-blur-sm"
               />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             </div>
 
             {/* User Actions */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               {/* Cart Icon */}
-              <CartIcon onClick={toggleCart} className="hidden sm:flex" />
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                <button
+                  onClick={toggleCart}
+                  className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors relative"
+                >
+                  <ShoppingCart className="w-5 h-5 text-gray-300" />
+                </button>
+              </motion.div>
 
               {/* Mobile Cart Icon */}
-              <MobileCartIcon onClick={toggleCart} className="sm:hidden" />
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="sm:hidden">
+                <button
+                  onClick={toggleCart}
+                  className="flex items-center justify-center w-10 h-10 rounded-full bg-white/5 backdrop-blur-sm border border-white/10"
+                >
+                  <ShoppingCart className="w-5 h-5 text-gray-300" />
+                </button>
+              </motion.div>
 
               {user ? (
                 /* User Profile */
                 <div className="flex items-center gap-2">
                   {/* Desktop User Profile */}
                   <div className="hidden sm:flex items-center gap-3">
-                    <Link
-                      to="/quan-ly-tai-khoan"
-                      className="flex items-center gap-2 hover:bg-gray-50 p-2 rounded-lg transition-colors"
-                    >
-                      {user.avatar_url ? (
-                        <img
-                          src={user.avatar_url}
-                          alt={user.full_name || user.email}
-                          className="w-8 h-8 rounded-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                          <User size={16} className="text-blue-600" />
+                    <motion.div whileHover={{ scale: 1.05 }}>
+                      <Link
+                        to="/quan-ly-tai-khoan"
+                        className="flex items-center gap-3 hover:bg-white/5 p-2 rounded-full transition-colors backdrop-blur-sm border border-white/10"
+                      >
+                        {user.avatar_url ? (
+                          <img
+                            src={user.avatar_url}
+                            alt={user.full_name || user.email}
+                            className="w-9 h-9 rounded-full object-cover border-2 border-blue-500/30"
+                          />
+                        ) : (
+                          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center border-2 border-blue-500/30">
+                            <User size={18} className="text-white" />
+                          </div>
+                        )}
+                        <div className="text-sm">
+                          <p className="font-medium text-white">
+                            {user.full_name || user.email}
+                          </p>
+                          <p className="text-xs text-gray-400">
+                            {user.account_role === "sinh_vien"
+                              ? "Học viên"
+                              : user.account_role === "giang_vien"
+                              ? "Giảng viên"
+                              : user.account_role === "admin"
+                              ? "Quản trị viên"
+                              : "Người dùng"}
+                          </p>
                         </div>
-                      )}
-                      <div className="text-sm">
-                        <p className="font-medium text-gray-900">
-                          {user.full_name || user.email}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {user.role === "student"
-                            ? "Học viên"
-                            : user.role === "instructor"
-                            ? "Giảng viên"
-                            : user.role === "admin"
-                            ? "Quản trị viên"
-                            : "Người dùng"}
-                        </p>
-                      </div>
-                    </Link>
+                      </Link>
+                    </motion.div>
 
-                    <div className="flex items-center gap-1">
-                      <Button variant="ghost" size="sm" className="p-2">
-                        <Bell size={16} className="text-gray-600" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="p-2"
-                        title="Lịch sử hoạt động"
-                        onClick={() =>
-                          (window.location.href = "/lich-su-hoat-dong")
-                        }
-                      >
-                        <Activity size={16} className="text-gray-600" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="p-2"
-                        title="Quản lý tài khoản"
-                        onClick={() =>
-                          (window.location.href = "/quan-ly-tai-khoan")
-                        }
-                      >
-                        <Settings size={16} className="text-gray-600" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleSignOut}
-                        className="text-red-600 hover:text-red-700"
-                      >
-                        Đăng xuất
-                      </Button>
+                    <div className="flex items-center gap-2">
+                      <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                        <button className="p-2 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors">
+                          <Bell size={18} className="text-gray-300" />
+                        </button>
+                      </motion.div>
+                      <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                        <button
+                          className="p-2 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors"
+                          title="Lịch sử hoạt động"
+                          onClick={() =>
+                            (window.location.href = "/lich-su-hoat-dong")
+                          }
+                        >
+                          <Activity size={18} className="text-gray-300" />
+                        </button>
+                      </motion.div>
+                      <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                        <button
+                          className="p-2 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors"
+                          title="Quản lý tài khoản"
+                          onClick={() =>
+                            (window.location.href = "/quan-ly-tai-khoan")
+                          }
+                        >
+                          <Settings size={18} className="text-gray-300" />
+                        </button>
+                      </motion.div>
+                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                        <button
+                          onClick={handleSignOut}
+                          className="px-4 py-2 rounded-full bg-red-500/10 backdrop-blur-sm border border-red-500/30 text-red-400 hover:bg-red-500/20 transition-colors text-sm font-medium"
+                        >
+                          Đăng xuất
+                        </button>
+                      </motion.div>
                     </div>
                   </div>
 
@@ -208,161 +198,72 @@ const Header = () => {
                         <img
                           src={user.avatar_url}
                           alt={user.full_name || user.email}
-                          className="w-8 h-8 rounded-full object-cover"
+                          className="w-9 h-9 rounded-full object-cover border-2 border-blue-500/30"
                         />
                       ) : (
-                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                          <User size={16} className="text-blue-600" />
+                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center border-2 border-blue-500/30">
+                          <User size={18} className="text-white" />
                         </div>
                       )}
-                      <div className="text-xs">
-                        <p className="font-medium text-gray-900 truncate max-w-20">
-                          {user.full_name || user.email?.split("@")[0]}
-                        </p>
-                        <Badge variant="outline" className="text-xs">
-                          {user.role === "student"
-                            ? "Học viên"
-                            : user.role === "instructor"
-                            ? "Giảng viên"
-                            : user.role === "admin"
-                            ? "Admin"
-                            : "User"}
-                        </Badge>
-                      </div>
                     </Link>
                   </div>
                 </div>
               ) : (
                 /* Login/Register Buttons */
                 <div className="flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="hidden sm:flex text-gray-700 hover:text-blue-600"
-                    onClick={() => (window.location.href = "/dang-nhap")}
-                  >
-                    Đăng nhập
-                  </Button>
-                  <Button
-                    size="sm"
-                    className="hidden sm:flex bg-blue-600 hover:bg-blue-700 text-white"
-                    onClick={() => (window.location.href = "/dang-nhap")}
-                  >
-                    Đăng ký
-                  </Button>
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <button
+                      className="hidden sm:flex px-4 py-2 rounded-full text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 backdrop-blur-sm border border-white/10 transition-colors"
+                      onClick={() => (window.location.href = "/dang-nhap")}
+                    >
+                      Đăng nhập
+                    </button>
+                  </motion.div>
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <button
+                      className="hidden sm:flex px-5 py-2 rounded-full bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 text-white text-sm font-medium shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 transition-all"
+                      onClick={() => (window.location.href = "/dang-nhap")}
+                    >
+                      Đăng ký
+                    </button>
+                  </motion.div>
 
                   {/* Mobile Login Button */}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="sm:hidden p-2"
-                    onClick={() => (window.location.href = "/dang-nhap")}
-                  >
-                    <User className="w-5 h-5" />
-                  </Button>
+                  <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="sm:hidden">
+                    <button
+                      className="p-2 rounded-full bg-white/5 backdrop-blur-sm border border-white/10"
+                      onClick={() => (window.location.href = "/dang-nhap")}
+                    >
+                      <User className="w-5 h-5 text-gray-300" />
+                    </button>
+                  </motion.div>
                 </div>
               )}
             </div>
 
             {/* Mobile menu button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="lg:hidden p-2"
-              onClick={toggleMenu}
-            >
-              {isMenuOpen ? (
-                <X className="w-5 h-5" />
-              ) : (
-                <Menu className="w-5 h-5" />
-              )}
-            </Button>
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="lg:hidden">
+              <button
+                className="p-2 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors"
+                onClick={toggleMenu}
+              >
+                {isMenuOpen ? (
+                  <X className="w-5 h-5 text-gray-300" />
+                ) : (
+                  <Menu className="w-5 h-5 text-gray-300" />
+                )}
+              </button>
+            </motion.div>
           </div>
         </div>
-
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="lg:hidden border-t border-gray-100 py-4">
-            <div className="flex flex-col space-y-4">
-              {/* Mobile Search */}
-              <div className="md:hidden relative">
-                <Input
-                  type="text"
-                  placeholder="Tìm kiếm..."
-                  className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg"
-                />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              </div>
-
-              {/* Navigation Links */}
-              {navigationItems.map((item) => (
-                <Link
-                  key={item.label}
-                  to={item.href}
-                  className={`text-sm font-medium py-2 px-4 rounded-lg transition-colors ${
-                    item.isActive
-                      ? "text-blue-600 bg-blue-50"
-                      : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                  }`}
-                  onClick={toggleMenu}
-                >
-                  {item.label}
-                </Link>
-              ))}
-
-              {/* Mobile Auth/User Buttons */}
-              <div className="flex flex-col gap-2 pt-4 border-t border-gray-100 sm:hidden">
-                {user ? (
-                  <>
-                    <Button
-                      variant="outline"
-                      className="justify-center"
-                      onClick={() => {
-                        setIsMenuOpen(false);
-                        window.location.href = "/quan-ly-tai-khoan";
-                      }}
-                    >
-                      Quản lý tài khoản
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      className="justify-center"
-                      onClick={() => {
-                        setIsMenuOpen(false);
-                        signOut();
-                      }}
-                    >
-                      Đăng xuất
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button
-                      variant="outline"
-                      className="justify-center"
-                      onClick={() => {
-                        setIsMenuOpen(false);
-                        window.location.href = "/dang-nhap";
-                      }}
-                    >
-                      Đăng nhập
-                    </Button>
-                    <Button
-                      className="justify-center bg-blue-600 hover:bg-blue-700"
-                      onClick={() => {
-                        setIsMenuOpen(false);
-                        window.location.href = "/dang-nhap";
-                      }}
-                    >
-                      Đăng ký
-                    </Button>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* Mobile Navigation with GooeyNavMobile */}
+      <GooeyNavMobile
+        items={navigationItems}
+        isOpen={isMenuOpen}
+        onClose={() => setIsMenuOpen(false)}
+      />
 
       {/* Cart Drawers */}
       <CartDrawer
@@ -382,7 +283,7 @@ const Header = () => {
           window.location.href = "/checkout";
         }}
       />
-    </header>
+    </motion.header>
   );
 };
 

@@ -8,6 +8,9 @@ import type { Database } from "../supabase-config";
 
 type Tables = Database["public"]["Tables"];
 
+// Type helper for NLC tables - bypass TypeScript checking until types are generated
+const nlc = (supabase as any);
+
 // User API
 export const userApi = {
   // Get current user profile
@@ -15,17 +18,17 @@ export const userApi = {
     const {
       data: { user },
       error,
-    } = await supabase.auth.getUser();
+    } = await nlc.auth.getUser();
     if (error) throw error;
     return user;
   },
 
   // Get user profile from users table
   async getUserProfile(userId: string) {
-    const { data, error } = await supabase
-      .from("users")
+    const { data, error } = await nlc
+      .from("nlc_accounts")
       .select("*")
-      .eq("id", userId)
+      .eq("user_id", userId)
       .single();
 
     if (error) throw error;
@@ -35,12 +38,12 @@ export const userApi = {
   // Update user profile
   async updateUserProfile(
     userId: string,
-    updates: Partial<Tables["users"]["Update"]>
+    updates: any
   ) {
-    const { data, error } = await (supabase as any)
-      .from("users")
+    const { data, error } = await nlc
+      .from("nlc_accounts")
       .update({ ...updates, updated_at: new Date().toISOString() })
-      .eq("id", userId)
+      .eq("user_id", userId)
       .select()
       .single();
 
@@ -54,7 +57,7 @@ export const userApi = {
     const fileName = `${userId}-${Date.now()}.${fileExt}`;
     const filePath = `avatars/${fileName}`;
 
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { data: uploadData, error: uploadError } = await nlc.storage
       .from("user-avatars")
       .upload(filePath, file, {
         cacheControl: "3600",
@@ -87,7 +90,7 @@ export const courseApi = {
     instructor_id?: string;
   }) {
     let query = supabase
-      .from("courses")
+      .from("nlc_courses")
       .select("*, instructor:users!instructor_id(full_name, avatar_url)")
       .eq("is_published", true)
       .order("created_at", { ascending: false });
@@ -109,8 +112,8 @@ export const courseApi = {
 
   // Get course by ID
   async getCourse(courseId: string) {
-    const { data, error } = await supabase
-      .from("courses")
+    const { data, error } = await nlc
+      .from("nlc_courses")
       .select("*, instructor:users!instructor_id(full_name, avatar_url)")
       .eq("id", courseId)
       .eq("is_published", true)
@@ -122,7 +125,7 @@ export const courseApi = {
 
   // Get user's enrolled courses
   async getUserCourses(userId: string) {
-    const { data, error } = await supabase
+    const { data, error } = await nlc
       .from("user_courses")
       .select(
         `
@@ -184,7 +187,7 @@ export const courseApi = {
 
   // Check if user is enrolled
   async isEnrolled(userId: string, courseId: string) {
-    const { data, error } = await supabase
+    const { data, error } = await nlc
       .from("user_courses")
       .select("id")
       .eq("user_id", userId)
@@ -219,7 +222,7 @@ export const blogApi = {
 
   // Get blog post by ID
   async getPost(postId: string) {
-    const { data, error } = await supabase
+    const { data, error } = await nlc
       .from("blog_posts")
       .select("*, author:users!author_id(full_name, avatar_url)")
       .eq("id", postId)
@@ -232,7 +235,7 @@ export const blogApi = {
 
   // Get related posts
   async getRelatedPosts(postId: string, limit: number = 3) {
-    const { data: currentPost } = await supabase
+    const { data: currentPost } = await nlc
       .from("blog_posts")
       .select("category, tags")
       .eq("id", postId)
@@ -241,7 +244,7 @@ export const blogApi = {
     if (!currentPost) return [];
 
     const currentPostData = currentPost as any;
-    const { data, error } = await supabase
+    const { data, error } = await nlc
       .from("blog_posts")
       .select("*, author:users!author_id(full_name, avatar_url)")
       .eq("is_published", true)
@@ -307,7 +310,7 @@ export const purchaseApi = {
 
   // Get user purchases
   async getUserPurchases(userId: string) {
-    const { data, error } = await supabase
+    const { data, error } = await nlc
       .from("purchases")
       .select(
         `
@@ -328,9 +331,15 @@ export const purchaseApi = {
 
 // Auth API (using Supabase Auth)
 export const authApi = {
-  // Sign up
-  async signUp(email: string, password: string, fullName: string) {
-    const { data, error } = await supabase.auth.signUp({
+  // Sign up with user profile creation
+  async signUp(
+    email: string,
+    password: string,
+    fullName: string,
+    role: string = "student",
+    plan: string = "free"
+  ) {
+    const { data, error } = await nlc.auth.signUp({
       email,
       password,
       options: {
@@ -340,12 +349,45 @@ export const authApi = {
       },
     });
 
+    if (error) {
+      return { data, error };
+    }
+
+    // Create user profile in nlc_accounts table if auth user was created successfully
+    if (data.user) {
+      try {
+        const accountData = {
+          user_id: data.user.id,
+          email: email,
+          full_name: fullName,
+          account_role: (role === "teacher" || role === "giang_vien") ? "giang_vien" : "sinh_vien",
+          membership_plan: (plan === "premium" || plan === "vip" || plan === "business") ? plan : "free",
+          account_status: "active" as "active",
+          is_paid: false,
+          is_verified: false,
+          auth_provider: "email" as "email",
+          login_count: 0,
+        };
+
+        const { error: profileError } = await nlc
+          .from("nlc_accounts")
+          .insert(accountData);
+
+        if (profileError) {
+          console.warn("Failed to create user profile:", profileError);
+          // Don't fail the signup, just log the warning
+        }
+      } catch (profileError) {
+        console.warn("Error creating user profile:", profileError);
+      }
+    }
+
     return { data, error };
   },
 
   // Sign in
   async signIn(email: string, password: string) {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await nlc.auth.signInWithPassword({
       email,
       password,
     });
@@ -355,13 +397,13 @@ export const authApi = {
 
   // Sign out
   async signOut() {
-    const { error } = await supabase.auth.signOut();
+    const { error } = await nlc.auth.signOut();
     if (error) throw error;
   },
 
   // Reset password
   async resetPassword(email: string) {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    const { error } = await nlc.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
     });
 
@@ -370,7 +412,7 @@ export const authApi = {
 
   // Update password
   async updatePassword(newPassword: string) {
-    const { error } = await supabase.auth.updateUser({
+    const { error } = await nlc.auth.updateUser({
       password: newPassword,
     });
 

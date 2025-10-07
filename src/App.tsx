@@ -8,11 +8,13 @@ import { NotificationProvider as EnhancedNotificationProvider } from "./contexts
 import { ClientWrapper } from "./components/client-wrapper";
 import LocatorSetup from "./components/locator-setup";
 import LiquidGlassQuickMenu from "./components/navigation/LiquidGlassQuickMenu";
+import { ModernSidebar } from "./components/navigation/ModernSidebar";
 import HeaderLayout from "./components/layout/HeaderLayout";
 import PageTransition from "./components/layout/PageTransition";
 import PageTourWrapper from "./components/guide/PageTourWrapper";
 import Footer from "./components/Footer";
 import { ScrollToTop } from "./components/ui/scroll-to-top";
+import { ScrollToTopOnMount } from "./components/ScrollToTopOnMount";
 import { ErrorBoundary } from "./components/ui/error-boundary";
 import { SkipToContent } from "./components/ui/accessibility";
 import { Loading } from "./components/ui/loading";
@@ -22,6 +24,8 @@ import { CartProvider } from "./contexts/CartContext";
 import { ProtectedRoute, AdminRoute } from "./components/auth/ProtectedRoute";
 import { config } from "./services/config";
 import { errorHandler } from "./lib/error-handler";
+import { ThreadsBackgroundStatic } from "./components/ui/threads-background";
+import { logger } from "./lib/logger/logger";
 
 // Lazy load pages for better performance
 const HomePage = React.lazy(() => import("./pages/HomePage"));
@@ -49,11 +53,17 @@ const SecurityPage = React.lazy(() => import("./pages/SecurityPage"));
 const AccountManagementPage = React.lazy(
   () => import("./pages/AccountManagementPage")
 );
+const ChangePasswordPage = React.lazy(
+  () => import("./pages/ChangePasswordPage")
+);
 const ActivityDashboard = React.lazy(() => import("./pages/ActivityDashboard"));
 const PublicFilesPage = React.lazy(() => import("./pages/PublicFilesPage"));
 const MarketplacePage = React.lazy(() => import("./pages/MarketplacePage"));
 const ProfilePage = React.lazy(() => import("./pages/ProfilePage"));
 const ManagerDashboard = React.lazy(() => import("./pages/ManagerDashboard"));
+const SupportPage = React.lazy(() => import("./pages/SupportPage"));
+const FAQPage = React.lazy(() => import("./pages/FAQPage"));
+const ContactPage = React.lazy(() => import("./pages/ContactPage"));
 const TermsPrivacy = React.lazy(() => import("./pages/TermsPrivacy"));
 const PricingPage = React.lazy(() => import("./pages/PricingPage"));
 const SuccessFreePage = React.lazy(() => import("./pages/SuccessFreePage"));
@@ -67,7 +77,9 @@ const EnhancedInstructionPage = React.lazy(
   () => import("./pages/EnhancedInstructionPage")
 );
 const UploadPage = React.lazy(() => import("./pages/UploadPage"));
-const NotificationDemo = React.lazy(() => import("./components/demo/NotificationDemo"));
+const NotificationDemo = React.lazy(
+  () => import("./components/demo/NotificationDemo")
+);
 
 function App() {
   // Debug configuration in development
@@ -78,30 +90,39 @@ function App() {
   // Initialize global error handling
   React.useEffect(() => {
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      console.error('Unhandled promise rejection:', event.reason);
+      logger.error("Unhandled promise rejection", event.reason, {
+        component: "App",
+        operation: "unhandled_promise_rejection",
+      });
       errorHandler.wrapError(event.reason, {
-        operation: 'unhandled_promise_rejection',
-        component: 'App',
+        operation: "unhandled_promise_rejection",
+        component: "App",
         timestamp: new Date().toISOString(),
       });
       event.preventDefault();
     };
 
     const handleError = (event: ErrorEvent) => {
-      console.error('Global error:', event.error);
+      logger.error("Global error", event.error, {
+        component: "App",
+        operation: "global_error",
+      });
       errorHandler.wrapError(event.error, {
-        operation: 'global_error',
-        component: 'App',
+        operation: "global_error",
+        component: "App",
         timestamp: new Date().toISOString(),
       });
     };
 
-    window.addEventListener('unhandledrejection', handleUnhandledRejection);
-    window.addEventListener('error', handleError);
+    window.addEventListener("unhandledrejection", handleUnhandledRejection);
+    window.addEventListener("error", handleError);
 
     return () => {
-      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
-      window.removeEventListener('error', handleError);
+      window.removeEventListener(
+        "unhandledrejection",
+        handleUnhandledRejection
+      );
+      window.removeEventListener("error", handleError);
     };
   }, []);
 
@@ -112,394 +133,462 @@ function App() {
           <CartProvider>
             <EnhancedNotificationProvider>
               <EnhancedToastProvider>
-            <ToastProvider>
-              <NotificationProvider>
-                <Router
-                  future={{
-                    v7_startTransition: true,
-                    v7_relativeSplatPath: true,
-                  }}
-                >
-                  <div className="App min-h-screen flex flex-col">
-                    <SkipToContent />
-                    <ScrollToTop />
-                    <Routes>
-                      {/* Auth routes without header/footer */}
-                      <Route
-                        path="/dang-nhap"
-                        element={
-                          <Suspense
-                            fallback={
-                              <Loading
-                                size="lg"
-                                variant="spinner"
-                                text="Đang tải trang đăng nhập..."
-                              />
-                            }
-                          >
-                            <AuthPage />
-                          </Suspense>
-                        }
-                      />
-                      <Route
-                        path="/xac-minh-email"
-                        element={
-                          <Suspense
-                            fallback={
-                              <div className="min-h-screen flex items-center justify-center">
-                                <div className="animate-pulse">Đang tải...</div>
-                              </div>
-                            }
-                          >
-                            <VerifyEmailPage />
-                          </Suspense>
-                        }
-                      />
-                      <Route
-                        path="/quen-mat-khau"
-                        element={
-                          <Suspense
-                            fallback={
-                              <div className="min-h-screen flex items-center justify-center">
-                                <div className="animate-pulse">Đang tải...</div>
-                              </div>
-                            }
-                          >
-                            <ForgotPasswordPage />
-                          </Suspense>
-                        }
-                      />
-                      <Route
-                        path="/dat-lai-mat-khau"
-                        element={
-                          <Suspense
-                            fallback={
-                              <div className="min-h-screen flex items-center justify-center">
-                                <div className="animate-pulse">Đang tải...</div>
-                              </div>
-                            }
-                          >
-                            <ResetPasswordPage />
-                          </Suspense>
-                        }
-                      />
-                      <Route
-                        path="/gui-lai-xac-minh"
-                        element={
-                          <Suspense
-                            fallback={
-                              <div className="min-h-screen flex items-center justify-center">
-                                <div className="animate-pulse">Đang tải...</div>
-                              </div>
-                            }
-                          >
-                            <ResendVerificationPage />
-                          </Suspense>
-                        }
-                      />
-                      <Route
-                        path="/chinh-sach-bao-mat"
-                        element={
-                          <Suspense
-                            fallback={
-                              <div className="min-h-screen flex items-center justify-center">
-                                <div className="animate-pulse">Đang tải...</div>
-                              </div>
-                            }
-                          >
-                            <PrivacyPolicyPage />
-                          </Suspense>
-                        }
-                      />
-                      <Route
-                        path="/dieu-khoan-su-dung"
-                        element={
-                          <Suspense
-                            fallback={
-                              <div className="min-h-screen flex items-center justify-center">
-                                <div className="animate-pulse">Đang tải...</div>
-                              </div>
-                            }
-                          >
-                            <TermsOfServicePage />
-                          </Suspense>
-                        }
-                      />
-                      <Route
-                        path="/bao-mat"
-                        element={
-                          <Suspense
-                            fallback={
-                              <div className="min-h-screen flex items-center justify-center">
-                                <div className="animate-pulse">Đang tải...</div>
-                              </div>
-                            }
-                          >
-                            <SecurityPage />
-                          </Suspense>
-                        }
-                      />
-                      <Route
-                        path="/quan-ly-tai-khoan"
-                        element={
-                          <Suspense
-                            fallback={
-                              <div className="min-h-screen flex items-center justify-center">
-                                <div className="animate-pulse">Đang tải...</div>
-                              </div>
-                            }
-                          >
-                            <AccountManagementPage />
-                          </Suspense>
-                        }
-                      />
-                      <Route
-                        path="/lich-su-hoat-dong"
-                        element={
-                          <ProtectedRoute>
-                            <Suspense
-                              fallback={
-                                <div className="min-h-screen flex items-center justify-center">
-                                  <div className="animate-pulse">Đang tải...</div>
-                                </div>
-                              }
-                            >
-                              <ActivityDashboard />
-                            </Suspense>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/dieu-khoan-bao-mat"
-                        element={
-                          <Suspense
-                            fallback={
-                              <div className="min-h-screen flex items-center justify-center">
-                                <div className="animate-pulse">Đang tải...</div>
-                              </div>
-                            }
-                          >
-                            <TermsPrivacy />
-                          </Suspense>
-                        }
-                      />
-                      <Route
-                        path="/gioi-thieu"
-                        element={
-                          <Suspense
-                            fallback={
-                              <div className="min-h-screen flex items-center justify-center">
-                                <div className="animate-pulse">Đang tải...</div>
-                              </div>
-                            }
-                          >
-                            <GioiThieuPage />
-                          </Suspense>
-                        }
-                      />
-
-                      {/* Main routes with conditional header/footer */}
-                      <Route
-                        path="/*"
-                        element={
-                          <HeaderLayout>
-                            <main className="flex-1">
-                              <Routes>
-                                <Route
-                                  path="/goi-dich-vu"
-                                  element={
-                                    <PageTransition>
-                                      <PricingPage />
-                                    </PageTransition>
-                                  }
-                                />
-                                <Route
-                                  path="/huong-dan"
-                                  element={
-                                    <PageTransition>
-                                      <EnhancedInstructionPage />
-                                    </PageTransition>
-                                  }
-                                />
-                                <Route
-                                  path="/thanh-cong/free"
-                                  element={
-                                    <PageTransition>
-                                      <SuccessFreePage />
-                                    </PageTransition>
-                                  }
-                                />
-                                <Route
-                                  path="/thanh-cong/premium"
-                                  element={
-                                    <PageTransition>
-                                      <SuccessPremiumPage />
-                                    </PageTransition>
-                                  }
-                                />
-                                <Route
-                                  path="/thanh-cong/partner"
-                                  element={
-                                    <PageTransition>
-                                      <SuccessPartnerPage />
-                                    </PageTransition>
-                                  }
-                                />
-                                <Route
-                                  path="/"
-                                  element={
-                                    <PageTransition>
-                                      <GioiThieuPage />
-                                    </PageTransition>
-                                  }
-                                />
-                                <Route
-                                  path="/trang-chu"
-                                  element={
-                                    <PageTourWrapper
-                                      autoStart={true}
-                                      delay={3000}
-                                    >
-                                      <PageTransition>
-                                        <HomePage />
-                                      </PageTransition>
-                                    </PageTourWrapper>
-                                  }
-                                />
-                                <Route
-                                  path="/bai-viet"
-                                  element={
-                                    <PageTransition>
-                                      <BlogPage />
-                                    </PageTransition>
-                                  }
-                                />
-                                <Route
-                                  path="/bai-viet/:id"
-                                  element={
-                                    <PageTransition>
-                                      <BlogPostPage />
-                                    </PageTransition>
-                                  }
-                                />
-                                <Route
-                                  path="/khoa-hoc"
-                                  element={
-                                    <PageTransition>
-                                      <KhoaHocPage />
-                                    </PageTransition>
-                                  }
-                                />
-                                <Route
-                                  path="/khoa-hoc/:category"
-                                  element={
-                                    <PageTransition>
-                                      <KhoaHocPage />
-                                    </PageTransition>
-                                  }
-                                />
-                                <Route
-                                  path="/san-pham"
-                                  element={
-                                    <PageTransition>
-                                      <ProductsPage />
-                                    </PageTransition>
-                                  }
-                                />
-                                <Route
-                                  path="/tai-nguyen"
-                                  element={
-                                    <PageTransition>
-                                      <TaiNguyenPage />
-                                    </PageTransition>
-                                  }
-                                />
-                                <Route
-                                  path="/tai-lieu"
-                                  element={
-                                    <PageTransition>
-                                      <PublicFilesPage />
-                                    </PageTransition>
-                                  }
-                                />
-                                <Route
-                                  path="/hop-tac"
-                                  element={
-                                    <PageTransition>
-                                      <HopTacPage />
-                                    </PageTransition>
-                                  }
-                                />
-                                <Route
-                                  path="/cho-mua-ban"
-                                  element={
-                                    <PageTransition>
-                                      <MarketplacePage />
-                                    </PageTransition>
-                                  }
-                                />
-                                <Route
-                                  path="/ho-so"
-                                  element={
-                                    <ProtectedRoute>
-                                      <PageTransition>
-                                        <ProfilePage />
-                                      </PageTransition>
-                                    </ProtectedRoute>
-                                  }
-                                />
-                                <Route
-                                  path="/quan-ly"
-                                  element={
-                                    <AdminRoute>
-                                      <PageTransition>
-                                        <ManagerDashboard />
-                                      </PageTransition>
-                                    </AdminRoute>
-                                  }
-                                />
-                                <Route
-                                  path="/tai-len"
-                                  element={
-                                    <ProtectedRoute>
-                                      <PageTransition>
-                                        <UploadPage />
-                                      </PageTransition>
-                                    </ProtectedRoute>
-                                  }
-                                />
-                                <Route
-                                  path="/demo/notifications"
-                                  element={
-                                    <PageTransition>
-                                      <NotificationDemo />
-                                    </PageTransition>
-                                  }
-                                />
-                              </Routes>
-                            </main>
-                            <Footer />
-                            <ClientWrapper />
-                          </HeaderLayout>
-                        }
-                      />
-                    </Routes>
-
-                    <LocatorSetup />
-                    <LiquidGlassQuickMenu />
-                    <Toaster 
-                      position="top-center" 
-                      toastOptions={{
-                        style: {
-                          marginTop: '80px', // Để tránh chen với header
-                          zIndex: 9999
-                        }
+                <ToastProvider>
+                  <NotificationProvider>
+                    <Router
+                      future={{
+                        v7_startTransition: true,
+                        v7_relativeSplatPath: true,
                       }}
-                    />
-                  </div>
-                </Router>
-              </NotificationProvider>
-            </ToastProvider>
+                    >
+                      <div className="App min-h-screen flex flex-col bg-black">
+                        {/* Threads Background for all pages */}
+                        <ThreadsBackgroundStatic />
+                        <ModernSidebar />
+                        <SkipToContent />
+                        <ScrollToTop />
+                        <ScrollToTopOnMount />
+                        <Routes>
+                          {/* Auth routes without header/footer */}
+                          <Route
+                            path="/dang-nhap"
+                            element={
+                              <Suspense
+                                fallback={
+                                  <Loading
+                                    size="lg"
+                                    variant="spinner"
+                                    text="Đang tải trang đăng nhập..."
+                                  />
+                                }
+                              >
+                                <AuthPage />
+                              </Suspense>
+                            }
+                          />
+                          <Route
+                            path="/xac-minh-email"
+                            element={
+                              <Suspense
+                                fallback={
+                                  <div className="min-h-screen flex items-center justify-center">
+                                    <div className="animate-pulse">
+                                      Đang tải...
+                                    </div>
+                                  </div>
+                                }
+                              >
+                                <VerifyEmailPage />
+                              </Suspense>
+                            }
+                          />
+                          <Route
+                            path="/quen-mat-khau"
+                            element={
+                              <Suspense
+                                fallback={
+                                  <div className="min-h-screen flex items-center justify-center">
+                                    <div className="animate-pulse">
+                                      Đang tải...
+                                    </div>
+                                  </div>
+                                }
+                              >
+                                <ForgotPasswordPage />
+                              </Suspense>
+                            }
+                          />
+                          <Route
+                            path="/dat-lai-mat-khau"
+                            element={
+                              <Suspense
+                                fallback={
+                                  <div className="min-h-screen flex items-center justify-center">
+                                    <div className="animate-pulse">
+                                      Đang tải...
+                                    </div>
+                                  </div>
+                                }
+                              >
+                                <ResetPasswordPage />
+                              </Suspense>
+                            }
+                          />
+                          <Route
+                            path="/gui-lai-xac-minh"
+                            element={
+                              <Suspense
+                                fallback={
+                                  <div className="min-h-screen flex items-center justify-center">
+                                    <div className="animate-pulse">
+                                      Đang tải...
+                                    </div>
+                                  </div>
+                                }
+                              >
+                                <ResendVerificationPage />
+                              </Suspense>
+                            }
+                          />
+                          <Route
+                            path="/chinh-sach-bao-mat"
+                            element={
+                              <Suspense
+                                fallback={
+                                  <div className="min-h-screen flex items-center justify-center">
+                                    <div className="animate-pulse">
+                                      Đang tải...
+                                    </div>
+                                  </div>
+                                }
+                              >
+                                <PrivacyPolicyPage />
+                              </Suspense>
+                            }
+                          />
+                          <Route
+                            path="/dieu-khoan-su-dung"
+                            element={
+                              <Suspense
+                                fallback={
+                                  <div className="min-h-screen flex items-center justify-center">
+                                    <div className="animate-pulse">
+                                      Đang tải...
+                                    </div>
+                                  </div>
+                                }
+                              >
+                                <TermsOfServicePage />
+                              </Suspense>
+                            }
+                          />
+                          <Route
+                            path="/bao-mat"
+                            element={
+                              <Suspense
+                                fallback={
+                                  <div className="min-h-screen flex items-center justify-center">
+                                    <div className="animate-pulse">
+                                      Đang tải...
+                                    </div>
+                                  </div>
+                                }
+                              >
+                                <SecurityPage />
+                              </Suspense>
+                            }
+                          />
+                          <Route
+                            path="/quan-ly-tai-khoan"
+                            element={
+                              <ProtectedRoute>
+                                <Suspense
+                                  fallback={
+                                    <div className="min-h-screen flex items-center justify-center">
+                                      <div className="animate-pulse">
+                                        Đang tải...
+                                      </div>
+                                    </div>
+                                  }
+                                >
+                                  <AccountManagementPage />
+                                </Suspense>
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/change-password"
+                            element={
+                              <Suspense
+                                fallback={
+                                  <div className="min-h-screen flex items-center justify-center">
+                                    <div className="animate-pulse">
+                                      Đang tải...
+                                    </div>
+                                  </div>
+                                }
+                              >
+                                <ChangePasswordPage />
+                              </Suspense>
+                            }
+                          />
+                          <Route
+                            path="/lich-su-hoat-dong"
+                            element={
+                              <ProtectedRoute>
+                                <Suspense
+                                  fallback={
+                                    <div className="min-h-screen flex items-center justify-center">
+                                      <div className="animate-pulse">
+                                        Đang tải...
+                                      </div>
+                                    </div>
+                                  }
+                                >
+                                  <ActivityDashboard />
+                                </Suspense>
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/dieu-khoan-bao-mat"
+                            element={
+                              <Suspense
+                                fallback={
+                                  <div className="min-h-screen flex items-center justify-center">
+                                    <div className="animate-pulse">
+                                      Đang tải...
+                                    </div>
+                                  </div>
+                                }
+                              >
+                                <TermsPrivacy />
+                              </Suspense>
+                            }
+                          />
+                          <Route
+                            path="/gioi-thieu"
+                            element={
+                              <Suspense
+                                fallback={
+                                  <div className="min-h-screen flex items-center justify-center">
+                                    <div className="animate-pulse">
+                                      Đang tải...
+                                    </div>
+                                  </div>
+                                }
+                              >
+                                <GioiThieuPage />
+                              </Suspense>
+                            }
+                          />
+
+                          {/* Main routes with conditional header/footer */}
+                          <Route
+                            path="/*"
+                            element={
+                              <HeaderLayout>
+                                <main className="flex-1">
+                                  <Routes>
+                                    <Route
+                                      path="/goi-dich-vu"
+                                      element={
+                                        <PageTransition>
+                                          <PricingPage />
+                                        </PageTransition>
+                                      }
+                                    />
+                                    <Route
+                                      path="/huong-dan"
+                                      element={
+                                        <PageTransition>
+                                          <EnhancedInstructionPage />
+                                        </PageTransition>
+                                      }
+                                    />
+                                    <Route
+                                      path="/thanh-cong/free"
+                                      element={
+                                        <PageTransition>
+                                          <SuccessFreePage />
+                                        </PageTransition>
+                                      }
+                                    />
+                                    <Route
+                                      path="/thanh-cong/premium"
+                                      element={
+                                        <PageTransition>
+                                          <SuccessPremiumPage />
+                                        </PageTransition>
+                                      }
+                                    />
+                                    <Route
+                                      path="/thanh-cong/partner"
+                                      element={
+                                        <PageTransition>
+                                          <SuccessPartnerPage />
+                                        </PageTransition>
+                                      }
+                                    />
+                                    <Route
+                                      path="/"
+                                      element={
+                                        <PageTransition>
+                                          <GioiThieuPage />
+                                        </PageTransition>
+                                      }
+                                    />
+                                    <Route
+                                      path="/trang-chu"
+                                      element={
+                                        <PageTourWrapper
+                                          autoStart={true}
+                                          delay={3000}
+                                        >
+                                          <PageTransition>
+                                            <HomePage />
+                                          </PageTransition>
+                                        </PageTourWrapper>
+                                      }
+                                    />
+                                    <Route
+                                      path="/bai-viet"
+                                      element={
+                                        <PageTransition>
+                                          <BlogPage />
+                                        </PageTransition>
+                                      }
+                                    />
+                                    <Route
+                                      path="/bai-viet/:id"
+                                      element={
+                                        <PageTransition>
+                                          <BlogPostPage />
+                                        </PageTransition>
+                                      }
+                                    />
+                                    <Route
+                                      path="/khoa-hoc"
+                                      element={
+                                        <PageTransition>
+                                          <KhoaHocPage />
+                                        </PageTransition>
+                                      }
+                                    />
+                                    <Route
+                                      path="/khoa-hoc/:category"
+                                      element={
+                                        <PageTransition>
+                                          <KhoaHocPage />
+                                        </PageTransition>
+                                      }
+                                    />
+                                    <Route
+                                      path="/san-pham"
+                                      element={
+                                        <PageTransition>
+                                          <ProductsPage />
+                                        </PageTransition>
+                                      }
+                                    />
+                                    <Route
+                                      path="/tai-nguyen"
+                                      element={
+                                        <PageTransition>
+                                          <TaiNguyenPage />
+                                        </PageTransition>
+                                      }
+                                    />
+                                    <Route
+                                      path="/tai-lieu"
+                                      element={
+                                        <PageTransition>
+                                          <PublicFilesPage />
+                                        </PageTransition>
+                                      }
+                                    />
+                                    <Route
+                                      path="/hop-tac"
+                                      element={
+                                        <PageTransition>
+                                          <HopTacPage />
+                                        </PageTransition>
+                                      }
+                                    />
+                                    <Route
+                                      path="/cho-mua-ban"
+                                      element={
+                                        <PageTransition>
+                                          <MarketplacePage />
+                                        </PageTransition>
+                                      }
+                                    />
+                                    <Route
+                                      path="/support"
+                                      element={
+                                        <PageTransition>
+                                          <SupportPage />
+                                        </PageTransition>
+                                      }
+                                    />
+                                    <Route
+                                      path="/faq"
+                                      element={
+                                        <PageTransition>
+                                          <FAQPage />
+                                        </PageTransition>
+                                      }
+                                    />
+                                    <Route
+                                      path="/contact"
+                                      element={
+                                        <PageTransition>
+                                          <ContactPage />
+                                        </PageTransition>
+                                      }
+                                    />
+                                    <Route
+                                      path="/ho-so"
+                                      element={
+                                        <ProtectedRoute>
+                                          <PageTransition>
+                                            <ProfilePage />
+                                          </PageTransition>
+                                        </ProtectedRoute>
+                                      }
+                                    />
+                                    <Route
+                                      path="/quan-ly"
+                                      element={
+                                        <AdminRoute>
+                                          <PageTransition>
+                                            <ManagerDashboard />
+                                          </PageTransition>
+                                        </AdminRoute>
+                                      }
+                                    />
+                                    <Route
+                                      path="/tai-len"
+                                      element={
+                                        <ProtectedRoute>
+                                          <PageTransition>
+                                            <UploadPage />
+                                          </PageTransition>
+                                        </ProtectedRoute>
+                                      }
+                                    />
+                                    <Route
+                                      path="/demo/notifications"
+                                      element={
+                                        <PageTransition>
+                                          <NotificationDemo />
+                                        </PageTransition>
+                                      }
+                                    />
+                                  </Routes>
+                                </main>
+                                <Footer />
+                                <ClientWrapper />
+                              </HeaderLayout>
+                            }
+                          />
+                        </Routes>
+
+                        <LocatorSetup />
+                        <LiquidGlassQuickMenu />
+                        <Toaster
+                          position="top-center"
+                          toastOptions={{
+                            style: {
+                              marginTop: "80px", // Để tránh chen với header
+                              zIndex: 9999,
+                            },
+                          }}
+                        />
+                      </div>
+                    </Router>
+                  </NotificationProvider>
+                </ToastProvider>
               </EnhancedToastProvider>
             </EnhancedNotificationProvider>
           </CartProvider>

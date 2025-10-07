@@ -57,6 +57,18 @@ export interface UserProfile {
   interests?: string[];
   createdAt: string;
   updatedAt: string;
+  // Membership fields
+  membership_type?: "free" | "member" | "premium";
+  membership_status?: "active" | "expired" | "suspended" | "cancelled";
+  membership_started_at?: string;
+  membership_expires_at?: string;
+  auto_renewal?: boolean;
+  payment_method_saved?: boolean;
+  // Additional fields
+  full_name?: string;
+  phone?: string;
+  address?: string;
+  role?: string;
 }
 
 export interface UserStats {

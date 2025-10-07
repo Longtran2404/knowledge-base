@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run linter
+npm run lint:check
+
+# Run type check
+npx tsc --noEmit
+
+# Check for console.log (except logger)
+if git diff --cached --name-only | grep -E '\.(ts|tsx)$' | xargs grep -l 'console\.log' | grep -v logger.ts; then
+  echo "❌ Error: Found console.log statements. Use logger instead!"
+  echo "Replace console.log with:"
+  echo "  import { logger } from '@/lib/logger/logger';"
+  echo "  logger.info('message', context);"
+  exit 1
+fi
+
+# Run tests for changed files
+npm run test -- --bail --findRelatedTests $(git diff --cached --name-only | grep -E '\.(ts|tsx)$' | tr '\n' ' ')
+
+echo "✅ Pre-commit checks passed!"

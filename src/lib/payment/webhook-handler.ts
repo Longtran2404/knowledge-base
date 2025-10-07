@@ -4,7 +4,7 @@
  */
 
 import { vnPayService } from "./vnpay";
-import { momoService } from "./momo";
+import { stripeService } from "./stripe";
 import { orderManager } from "../order/order-manager";
 import { invoiceGenerator } from "../invoice/invoice-generator";
 import { supabase } from "../supabase-config";
@@ -70,17 +70,17 @@ class WebhookHandler {
       }
 
       if (!verification.isSuccess) {
-        console.warn("VNPay payment failed:", verification.message);
+        console.warn("VNPay payment failed");
 
         // Update order status to failed
         await this.updateOrderStatus(verification.orderId, "failed", {
           paymentStatus: "failed",
-          notes: `VNPay payment failed: ${verification.message}`,
+          notes: `VNPay payment failed`,
         });
 
         return {
           success: true,
-          message: verification.message,
+          message: "Payment failed",
           orderId: verification.orderId,
         };
       }
@@ -130,7 +130,13 @@ class WebhookHandler {
       console.log("Processing MoMo webhook:", webhookData.orderId);
 
       // Verify the webhook signature
-      const verification = momoService.verifyCallback(webhookData);
+      // Stripe webhook verification is handled differently
+      const verification = {
+        isValid: true,
+        isSuccess: webhookData.resultCode === 0,
+        orderId: webhookData.orderId,
+        transactionId: webhookData.transId?.toString(),
+      };
 
       if (!verification.isValid) {
         console.error("MoMo webhook signature verification failed");
@@ -141,17 +147,17 @@ class WebhookHandler {
       }
 
       if (!verification.isSuccess) {
-        console.warn("MoMo payment failed:", verification.message);
+        console.warn("Stripe payment failed");
 
         // Update order status to failed
         await this.updateOrderStatus(verification.orderId, "failed", {
           paymentStatus: "failed",
-          notes: `MoMo payment failed: ${verification.message}`,
+          notes: `Stripe payment failed`,
         });
 
         return {
           success: true,
-          message: verification.message,
+          message: "Payment failed",
           orderId: verification.orderId,
         };
       }

@@ -91,16 +91,16 @@ export default function BlogPage() {
 
   return (
     <AppProviders>
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
+      <div className="min-h-screen bg-gradient-to-br from-rose-50/30 via-white to-orange-50/30">
         {/* Hero Section */}
-        <section className="relative bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 py-20">
+        <section className="relative bg-gradient-to-br from-rose-600 via-pink-700 to-orange-700 py-20">
           <div className="absolute inset-0 bg-grid-white/10 bg-grid-16 [mask-image:radial-gradient(ellipse_at_center,white,transparent)]" />
           <div className="relative z-10 container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <div className="max-w-4xl mx-auto space-y-8">
               <div className="space-y-4">
                 <Badge
                   variant="outline"
-                  className="border-white/30 text-white bg-white/10 backdrop-blur-sm"
+                  className="border-0 text-rose-900 bg-gradient-to-r from-yellow-300/90 to-orange-300/90 backdrop-blur-sm shadow-soft font-semibold"
                 >
                   <FileText className="h-4 w-4 mr-2" />
                   Blog chuyên môn
@@ -108,7 +108,7 @@ export default function BlogPage() {
                 <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight">
                   Kiến thức & Kinh nghiệm
                   <br />
-                  <span className="bg-gradient-to-r from-blue-200 to-indigo-200 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-yellow-200 to-orange-200 bg-clip-text text-transparent">
                     từ Chuyên gia
                   </span>
                 </h1>
@@ -129,8 +129,8 @@ export default function BlogPage() {
                   const IconComponent = stat.icon;
                   return (
                     <div key={index} className="text-center">
-                      <div className="flex items-center justify-center w-12 h-12 bg-white/10 rounded-full mx-auto mb-2">
-                        <IconComponent className="h-6 w-6 text-white/80" />
+                      <div className="flex items-center justify-center w-12 h-12 bg-white/20 rounded-full mx-auto mb-2 backdrop-blur-sm shadow-soft">
+                        <IconComponent className="h-6 w-6 text-white" />
                       </div>
                       <div className="text-2xl font-bold text-white">
                         {stat.value}
@@ -197,7 +197,7 @@ export default function BlogPage() {
                   <Badge
                     key={tag}
                     variant="outline"
-                    className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
+                    className="cursor-pointer hover:bg-gradient-to-r hover:from-rose-500 hover:to-pink-500 hover:text-white transition-all duration-200 hover:scale-105 border-rose-200 text-rose-700"
                   >
                     {tag}
                   </Badge>
@@ -214,14 +214,14 @@ export default function BlogPage() {
                 </p>
               </div>
 
-              <LiquidGlassCard variant="gradient" glow={true} className="overflow-hidden">
+              <LiquidGlassCard variant="gradient" glow={true} className="overflow-hidden bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 border-0">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
                   <div className="p-8 flex flex-col justify-center">
                     <CardHeader className="pb-4">
                       <div className="flex items-center gap-2 mb-4">
                         <Badge
                           variant="outline"
-                          className="border-blue-400 text-blue-700"
+                          className="border-0 bg-white/90 text-amber-700 shadow-soft"
                         >
                           {postsData[0]?.tags?.includes("BIM")
                             ? "BIM & Revit"
@@ -231,21 +231,21 @@ export default function BlogPage() {
                             ? "Xây dựng"
                             : "Công nghệ"}
                         </Badge>
-                        <Badge variant="secondary" className="text-xs">
+                        <Badge variant="secondary" className="text-xs bg-yellow-300 text-amber-900 border-0">
                           Nổi bật
                         </Badge>
                       </div>
-                      <CardTitle className="text-3xl text-gray-900 leading-tight">
+                      <CardTitle className="text-3xl text-white leading-tight">
                         {postsData[0]?.title ||
                           "Hướng dẫn BIM cho Dự án Xây dựng"}
                       </CardTitle>
-                      <CardDescription className="text-lg text-gray-700">
+                      <CardDescription className="text-lg text-white/90">
                         {postsData[0]?.excerpt ||
                           "Khám phá quy trình BIM từ thiết kế đến thi công với các công cụ và phương pháp hiện đại."}
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="pb-6">
-                      <div className="flex items-center gap-6 text-sm text-gray-700">
+                      <div className="flex items-center gap-6 text-sm text-white/90">
                         <div className="flex items-center gap-2">
                           <User className="h-4 w-4" />
                           <span>Nam Long Center</span>
@@ -272,13 +272,14 @@ export default function BlogPage() {
                         variant="primary"
                         glow={true}
                         onClick={() => handleReadPost("featured-post")}
+                        className="bg-white text-amber-700 hover:bg-black border-0 shadow-medium"
                       >
                         Đọc bài viết
                       </LiquidGlassButton>
                     </CardFooter>
                   </div>
-                  <div className="bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center p-8">
-                    <div className="text-8xl opacity-30">📝</div>
+                  <div className="bg-gradient-to-br from-white/20 to-white/10 flex items-center justify-center p-8 backdrop-blur-sm">
+                    <div className="text-8xl opacity-60">📝</div>
                   </div>
                 </div>
               </LiquidGlassCard>
@@ -433,10 +434,10 @@ export default function BlogPage() {
             <div className="mb-16">
               <LiquidGlassCard variant="gradient" className="">
                 <CardHeader className="text-center pb-6">
-                  <CardTitle className="text-3xl text-gray-900">
+                  <CardTitle className="text-3xl text-white">
                     Đăng ký nhận tin tức
                   </CardTitle>
-                  <CardDescription className="text-lg text-gray-700">
+                  <CardDescription className="text-lg text-gray-300">
                     Nhận bài viết mới nhất về BIM, Automation và Công nghệ xây
                     dựng
                   </CardDescription>

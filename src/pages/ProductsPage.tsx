@@ -1,22 +1,13 @@
-/**
- * Products Page - Trang sản phẩm
- * Hiển thị danh sách sản phẩm và khóa học
- */
-
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Grid, List, Star, Clock, Users } from 'lucide-react';
-import { LiquidGlassButton } from '../components/ui/liquid-glass-button';
-import { LiquidGlassCard } from '../components/ui/liquid-glass-card';
+import { Search, Filter, Grid, List, Star, Clock, Users, BookOpen, ShoppingCart, ArrowRight } from 'lucide-react';
+import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { AddToCartButton, CourseAddToCartButton, ProductAddToCartButton } from '../components/cart/AddToCartButton';
 import { useCart } from '../contexts/CartContext';
 import { Product, Course } from '../lib/supabase-config';
 import { supabase } from '../lib/supabase-config';
 import { productsData } from '../data/products';
-import { AnimeScrollEffects, StaggerAnimation } from '../components/animations/anime-scroll-effects';
 
 interface CombinedItem {
   id: string;
@@ -176,16 +167,16 @@ const ProductsPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="min-h-screen bg-black text-white relative">
+        <div className="container mx-auto px-4 py-8">
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
+            <div className="h-8 bg-white/10 rounded w-1/4 mb-6"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="bg-white rounded-lg shadow p-6">
-                  <div className="h-48 bg-gray-200 rounded mb-4"></div>
-                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                <div key={i} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg shadow-sm p-6">
+                  <div className="h-48 bg-white/10 rounded mb-4"></div>
+                  <div className="h-4 bg-white/10 rounded w-3/4 mb-2"></div>
+                  <div className="h-4 bg-white/10 rounded w-1/2"></div>
                 </div>
               ))}
             </div>
@@ -196,43 +187,41 @@ const ProductsPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <AnimeScrollEffects animationType="fadeInUp" delay={200}>
-          <LiquidGlassCard variant="gradient" glow={true} className="mb-8 p-8 text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+    <div className="min-h-screen bg-black text-white relative">
+      <div className="container mx-auto px-4 py-8">
+        {/* Hero Section */}
+        <section className="bg-black relative py-16 mb-8 rounded-lg">
+          <div className="text-center">
+            <Badge variant="secondary" className="mb-6 bg-blue-100 text-blue-700 px-4 py-2">
+              <ShoppingCart className="h-4 w-4 mr-2" />
+              Sản phẩm & Khóa học
+            </Badge>
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
               Sản phẩm & <span className="text-blue-600">Khóa học</span>
             </h1>
-            <p className="text-xl text-gray-700">
-              Khám phá các khóa học và sản phẩm chất lượng cao
+            <p className="text-xl text-gray-400 max-w-3xl mx-auto mb-8 leading-relaxed">
+              Khám phá các khóa học BIM, AutoCAD và sản phẩm chất lượng cao từ Nam Long Center
             </p>
-          </LiquidGlassCard>
-        </AnimeScrollEffects>
+          </div>
+        </section>
 
         {/* Search and Filters */}
-        <div className="mb-8 space-y-4">
-          {/* Search Bar */}
-          <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <Input
-              type="text"
-              placeholder="Tìm kiếm sản phẩm, khóa học..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 w-full"
-            />
-          </div>
-
-          {/* Filters */}
-          <div className="flex flex-wrap items-center gap-4">
-            {/* Category Filter */}
-            <div className="flex items-center space-x-2">
-              <Filter className="w-5 h-5 text-gray-500" />
+        <section className="py-8 bg-black border rounded-lg mb-8">
+          <div className="max-w-4xl mx-auto px-6">
+            <div className="flex flex-col md:flex-row gap-4 mb-6">
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input
+                  placeholder="Tìm kiếm sản phẩm, khóa học..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="px-4 py-2 border border-gray-300 rounded-md bg-white"
               >
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>
@@ -241,129 +230,128 @@ const ProductsPage: React.FC = () => {
                 ))}
               </select>
             </div>
-
-            {/* View Mode */}
-            <div className="flex items-center space-x-2">
-              <LiquidGlassButton
-                variant={viewMode === 'grid' ? 'primary' : 'ghost'}
+            <div className="flex items-center gap-2">
+              <Button
+                variant={viewMode === 'grid' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setViewMode('grid')}
               >
-                <Grid className="w-4 h-4" />
-              </LiquidGlassButton>
-              <LiquidGlassButton
-                variant={viewMode === 'list' ? 'primary' : 'ghost'}
+                <Grid className="w-4 h-4 mr-2" />
+                Lưới
+              </Button>
+              <Button
+                variant={viewMode === 'list' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setViewMode('list')}
               >
-                <List className="w-4 h-4" />
-              </LiquidGlassButton>
+                <List className="w-4 h-4 mr-2" />
+                Danh sách
+              </Button>
             </div>
           </div>
-        </div>
+        </section>
 
         {/* Products Grid */}
-        <StaggerAnimation staggerDelay={100}>
+        <section className="py-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-white mb-4">Tất cả sản phẩm & khóa học</h2>
+            <p className="text-lg text-gray-400">
+              Tìm thấy {filteredData().length} sản phẩm phù hợp
+            </p>
+          </div>
+
           <div className={
             viewMode === 'grid'
-              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
-              : 'space-y-4'
+              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'
+              : 'space-y-6'
           }>
-            {filteredData().map((item, index) => (
-              <AnimeScrollEffects
-                key={item.id}
-                animationType="fadeInUp"
-                delay={300 + index * 50}
-              >
-                <LiquidGlassCard variant="interactive" hover={true} className="overflow-hidden">
-              {item.image_url ? (
-                <div className="aspect-video bg-gray-100">
-                  <img
-                    src={item.image_url}
-                    alt={item.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ) : (
-                <div className="aspect-video bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-2">
-                      {item.item_type === 'course' ? (
-                        <Users className="w-8 h-8 text-white" />
-                      ) : (
-                        <Star className="w-8 h-8 text-white" />
-                      )}
+            {filteredData().map((item) => (
+              <Card key={item.id} className="border border-white/10 shadow-sm hover:shadow-md transition-shadow bg-white/5 backdrop-blur-sm overflow-hidden">
+                {item.image_url ? (
+                  <div className="h-48 bg-white/10">
+                    <img
+                      src={item.image_url}
+                      alt={item.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="h-48 bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-2">
+                        {item.item_type === 'course' ? (
+                          <BookOpen className="w-8 h-8 text-white" />
+                        ) : (
+                          <ShoppingCart className="w-8 h-8 text-white" />
+                        )}
+                      </div>
+                      <p className="text-sm text-blue-400 font-medium">
+                        {item.item_type === 'course' ? 'Khóa học' : 'Sản phẩm'}
+                      </p>
                     </div>
-                    <p className="text-sm text-blue-600 font-medium">
-                      {item.item_type === 'course' ? 'Khóa học' : 'Sản phẩm'}
+                  </div>
+                )}
+
+                <CardHeader>
+                  <div className="flex items-start justify-between mb-2">
+                    <Badge variant="outline" className="text-xs bg-blue-500/20 text-blue-400 border-blue-400/30">
+                      {item.item_type === 'course' ? 'Khóa học' : item.category || 'Sản phẩm'}
+                    </Badge>
+                    <div className="text-xl font-bold text-white">
+                      {!item.price || item.price === 0 ? "Miễn phí" : `${item.price.toLocaleString()}đ`}
+                    </div>
+                  </div>
+                  <CardTitle className="text-lg line-clamp-2 text-white">
+                    {item.name}
+                  </CardTitle>
+                </CardHeader>
+
+                <CardContent>
+                  <div className="space-y-3">
+                    <p className="text-gray-400 text-sm line-clamp-3">
+                      {item.description}
                     </p>
+                    {item.item_type === 'course' && (
+                      <div className="flex items-center text-sm text-gray-400">
+                        <Clock className="w-4 h-4 mr-1" />
+                        <span>Thời lượng: 4 tuần</span>
+                      </div>
+                    )}
+                    <Button
+                      className="w-full bg-blue-600 hover:bg-blue-700"
+                      onClick={() => handleAddToCart(item)}
+                    >
+                      <ShoppingCart className="w-4 h-4 mr-2" />
+                      Thêm vào giỏ hàng
+                    </Button>
                   </div>
-                </div>
-              )}
-
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between mb-2">
-                  <Badge variant="outline" className="text-xs">
-                    {item.item_type === 'course' ? 'Khóa học' : item.category || 'Sản phẩm'}
-                  </Badge>
-                  {item.item_type === 'course' && (
-                    <div className="flex items-center text-sm text-gray-500">
-                      <Clock className="w-4 h-4 mr-1" />
-                      <span>4 tuần</span>
-                    </div>
-                  )}
-                </div>
-
-                <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-                  {item.name}
-                </h3>
-
-                <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                  {item.description}
-                </p>
-
-                <div className="flex items-center justify-between">
-                  <div className="text-2xl font-bold text-blue-600">
-                    {formatPrice(item.price)}
-                  </div>
-                  
-                  <LiquidGlassButton
-                    onClick={() => handleAddToCart(item)}
-                    variant="primary"
-                    glow={true}
-                  >
-                    <Star className="w-4 h-4 mr-2" />
-                    Thêm vào giỏ
-                  </LiquidGlassButton>
-                </div>
-              </CardContent>
-            </LiquidGlassCard>
-              </AnimeScrollEffects>
+                </CardContent>
+              </Card>
             ))}
           </div>
-        </StaggerAnimation>
+        </section>
 
         {/* Empty State */}
         {filteredData().length === 0 && (
           <div className="text-center py-12">
-            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <Search className="w-12 h-12 text-gray-400" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+            <h3 className="text-lg font-medium text-white mb-2">
               Không tìm thấy sản phẩm
             </h3>
-            <p className="text-gray-500 mb-4">
+            <p className="text-gray-400 mb-4">
               Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc
             </p>
-            <LiquidGlassButton
+            <Button
               onClick={() => {
                 setSearchTerm('');
                 setSelectedCategory('all');
               }}
-              variant="secondary"
+              variant="outline"
             >
               Xóa bộ lọc
-            </LiquidGlassButton>
+            </Button>
           </div>
         )}
       </div>

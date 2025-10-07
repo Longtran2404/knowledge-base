@@ -9,6 +9,7 @@ export type Course = {
   ratingAvg?: number;
   ratingCount?: number;
   thumbnail?: string;
+  videoUrl?: string; // Preview video URL for course
   price?: number;
   isHot?: boolean;
   createdAt: string;

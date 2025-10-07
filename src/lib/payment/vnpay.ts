@@ -5,6 +5,23 @@
 
 import CryptoJS from 'crypto-js';
 
+/**
+ * Get client IP address
+ * Falls back to localhost if unable to fetch
+ */
+async function getClientIP(): Promise<string> {
+  try {
+    const response = await fetch('https://api.ipify.org?format=json', {
+      signal: AbortSignal.timeout(3000), // 3 second timeout
+    });
+    const data = await response.json();
+    return data.ip || '127.0.0.1';
+  } catch (error) {
+    console.warn('Failed to get client IP, using fallback:', error);
+    return '127.0.0.1';
+  }
+}
+
 // VNPay Configuration
 export const VNPAY_CONFIG = {
   VERSION: '2.1.0',
@@ -68,13 +85,16 @@ class VNPayService {
   /**
    * Create payment URL for VNPay gateway
    */
-  createPaymentUrl(orderInfo: VNPayOrderInfo): VNPayResponse {
+  async createPaymentUrl(orderInfo: VNPayOrderInfo): Promise<VNPayResponse> {
     const date = new Date();
     const createDate = this.formatDate(date);
     const expireDate = this.formatDate(new Date(date.getTime() + 15 * 60 * 1000)); // 15 minutes
 
     // Generate transaction reference
     const transactionRef = `${orderInfo.orderId}_${Date.now()}`;
+
+    // Get client IP address
+    const clientIP = await getClientIP();
 
     // VNPay parameters
     const vnpParams: Record<string, string> = {
@@ -84,7 +104,7 @@ class VNPayService {
       vnp_Amount: (orderInfo.amount * 100).toString(), // Convert to VNPay format (multiply by 100)
       vnp_CreateDate: createDate,
       vnp_CurrCode: 'VND',
-      vnp_IpAddr: '127.0.0.1', // Client IP would be set on backend
+      vnp_IpAddr: clientIP, // Get real client IP
       vnp_Locale: orderInfo.locale || 'vn',
       vnp_OrderInfo: orderInfo.orderDescription,
       vnp_OrderType: orderInfo.productType || 'other',
@@ -186,6 +206,8 @@ class VNPayService {
    * Query transaction status from VNPay
    */
   async queryTransaction(transactionRef: string, transactionDate: string): Promise<any> {
+    const clientIP = await getClientIP();
+
     const requestData = {
       vnp_RequestId: Date.now().toString(),
       vnp_Version: VNPAY_CONFIG.VERSION,
@@ -195,7 +217,7 @@ class VNPayService {
       vnp_OrderInfo: `Query transaction ${transactionRef}`,
       vnp_TransactionDate: transactionDate,
       vnp_CreateDate: this.formatDate(new Date()),
-      vnp_IpAddr: '127.0.0.1',
+      vnp_IpAddr: clientIP,
     };
 
     // Create secure hash for API request

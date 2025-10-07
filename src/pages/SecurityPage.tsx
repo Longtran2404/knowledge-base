@@ -185,10 +185,14 @@ export default function SecurityPage() {
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                     <span className="text-blue-600 font-semibold text-sm">
-                      {userProfile?.full_name?.charAt(0) || user?.email?.charAt(0) || "U"}
+                      {userProfile?.full_name?.charAt(0) ||
+                        user?.email?.charAt(0) ||
+                        "U"}
                     </span>
                   </div>
-                  <span className="text-gray-900">{userProfile?.full_name || "Chưa cập nhật"}</span>
+                  <span className="text-gray-900">
+                    {userProfile?.full_name || "Chưa cập nhật"}
+                  </span>
                 </div>
               </div>
 
@@ -213,17 +217,17 @@ export default function SecurityPage() {
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                     <span className="text-green-600 font-semibold text-sm">
-                      {userProfile?.role === "student"
+                      {userProfile?.account_role === "sinh_vien"
                         ? "H"
-                        : userProfile?.role === "instructor"
+                        : userProfile?.account_role === "giang_vien"
                         ? "G"
                         : "A"}
                     </span>
                   </div>
                   <span className="text-gray-900">
-                    {userProfile?.role === "student"
+                    {userProfile?.account_role === "sinh_vien"
                       ? "Học viên"
-                      : userProfile?.role === "instructor"
+                      : userProfile?.account_role === "giang_vien"
                       ? "Giảng viên"
                       : "Quản trị viên"}
                   </span>
@@ -237,7 +241,11 @@ export default function SecurityPage() {
                 <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4 text-gray-500" />
                   <span className="text-gray-900">
-                    {userProfile?.created_at ? new Date(userProfile.created_at).toLocaleDateString("vi-VN") : "Chưa rõ"}
+                    {userProfile?.created_at
+                      ? new Date(userProfile.created_at).toLocaleDateString(
+                          "vi-VN"
+                        )
+                      : "Chưa rõ"}
                   </span>
                 </div>
               </div>

@@ -324,17 +324,19 @@ class SupabaseRealtime {
     notification: Omit<NotificationPayload, "id" | "createdAt" | "isRead">
   ): Promise<void> {
     try {
-      const { error } = await (supabase as any).from("notifications").insert([
-        {
-          user_id: userId,
-          type: notification.type,
-          title: notification.title,
-          message: notification.message,
-          data: notification.data,
-          is_read: false,
-          created_at: new Date().toISOString(),
-        },
-      ]);
+      const { error } = await (supabase as any)
+        .from("nlc_notifications")
+        .insert([
+          {
+            user_id: userId,
+            type: notification.type,
+            title: notification.title,
+            message: notification.message,
+            data: notification.data,
+            is_read: false,
+            created_at: new Date().toISOString(),
+          },
+        ]);
 
       if (error) throw error;
     } catch (error) {
@@ -349,7 +351,7 @@ class SupabaseRealtime {
   async markNotificationRead(notificationId: string): Promise<void> {
     try {
       const { error } = await (supabase as any)
-        .from("notifications")
+        .from("nlc_notifications")
         .update({ is_read: true } as any)
         .eq("id", notificationId);
 
@@ -366,7 +368,7 @@ class SupabaseRealtime {
   async getUnreadNotificationCount(userId: string): Promise<number> {
     try {
       const { count, error } = await (supabase as any)
-        .from("notifications")
+        .from("nlc_notifications")
         .select("*", { count: "exact", head: true })
         .eq("user_id", userId)
         .eq("is_read", false);

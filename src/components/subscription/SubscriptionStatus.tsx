@@ -25,8 +25,8 @@ export const SubscriptionStatus: React.FC = () => {
     );
   }
 
-  const plan = user.plan || "free";
-  const isActive = user.is_active || false;
+  const plan = user.membership_plan || "free";
+  const isActive = user.account_status === "active";
 
   const getPlanLabel = (plan: string) => {
     switch (plan) {
