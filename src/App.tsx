@@ -80,6 +80,7 @@ const UploadPage = React.lazy(() => import("./pages/UploadPage"));
 const NotificationDemo = React.lazy(
   () => import("./components/demo/NotificationDemo")
 );
+const ShowcasePage = React.lazy(() => import("./pages/ShowcasePage"));
 
 function App() {
   // Debug configuration in development
@@ -562,6 +563,14 @@ function App() {
                                       element={
                                         <PageTransition>
                                           <NotificationDemo />
+                                        </PageTransition>
+                                      }
+                                    />
+                                    <Route
+                                      path="/showcase"
+                                      element={
+                                        <PageTransition>
+                                          <ShowcasePage />
                                         </PageTransition>
                                       }
                                     />
