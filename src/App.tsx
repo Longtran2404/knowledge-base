@@ -8,7 +8,7 @@ import { NotificationProvider as EnhancedNotificationProvider } from "./contexts
 import { ClientWrapper } from "./components/client-wrapper";
 import LocatorSetup from "./components/locator-setup";
 import LiquidGlassQuickMenu from "./components/navigation/LiquidGlassQuickMenu";
-import { ModernSidebar } from "./components/navigation/ModernSidebar";
+import { ModernSidebarV2 } from "./components/navigation/ModernSidebarV2";
 import HeaderLayout from "./components/layout/HeaderLayout";
 import PageTransition from "./components/layout/PageTransition";
 import PageTourWrapper from "./components/guide/PageTourWrapper";
@@ -81,6 +81,7 @@ const NotificationDemo = React.lazy(
   () => import("./components/demo/NotificationDemo")
 );
 const ShowcasePage = React.lazy(() => import("./pages/ShowcasePage"));
+const PaymentVerificationPage = React.lazy(() => import("./pages/admin/PaymentVerificationPage"));
 
 function App() {
   // Debug configuration in development
@@ -145,7 +146,7 @@ function App() {
                       <div className="App min-h-screen flex flex-col bg-black">
                         {/* Threads Background for all pages */}
                         <ThreadsBackgroundStatic />
-                        <ModernSidebar />
+                        <ModernSidebarV2 />
                         <SkipToContent />
                         <ScrollToTop />
                         <ScrollToTopOnMount />
@@ -544,6 +545,16 @@ function App() {
                                         <AdminRoute>
                                           <PageTransition>
                                             <ManagerDashboard />
+                                          </PageTransition>
+                                        </AdminRoute>
+                                      }
+                                    />
+                                    <Route
+                                      path="/admin/thanh-toan"
+                                      element={
+                                        <AdminRoute>
+                                          <PageTransition>
+                                            <PaymentVerificationPage />
                                           </PageTransition>
                                         </AdminRoute>
                                       }
