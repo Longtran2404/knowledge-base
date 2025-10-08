@@ -7,7 +7,7 @@ import { EnhancedToastProvider } from "./components/ui/enhanced-toast";
 import { NotificationProvider as EnhancedNotificationProvider } from "./contexts/NotificationContext";
 import { ClientWrapper } from "./components/client-wrapper";
 import LocatorSetup from "./components/locator-setup";
-import LiquidGlassQuickMenu from "./components/navigation/LiquidGlassQuickMenu";
+// import LiquidGlassQuickMenu from "./components/navigation/LiquidGlassQuickMenu"; // Removed - replaced by ModernSidebarV2
 import { ModernSidebarV2 } from "./components/navigation/ModernSidebarV2";
 import HeaderLayout from "./components/layout/HeaderLayout";
 import PageTransition from "./components/layout/PageTransition";
@@ -595,7 +595,6 @@ function App() {
                         </Routes>
 
                         <LocatorSetup />
-                        <LiquidGlassQuickMenu />
                         <Toaster
                           position="top-center"
                           toastOptions={{
