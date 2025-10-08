@@ -31,7 +31,7 @@ import { logger } from "./lib/logger/logger";
 const HomePage = React.lazy(() => import("./pages/HomePage"));
 const BlogPage = React.lazy(() => import("./pages/BlogPage"));
 const BlogPostPage = React.lazy(() => import("./pages/BlogPostPage"));
-const GioiThieuPage = React.lazy(() => import("./pages/GioiThieuPage"));
+const GioiThieuPage = React.lazy(() => import("./pages/EnhancedGioiThieuPage"));
 const KhoaHocPage = React.lazy(() => import("./pages/KhoaHocPage"));
 const ProductsPage = React.lazy(() => import("./pages/ProductsPage"));
 const TaiNguyenPage = React.lazy(() => import("./pages/TaiNguyenPage"));
