@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-import LiquidGlassNavigation from "../navigation/LiquidGlassNavigation";
+// import LiquidGlassNavigation from "../navigation/LiquidGlassNavigation"; // Removed - using ModernSidebarV2 globally
 
 interface HeaderLayoutProps {
   children: React.ReactNode;
@@ -23,8 +23,8 @@ export default function HeaderLayout({ children }: HeaderLayoutProps) {
 
   return (
     <>
-      {shouldShowHeader && <LiquidGlassNavigation />}
-{children}
+      {/* LiquidGlassNavigation removed - ModernSidebarV2 is now rendered globally in App.tsx */}
+      {children}
     </>
   );
 }
