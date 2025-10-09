@@ -24,7 +24,8 @@ import { CartProvider } from "./contexts/CartContext";
 import { ProtectedRoute, AdminRoute } from "./components/auth/ProtectedRoute";
 import { config } from "./services/config";
 import { errorHandler } from "./lib/error-handler";
-import { ThreadsBackgroundStatic } from "./components/ui/threads-background";
+// import { ThreadsBackgroundStatic } from "./components/ui/threads-background"; // Replaced with GalaxyBackground
+import { GalaxyBackground } from "./components/backgrounds/GalaxyBackground";
 import { logger } from "./lib/logger/logger";
 
 // Lazy load pages for better performance
@@ -144,8 +145,8 @@ function App() {
                       }}
                     >
                       <div className="App min-h-screen flex flex-col bg-black">
-                        {/* Threads Background for all pages */}
-                        <ThreadsBackgroundStatic />
+                        {/* Galaxy Background for all pages */}
+                        <GalaxyBackground />
                         <ModernSidebarV2 />
                         <SkipToContent />
                         <ScrollToTop />
