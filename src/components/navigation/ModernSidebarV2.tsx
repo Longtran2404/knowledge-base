@@ -99,6 +99,13 @@ const mainNavItems: NavItem[] = [
     badge: 0,
     gradient: 'from-yellow-500 to-orange-500',
   },
+  {
+    id: 'workflows',
+    label: 'n8n Workflows',
+    icon: <Sparkles className="h-5 w-5" />,
+    path: '/workflows',
+    gradient: 'from-cyan-500 to-blue-500',
+  },
 ];
 
 export function ModernSidebarV2() {
@@ -120,6 +127,32 @@ export function ModernSidebarV2() {
     window.addEventListener('resize', checkDesktop);
     return () => window.removeEventListener('resize', checkDesktop);
   }, []);
+
+  // Close sidebar when clicking outside on desktop
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const sidebar = document.getElementById('modern-sidebar');
+      const toggleButton = document.getElementById('sidebar-toggle-button');
+
+      if (
+        isOpen &&
+        sidebar &&
+        !sidebar.contains(event.target as Node) &&
+        toggleButton &&
+        !toggleButton.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   const quickActions: QuickAction[] = [
     {
@@ -185,9 +218,10 @@ export function ModernSidebarV2() {
 
   return (
     <>
-      {/* Mobile Toggle Button - Only on Mobile */}
-      {!isDesktop && (
+      {/* Toggle Button - Both Mobile and Desktop */}
+      {!isOpen && (
         <motion.button
+          id="sidebar-toggle-button"
           onClick={() => setIsOpen(true)}
           className="fixed top-4 left-4 z-50 p-3 rounded-2xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 text-white shadow-2xl"
           whileHover={{ scale: 1.05, rotate: 90 }}
@@ -257,9 +291,9 @@ export function ModernSidebarV2() {
         </motion.button>
       </motion.div>
 
-      {/* Overlay - Only on Mobile when open */}
+      {/* Overlay - Show when sidebar is open */}
       <AnimatePresence>
-        {!isDesktop && isOpen && (
+        {isOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -270,10 +304,11 @@ export function ModernSidebarV2() {
         )}
       </AnimatePresence>
 
-      {/* Sidebar - Show when isOpen on mobile OR always on desktop */}
+      {/* Sidebar - Show only when isOpen */}
       <AnimatePresence mode="wait">
-        {(isOpen || isDesktop) && (
+        {isOpen && (
           <motion.aside
+            id="modern-sidebar"
             key="sidebar"
             initial={{ x: -400, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
@@ -311,16 +346,14 @@ export function ModernSidebarV2() {
                       <p className="text-gray-400 text-xs">Xây dựng tương lai</p>
                     </div>
                   </div>
-                  {!isDesktop && (
-                    <motion.button
-                      onClick={() => setIsOpen(false)}
-                      whileHover={{ scale: 1.1, rotate: 90 }}
-                      whileTap={{ scale: 0.9 }}
-                      className="p-2 rounded-xl hover:bg-white/10 text-gray-400 transition-all"
-                    >
-                      <X className="h-6 w-6" />
-                    </motion.button>
-                  )}
+                  <motion.button
+                    onClick={() => setIsOpen(false)}
+                    whileHover={{ scale: 1.1, rotate: 90 }}
+                    whileTap={{ scale: 0.9 }}
+                    className="p-2 rounded-xl hover:bg-white/10 text-gray-400 transition-all"
+                  >
+                    <X className="h-6 w-6" />
+                  </motion.button>
                 </div>
 
                 {/* Search Bar */}
@@ -511,9 +544,6 @@ export function ModernSidebarV2() {
           </motion.aside>
         )}
       </AnimatePresence>
-
-      {/* Main Content Spacer - Only on Desktop */}
-      {isDesktop && <div className="w-80 flex-shrink-0" />}
     </>
   );
 }

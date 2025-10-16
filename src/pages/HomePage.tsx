@@ -26,7 +26,7 @@ import {
 import { BlurText, BlurTextWords } from "../components/ui/blur-text";
 import { FluidGlass, FluidGlassCard } from "../components/ui/fluid-glass";
 import { Counter, AnimatedCounter } from "../components/ui/counter";
-import { ThreadsBackgroundStatic } from "../components/ui/threads-background";
+// import { ThreadsBackgroundStatic } from "../components/ui/threads-background"; // Removed - using GalaxyBackground globally
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
@@ -127,8 +127,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-black text-white relative">
-      {/* Threads Background */}
-      <ThreadsBackgroundStatic />
+      {/* Background is now Galaxy from reactbits.dev rendered globally in App.tsx */}
 
       {/* Ultra Modern Hero */}
       <section className="relative py-32 overflow-hidden">

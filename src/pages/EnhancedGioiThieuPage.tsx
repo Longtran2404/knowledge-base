@@ -24,14 +24,14 @@ import {
 import { motion } from 'framer-motion';
 import { Counter } from '../components/ui/counter';
 import { FluidGlass } from '../components/ui/fluid-glass';
-import { ThreadsBackgroundStatic } from '../components/ui/threads-background';
+// import { ThreadsBackgroundStatic } from '../components/ui/threads-background'; // Removed - using GalaxyBackground globally
 import { SplashCursor } from '../components/animations/SplashCursor';
 import { ScrollFloat } from '../components/animations/ScrollFloat';
 import { VariableProximity } from '../components/animations/VariableProximity';
 import { ScrollVelocityMulti } from '../components/animations/ScrollVelocity';
 import { RotatingText } from '../components/animations/RotatingText';
 import { GradualBlur, ScrollGradualBlur } from '../components/animations/GradualBlur';
-import { CanvasLaserFlow } from '../components/animations/LaserFlow';
+// import { CanvasLaserFlow } from '../components/animations/LaserFlow'; // Removed - using GalaxyBackground globally
 import { BentoHero } from '../components/layout/MagicBento';
 import { SEO } from '../components/SEO';
 
@@ -101,11 +101,7 @@ export default function EnhancedGioiThieuPage() {
 
       <SplashCursor>
         <div className="min-h-screen bg-black text-white relative">
-          {/* Threads Background */}
-          <ThreadsBackgroundStatic />
-
-          {/* Laser Flow Animation */}
-          <CanvasLaserFlow />
+          {/* Background is now Galaxy from reactbits.dev rendered globally in App.tsx */}
 
           {/* Hero Section with Rotating Text */}
           <section className="relative py-32 overflow-hidden">

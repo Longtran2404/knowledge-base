@@ -38,6 +38,7 @@ import { Badge } from "../components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Switch } from "../components/ui/switch";
 import { useAuth } from "../contexts/UnifiedAuthContext";
+import { useGlobalData } from "../contexts/GlobalDataContext";
 import { NLCUserFile, supabase } from "../lib/supabase-config";
 import { toast } from "sonner";
 import {
@@ -50,6 +51,7 @@ import {
 } from "../components/ui/dialog";
 import { Textarea } from "../components/ui/textarea";
 import { Label } from "../components/ui/label";
+import { ModernLoading } from "../components/ui/modern-loading";
 
 interface UserStats {
   totalFiles: number;
@@ -84,7 +86,7 @@ interface FileUploadState {
 
 export default function UploadPage() {
   const { userProfile, isLoading: authLoading } = useAuth();
-  const [files, setFiles] = useState<NLCUserFile[]>([]);
+  const { userFiles, filesLoading, refreshUserFiles, addUserFile } = useGlobalData();
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -124,68 +126,33 @@ export default function UploadPage() {
     if (authLoading) return;
 
     if (userProfile?.id) {
-      loadUserFiles();
-      const timer = setTimeout(() => calculateStats(), 100);
-      return () => clearTimeout(timer);
-    } else {
-      setLoading(false);
+      refreshUserFiles();
     }
+    setLoading(filesLoading);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userProfile?.id, authLoading]);
 
-  const loadUserFiles = useCallback(async () => {
-    if (!userProfile?.id) return;
+  useEffect(() => {
+    setLoading(filesLoading);
+    calculateStatsFromFiles(userFiles);
+  }, [userFiles, filesLoading]);
 
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("nlc_user_files")
-        .select("*")
-        .eq("user_id", userProfile.id)
-        .order("created_at", { ascending: false });
+  const calculateStatsFromFiles = useCallback((fileData: any[]) => {
+    const newStats: UserStats = {
+      totalFiles: fileData.length,
+      totalSize: fileData.reduce((sum, file) => sum + (file.file_size || 0), 0),
+      totalDownloads: fileData.reduce((sum, file) => sum + (file.download_count || 0), 0),
+      publicFiles: fileData.filter((f) => f.is_public).length,
+      privateFiles: fileData.filter((f) => !f.is_public).length,
+      videoFiles: fileData.filter((f) => f.file_type === "video").length,
+      documentFiles: fileData.filter((f) => f.file_type === "document").length,
+      imageFiles: fileData.filter((f) => f.file_type === "image").length,
+      storageUsed: fileData.reduce((sum, file) => sum + (file.file_size || 0), 0),
+      storageLimit: 5 * 1024 * 1024 * 1024,
+    };
 
-      if (error) throw error;
-      setFiles(data || []);
-    } catch (error) {
-      console.error("Error loading files:", error);
-      toast.error("Không thể tải danh sách file");
-    } finally {
-      setLoading(false);
-    }
-  }, [userProfile?.id]);
-
-  const calculateStats = useCallback(async () => {
-    if (!userProfile?.id) return;
-
-    try {
-      const { data, error } = await supabase
-        .from("nlc_user_files")
-        .select("file_size, file_type, is_public, download_count")
-        .eq("user_id", userProfile.id);
-
-      if (error) throw error;
-
-      // Cast data to any[] to bypass TypeScript type inference issues
-      const statsData = (data || []) as any[];
-
-      const newStats: UserStats = {
-        totalFiles: statsData.length,
-        totalSize: statsData.reduce((sum, file) => sum + (file.file_size || 0), 0),
-        totalDownloads: statsData.reduce((sum, file) => sum + (file.download_count || 0), 0),
-        publicFiles: statsData.filter((f) => f.is_public).length,
-        privateFiles: statsData.filter((f) => !f.is_public).length,
-        videoFiles: statsData.filter((f) => f.file_type === "video").length,
-        documentFiles: statsData.filter((f) => f.file_type === "document").length,
-        imageFiles: statsData.filter((f) => f.file_type === "image").length,
-        storageUsed: statsData.reduce((sum, file) => sum + (file.file_size || 0), 0),
-        storageLimit: 5 * 1024 * 1024 * 1024,
-      };
-
-      setStats(newStats);
-    } catch (error) {
-      console.error("Error calculating stats:", error);
-    }
-  }, [userProfile?.id]);
+    setStats(newStats);
+  }, []);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -297,8 +264,9 @@ export default function UploadPage() {
           allowShare: true,
         },
       });
-      loadUserFiles();
-      calculateStats();
+
+      // Refresh global data để đồng bộ với tất cả các trang
+      await refreshUserFiles();
     } catch (error: any) {
       console.error("Upload error:", error);
       toast.error(error.message || "Lỗi khi upload file");
@@ -315,8 +283,7 @@ export default function UploadPage() {
       if (error) throw error;
 
       toast.success("Đã xóa file");
-      loadUserFiles();
-      calculateStats();
+      await refreshUserFiles();
     } catch (error) {
       toast.error("Không thể xóa file");
     }
@@ -332,8 +299,7 @@ export default function UploadPage() {
       if (error) throw error;
 
       toast.success(file.is_public ? "Chuyển thành riêng tư" : "Chuyển thành công khai");
-      loadUserFiles();
-      calculateStats();
+      await refreshUserFiles();
     } catch (error) {
       toast.error("Không thể cập nhật quyền riêng tư");
     }
@@ -361,7 +327,7 @@ export default function UploadPage() {
       toast.success("Đã cập nhật thông tin file");
       setShowEditDialog(false);
       setEditingFile(null);
-      loadUserFiles();
+      await refreshUserFiles();
     } catch (error) {
       toast.error("Không thể cập nhật file");
     }
@@ -405,7 +371,7 @@ export default function UploadPage() {
   };
 
   const filteredFiles = useMemo(() => {
-    return files.filter((file) => {
+    return userFiles.filter((file) => {
       const matchesSearch =
         file.original_filename.toLowerCase().includes(searchTerm.toLowerCase()) ||
         file.description?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -420,7 +386,7 @@ export default function UploadPage() {
 
       return matchesSearch && matchesCategory;
     });
-  }, [files, searchTerm, selectedCategory]);
+  }, [userFiles, searchTerm, selectedCategory]);
 
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return "0 Bytes";
@@ -441,21 +407,18 @@ export default function UploadPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-300 text-lg">Đang tải dữ liệu...</p>
-        </div>
-      </div>
-    );
-  }
-
   const storagePercent = (stats.storageUsed / stats.storageLimit) * 100;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white">
+      {/* Modern Loading */}
+      <ModernLoading
+        isLoading={loading}
+        message="Đang tải file của bạn"
+        submessage="Đang kết nối với server..."
+        icon="upload"
+      />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <motion.div

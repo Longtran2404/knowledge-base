@@ -1,15 +1,15 @@
 import React from "react";
-
-import { 
-  Users, 
-  Award, 
-  ArrowRight, 
-  Check, 
-  Star, 
-  Crown, 
-  Zap, 
-  Shield, 
-  Globe, 
+import { useNavigate } from "react-router-dom";
+import {
+  Users,
+  Award,
+  ArrowRight,
+  Check,
+  Star,
+  Crown,
+  Zap,
+  Shield,
+  Globe,
   BookOpen,
   Download,
   Eye,
@@ -24,6 +24,7 @@ import { Button } from "../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Separator } from "../components/ui/separator";
+import { toast } from "sonner";
 
 import { AppProviders } from "../lib/providers/app-providers";
 
@@ -131,13 +132,32 @@ const partnerRequirements = [
 ];
 
 export default function CollaborationPage() {
+  const navigate = useNavigate();
+
+  const handleSubscribe = (planId: string, planName: string, price: number) => {
+    if (planId === "free") {
+      toast.success("Bạn đang sử dụng gói miễn phí!", {
+        description: "Đăng ký để mở khóa thêm tính năng"
+      });
+      navigate("/auth");
+      return;
+    }
+
+    // Chuyển đến trang thanh toán
+    toast.success(`Đang chuyển đến thanh toán gói ${planName}`, {
+      description: `Tổng tiền: ${price.toLocaleString('vi-VN')}đ`
+    });
+
+    // Navigate to pricing page with selected plan
+    navigate(`/pricing?plan=${planId}&name=${encodeURIComponent(planName)}&price=${price}`);
+  };
+
   return (
     <AppProviders>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="min-h-screen relative bg-gradient-to-br from-purple-900 via-indigo-900 to-slate-900">
         {/* Hero Section */}
-        <section className="relative bg-gradient-to-br from-purple-900 via-violet-800 to-indigo-900 py-20">
-          <div className="absolute inset-0 bg-grid-white/10 bg-grid-16 [mask-image:radial-gradient(ellipse_at_center,white,transparent)]" />
-          <div className="relative z-10 container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <section className="relative py-20">
+          <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <div className="max-w-4xl mx-auto space-y-8">
               <div className="space-y-4">
                 <Badge variant="outline" className="border-purple-400/50 text-purple-200 bg-purple-950/50 backdrop-blur-sm">
@@ -182,36 +202,36 @@ export default function CollaborationPage() {
         </section>
 
         {/* Pricing Plans */}
-        <section className="py-20 bg-white">
+        <section className="relative py-20">
           <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <Badge variant="outline" className="mb-4 px-4 py-2 border-blue-300 text-blue-700">
+              <Badge variant="outline" className="mb-4 px-4 py-2 border-purple-400/50 text-purple-200 bg-purple-950/50 backdrop-blur-sm">
                 <Crown className="h-4 w-4 mr-2" />
                 Bảng giá dịch vụ
               </Badge>
-              <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
                 Chọn gói phù hợp với bạn
               </h2>
-              <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-                Từ gói miễn phí cơ bản đến gói đối tác cao cấp, 
+              <p className="text-xl text-purple-100 max-w-3xl mx-auto">
+                Từ gói miễn phí cơ bản đến gói đối tác cao cấp,
                 chúng tôi có giải pháp phù hợp cho mọi nhu cầu
               </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
               {pricingPlans.map((plan, index) => (
-                <Card 
+                <Card
                   key={plan.id}
-                  className={`relative border-2 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 ${
-                    plan.popular 
-                      ? 'border-blue-500 shadow-xl scale-105' 
-                      : 'border-white/10 hover:border-blue-300'
+                  className={`relative border-2 bg-black/40 backdrop-blur-md transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 ${
+                    plan.popular
+                      ? 'border-purple-500 shadow-xl shadow-purple-500/50 scale-105'
+                      : 'border-white/10 hover:border-purple-300'
                   }`}
                 >
                   {plan.popular && (
                     <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                      <Badge className="bg-blue-500 text-white px-4 py-2 text-sm">
-                        <Star className="h-3 w-3 mr-1" />
+                      <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 text-sm border-0">
+                        <Star className="h-3 w-3 mr-1 fill-white" />
                         Phổ biến nhất
                       </Badge>
                     </div>
@@ -220,28 +240,28 @@ export default function CollaborationPage() {
                   <CardHeader className="text-center pb-6">
                     <div className="flex items-center justify-center mb-4">
                       <div className={`p-3 rounded-full ${
-                        plan.popular ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-400'
+                        plan.popular ? 'bg-purple-500/20 text-purple-300' : 'bg-white/10 text-gray-300'
                       }`}>
                         {plan.icon}
                       </div>
                     </div>
-                    <CardTitle className="text-2xl text-slate-800">{plan.name}</CardTitle>
-                    <CardDescription className="text-slate-600">{plan.description}</CardDescription>
-                    
+                    <CardTitle className="text-2xl text-white">{plan.name}</CardTitle>
+                    <CardDescription className="text-gray-300">{plan.description}</CardDescription>
+
                     <div className="mt-4">
-                      <span className="text-4xl font-bold text-slate-800">{plan.price}</span>
-                      <span className="text-slate-600">/{plan.period}</span>
+                      <span className="text-4xl font-bold text-white">{plan.price}</span>
+                      <span className="text-gray-300">/{plan.period}</span>
                     </div>
                   </CardHeader>
 
                   <CardContent className="space-y-6">
                     <div className="space-y-3">
-                      <h4 className="font-semibold text-slate-800">Tính năng bao gồm:</h4>
+                      <h4 className="font-semibold text-white">Tính năng bao gồm:</h4>
                       <ul className="space-y-2">
                         {plan.features.map((feature, featureIndex) => (
                           <li key={featureIndex} className="flex items-start gap-2">
-                            <Check className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                            <span className="text-sm text-slate-600">{feature}</span>
+                            <Check className="h-4 w-4 text-green-400 mt-0.5 flex-shrink-0" />
+                            <span className="text-sm text-gray-300">{feature}</span>
                           </li>
                         ))}
                       </ul>
@@ -249,25 +269,26 @@ export default function CollaborationPage() {
 
                     {plan.limitations.length > 0 && (
                       <div className="space-y-3">
-                        <h4 className="font-semibold text-red-700">Hạn chế:</h4>
+                        <h4 className="font-semibold text-red-400">Hạn chế:</h4>
                         <ul className="space-y-2">
                           {plan.limitations.map((limitation, limitationIndex) => (
                             <li key={limitationIndex} className="flex items-start gap-2">
-                              <Lock className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
-                              <span className="text-sm text-red-600">{limitation}</span>
+                              <Lock className="h-4 w-4 text-red-400 mt-0.5 flex-shrink-0" />
+                              <span className="text-sm text-red-300">{limitation}</span>
                             </li>
                           ))}
                         </ul>
                       </div>
                     )}
 
-                    <Button 
+                    <Button
                       className={`w-full ${
-                        plan.popular 
-                          ? 'bg-blue-600 hover:bg-blue-700' 
-                          : 'bg-slate-600 hover:bg-slate-700'
+                        plan.popular
+                          ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600'
+                          : 'bg-white/10 hover:bg-white/20 backdrop-blur-sm'
                       }`}
                       size="lg"
+                      onClick={() => handleSubscribe(plan.id, plan.name, parseInt(plan.price.replace(/\D/g, '')))}
                     >
                       {plan.buttonText}
                       <ArrowRight className="h-4 w-4 ml-2" />
@@ -280,32 +301,32 @@ export default function CollaborationPage() {
         </section>
 
         {/* Collaboration Benefits */}
-        <section className="py-20 bg-gradient-to-br from-blue-50 to-indigo-100">
+        <section className="relative py-20">
           <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <Badge variant="outline" className="mb-4 px-4 py-2 border-indigo-300 text-indigo-700">
+              <Badge variant="outline" className="mb-4 px-4 py-2 border-purple-400/50 text-purple-200 bg-purple-950/50 backdrop-blur-sm">
                 <TrendingUp className="h-4 w-4 mr-2" />
                 Lợi ích hợp tác
               </Badge>
-              <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
                 Tại sao nên hợp tác với chúng tôi?
               </h2>
-              <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+              <p className="text-xl text-purple-100 max-w-3xl mx-auto">
                 Khám phá những lợi ích độc quyền khi trở thành đối tác của Nam Long Center
               </p>
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
               {collaborationBenefits.map((benefit, index) => (
-                <Card key={index} className="text-center p-6 border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                <Card key={index} className="text-center p-6 bg-black/40 backdrop-blur-md border border-white/10 hover:border-purple-300 hover:shadow-xl hover:shadow-purple-500/20 transition-all duration-300 hover:-translate-y-2">
                   <CardContent className="p-0">
-                    <div className="flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mx-auto mb-4">
-                      <div className="text-blue-600">
+                    <div className="flex items-center justify-center w-16 h-16 bg-purple-500/20 rounded-full mx-auto mb-4">
+                      <div className="text-purple-300">
                         {benefit.icon}
                       </div>
                     </div>
-                    <h3 className="text-xl font-bold text-slate-800 mb-3">{benefit.title}</h3>
-                    <p className="text-slate-600 leading-relaxed">{benefit.description}</p>
+                    <h3 className="text-xl font-bold text-white mb-3">{benefit.title}</h3>
+                    <p className="text-gray-300 leading-relaxed">{benefit.description}</p>
                   </CardContent>
                 </Card>
               ))}
@@ -314,65 +335,65 @@ export default function CollaborationPage() {
         </section>
 
         {/* Partner Requirements */}
-        <section className="py-20 bg-white">
+        <section className="relative py-20">
           <div className="container max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <Badge variant="outline" className="mb-4 px-4 py-2 border-green-300 text-green-700">
+              <Badge variant="outline" className="mb-4 px-4 py-2 border-purple-400/50 text-purple-200 bg-purple-950/50 backdrop-blur-sm">
                 <Shield className="h-4 w-4 mr-2" />
                 Yêu cầu đối tác
               </Badge>
-              <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
                 Tiêu chuẩn để trở thành đối tác
               </h2>
-              <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-                Chúng tôi tìm kiếm những đối tác có chuyên môn cao và tâm huyết 
+              <p className="text-xl text-purple-100 max-w-2xl mx-auto">
+                Chúng tôi tìm kiếm những đối tác có chuyên môn cao và tâm huyết
                 với ngành xây dựng
               </p>
             </div>
 
-            <Card className="border-0 shadow-xl">
+            <Card className="bg-black/40 backdrop-blur-md border border-white/10">
               <CardContent className="p-8">
                 <div className="grid md:grid-cols-2 gap-8">
                   <div>
-                    <h3 className="text-2xl font-bold text-slate-800 mb-6">Yêu cầu cơ bản</h3>
+                    <h3 className="text-2xl font-bold text-white mb-6">Yêu cầu cơ bản</h3>
                     <ul className="space-y-4">
                       {partnerRequirements.map((requirement, index) => (
                         <li key={index} className="flex items-start gap-3">
-                          <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <Check className="h-4 w-4 text-green-600" />
+                          <div className="w-6 h-6 bg-green-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <Check className="h-4 w-4 text-green-400" />
                           </div>
-                          <span className="text-slate-700">{requirement}</span>
+                          <span className="text-gray-300">{requirement}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
 
-                  <div className="bg-gradient-to-br from-blue-50 to-indigo-100 p-6 rounded-xl">
-                    <h3 className="text-2xl font-bold text-slate-800 mb-4">Quy trình hợp tác</h3>
+                  <div className="bg-purple-500/10 p-6 rounded-xl border border-purple-400/20">
+                    <h3 className="text-2xl font-bold text-white mb-4">Quy trình hợp tác</h3>
                     <div className="space-y-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                        <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
                           1
                         </div>
-                        <span className="text-slate-700">Đăng ký và gửi hồ sơ</span>
+                        <span className="text-gray-300">Đăng ký và gửi hồ sơ</span>
                       </div>
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                        <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
                           2
                         </div>
-                        <span className="text-slate-700">Phỏng vấn và đánh giá</span>
+                        <span className="text-gray-300">Phỏng vấn và đánh giá</span>
                       </div>
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                        <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
                           3
                         </div>
-                        <span className="text-slate-700">Ký kết hợp đồng</span>
+                        <span className="text-gray-300">Ký kết hợp đồng</span>
                       </div>
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                        <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
                           4
                         </div>
-                        <span className="text-slate-700">Bắt đầu hợp tác</span>
+                        <span className="text-gray-300">Bắt đầu hợp tác</span>
                       </div>
                     </div>
                   </div>
@@ -383,25 +404,34 @@ export default function CollaborationPage() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-20 bg-gradient-to-br from-purple-50 to-violet-100">
+        <section className="relative py-20">
           <div className="container max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <Badge variant="outline" className="mb-4 px-4 py-2 border-purple-300 text-purple-700">
+            <Badge variant="outline" className="mb-4 px-4 py-2 border-purple-400/50 text-purple-200 bg-purple-950/50 backdrop-blur-sm">
               <Heart className="h-4 w-4 mr-2" />
               Sẵn sàng hợp tác
             </Badge>
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
               Bắt đầu hành trình hợp tác ngay hôm nay
             </h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto mb-8">
-              Hãy để chúng tôi giúp bạn mở rộng thị trường và tăng doanh thu 
+            <p className="text-xl text-purple-100 max-w-2xl mx-auto mb-8">
+              Hãy để chúng tôi giúp bạn mở rộng thị trường và tăng doanh thu
               thông qua nền tảng giáo dục hàng đầu
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-purple-600 hover:bg-purple-700 px-8 py-4 text-lg">
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 px-8 py-4 text-lg"
+                onClick={() => handleSubscribe("partner", "Đối tác", 199000)}
+              >
                 <Handshake className="mr-3 h-6 w-6" />
                 Đăng ký hợp tác
               </Button>
-              <Button variant="outline" size="lg" className="px-8 py-4 text-lg">
+              <Button
+                variant="outline"
+                size="lg"
+                className="px-8 py-4 text-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm border-white/20 text-white"
+                onClick={() => navigate("/contact")}
+              >
                 <Users className="mr-3 h-6 w-6" />
                 Tìm hiểu thêm
               </Button>

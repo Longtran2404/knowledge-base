@@ -21,11 +21,12 @@ import { Loading } from "./components/ui/loading";
 import { UnifiedAuthProvider } from "./contexts/UnifiedAuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { CartProvider } from "./contexts/CartContext";
+import { GlobalDataProvider } from "./contexts/GlobalDataContext";
 import { ProtectedRoute, AdminRoute } from "./components/auth/ProtectedRoute";
 import { config } from "./services/config";
 import { errorHandler } from "./lib/error-handler";
-// import { ThreadsBackgroundStatic } from "./components/ui/threads-background"; // Replaced with GalaxyBackground
-import { GalaxyBackground } from "./components/backgrounds/GalaxyBackground";
+// import { ThreadsBackgroundStatic } from "./components/ui/threads-background"; // Removed
+// import Galaxy from "./components/Galaxy"; // Removed - causing lag
 import { logger } from "./lib/logger/logger";
 
 // Lazy load pages for better performance
@@ -81,8 +82,19 @@ const UploadPage = React.lazy(() => import("./pages/UploadPage"));
 const NotificationDemo = React.lazy(
   () => import("./components/demo/NotificationDemo")
 );
+
+// Workflow Marketplace pages
+const WorkflowMarketplacePage = React.lazy(
+  () => import("./pages/WorkflowMarketplacePage")
+);
+const WorkflowCheckoutPage = React.lazy(
+  () => import("./pages/WorkflowCheckoutPage")
+);
+const WorkflowManagementPage = React.lazy(
+  () => import("./pages/WorkflowManagementPage")
+);
 const ShowcasePage = React.lazy(() => import("./pages/ShowcasePage"));
-const PaymentVerificationPage = React.lazy(() => import("./pages/admin/PaymentVerificationPage"));
+// const PaymentVerificationPage = React.lazy(() => import("./pages/admin/PaymentVerificationPage"));
 
 function App() {
   // Debug configuration in development
@@ -133,11 +145,12 @@ function App() {
     <ErrorBoundary>
       <ThemeProvider>
         <UnifiedAuthProvider>
-          <CartProvider>
-            <EnhancedNotificationProvider>
-              <EnhancedToastProvider>
-                <ToastProvider>
-                  <NotificationProvider>
+          <GlobalDataProvider>
+            <CartProvider>
+              <EnhancedNotificationProvider>
+                <EnhancedToastProvider>
+                  <ToastProvider>
+                    <NotificationProvider>
                     <Router
                       future={{
                         v7_startTransition: true,
@@ -145,8 +158,7 @@ function App() {
                       }}
                     >
                       <div className="App min-h-screen flex flex-col bg-black">
-                        {/* Galaxy Background for all pages */}
-                        <GalaxyBackground />
+                        {/* Simple black background - Galaxy removed due to performance issues */}
                         <ModernSidebarV2 />
                         <SkipToContent />
                         <ScrollToTop />
@@ -506,6 +518,43 @@ function App() {
                                         </PageTransition>
                                       }
                                     />
+
+                                    {/* Workflow Marketplace Routes */}
+                                    <Route
+                                      path="/workflows"
+                                      element={
+                                        <PageTransition>
+                                          <WorkflowMarketplacePage />
+                                        </PageTransition>
+                                      }
+                                    />
+                                    <Route
+                                      path="/workflows/:slug"
+                                      element={
+                                        <PageTransition>
+                                          <WorkflowMarketplacePage />
+                                        </PageTransition>
+                                      }
+                                    />
+                                    <Route
+                                      path="/workflows/:slug/checkout"
+                                      element={
+                                        <PageTransition>
+                                          <WorkflowCheckoutPage />
+                                        </PageTransition>
+                                      }
+                                    />
+                                    <Route
+                                      path="/admin/workflows"
+                                      element={
+                                        <ProtectedRoute allowedRoles={['admin', 'giang_vien', 'quan_ly']}>
+                                          <PageTransition>
+                                            <WorkflowManagementPage />
+                                          </PageTransition>
+                                        </ProtectedRoute>
+                                      }
+                                    />
+
                                     <Route
                                       path="/support"
                                       element={
@@ -550,6 +599,7 @@ function App() {
                                         </AdminRoute>
                                       }
                                     />
+                                    {/* Temporarily disabled - build error
                                     <Route
                                       path="/admin/thanh-toan"
                                       element={
@@ -559,7 +609,7 @@ function App() {
                                           </PageTransition>
                                         </AdminRoute>
                                       }
-                                    />
+                                    /> */}
                                     <Route
                                       path="/tai-len"
                                       element={
@@ -612,8 +662,9 @@ function App() {
               </EnhancedToastProvider>
             </EnhancedNotificationProvider>
           </CartProvider>
-        </UnifiedAuthProvider>
-      </ThemeProvider>
+        </GlobalDataProvider>
+      </UnifiedAuthProvider>
+    </ThemeProvider>
     </ErrorBoundary>
   );
 }

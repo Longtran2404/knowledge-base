@@ -5,6 +5,7 @@ import { Input } from '../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { useCart } from '../contexts/CartContext';
+import { useGlobalData } from '../contexts/GlobalDataContext';
 import { Product, Course } from '../lib/supabase-config';
 import { supabase } from '../lib/supabase-config';
 import { productsData } from '../data/products';
@@ -21,8 +22,7 @@ interface CombinedItem {
 }
 
 const ProductsPage: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [courses, setCourses] = useState<Course[]>([]);
+  const { products, courses, productsLoading, coursesLoading, refreshProducts, refreshCourses } = useGlobalData();
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -37,71 +37,20 @@ const ProductsPage: React.FC = () => {
     { id: 'template', name: 'Template', count: 0 },
   ];
 
-  // Load data
+  // Load data from global context
   useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
-    try {
+    const loadData = async () => {
       setLoading(true);
-
-      // Load products from Supabase
-      const { data: supabaseProducts, error: productsError } = await supabase
-        .from('products')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
-
-      // Load courses from Supabase
-      const { data: coursesData, error: coursesError } = await supabase
-        .from('courses')
-        .select('*')
-        .eq('is_published', true)
-        .order('created_at', { ascending: false });
-
-      // If Supabase data is empty or error, use static data as fallback
-      if (productsError || !supabaseProducts || supabaseProducts.length === 0) {
-        console.warn('Using static products data as fallback');
-        // Convert static data to Product format
-        const staticProducts: Product[] = productsData.map(product => ({
-          id: product.id,
-          name: product.name,
-          description: product.description,
-          price: product.price,
-          image_url: product.thumbnail || undefined,
-          category: product.type,
-          stock_quantity: 100,
-          is_active: true,
-          created_at: product.createdAt,
-          updated_at: product.createdAt
-        }));
-        setProducts(staticProducts);
-      } else {
-        setProducts(supabaseProducts);
-      }
-
-      setCourses(coursesData || []);
-    } catch (error) {
-      console.error('Error loading data:', error);
-      // Use static data as ultimate fallback
-      const staticProducts: Product[] = productsData.map(product => ({
-        id: product.id,
-        name: product.name,
-        description: product.description,
-        price: product.price,
-        image_url: product.thumbnail || undefined,
-        category: product.type,
-        stock_quantity: 100,
-        is_active: true,
-        created_at: product.createdAt,
-        updated_at: product.createdAt
-      }));
-      setProducts(staticProducts);
-    } finally {
+      await Promise.all([refreshProducts(), refreshCourses()]);
       setLoading(false);
-    }
-  };
+    };
+
+    loadData();
+  }, [refreshProducts, refreshCourses]);
+
+  useEffect(() => {
+    setLoading(productsLoading || coursesLoading);
+  }, [productsLoading, coursesLoading]);
 
   // Filter data
   const filteredData = (): CombinedItem[] => {
@@ -167,7 +116,7 @@ const ProductsPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black text-white relative">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white relative">
         <div className="container mx-auto px-4 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-white/10 rounded w-1/4 mb-6"></div>
@@ -187,10 +136,10 @@ const ProductsPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white relative">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white relative">
       <div className="container mx-auto px-4 py-8">
         {/* Hero Section */}
-        <section className="bg-black relative py-16 mb-8 rounded-lg">
+        <section className="bg-transparent relative py-16 mb-8 rounded-lg">
           <div className="text-center">
             <Badge variant="secondary" className="mb-6 bg-blue-100 text-blue-700 px-4 py-2">
               <ShoppingCart className="h-4 w-4 mr-2" />
@@ -206,7 +155,7 @@ const ProductsPage: React.FC = () => {
         </section>
 
         {/* Search and Filters */}
-        <section className="py-8 bg-black border rounded-lg mb-8">
+        <section className="py-8 bg-transparent border rounded-lg mb-8">
           <div className="max-w-4xl mx-auto px-6">
             <div className="flex flex-col md:flex-row gap-4 mb-6">
               <div className="flex-1 relative">
@@ -215,13 +164,13 @@ const ProductsPage: React.FC = () => {
                   placeholder="Tìm kiếm sản phẩm, khóa học..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-gray-400"
                 />
               </div>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-md bg-white"
+                className="px-4 py-2 border border-white/20 rounded-md bg-white/10 text-white"
               >
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>

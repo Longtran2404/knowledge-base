@@ -1,0 +1,416 @@
+/**
+ * Mobile Responsive Styles for Workflow Marketplace
+ * Optimized for mobile devices (320px - 768px)
+ */
+
+/* Mobile-first responsive utilities */
+@media (max-width: 768px) {
+  /* Workflow Marketplace Page */
+  .workflow-marketplace {
+    padding: 1rem !important;
+  }
+
+  .workflow-hero {
+    padding: 2rem 1rem !important;
+  }
+
+  .workflow-hero h1 {
+    font-size: 2rem !important;
+    line-height: 1.2 !important;
+  }
+
+  .workflow-filters {
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+  }
+
+  .workflow-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  /* Workflow Card - Mobile optimized */
+  .workflow-card {
+    border-radius: 1rem !important;
+  }
+
+  .workflow-card img {
+    height: 200px !important;
+    object-fit: cover;
+  }
+
+  .workflow-card-content {
+    padding: 1rem !important;
+  }
+
+  .workflow-card-title {
+    font-size: 1.125rem !important;
+  }
+
+  .workflow-card-price {
+    font-size: 1.25rem !important;
+  }
+
+  .workflow-card-buttons {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+
+  .workflow-card-buttons button {
+    width: 100% !important;
+  }
+
+  /* Workflow Checkout Page - Mobile */
+  .checkout-container {
+    padding: 1rem !important;
+  }
+
+  .checkout-steps {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+
+  .checkout-step {
+    font-size: 0.875rem !important;
+  }
+
+  .checkout-qr-code img {
+    width: 100% !important;
+    max-width: 280px !important;
+    height: auto !important;
+  }
+
+  .checkout-sidebar {
+    position: static !important;
+    width: 100% !important;
+    margin-top: 1.5rem !important;
+  }
+
+  /* Management Page - Mobile */
+  .management-tabs {
+    flex-direction: column !important;
+  }
+
+  .management-tab {
+    width: 100% !important;
+    justify-content: flex-start !important;
+    padding: 0.75rem 1rem !important;
+  }
+
+  .management-header h1 {
+    font-size: 1.75rem !important;
+  }
+
+  .management-stats-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  /* Table - Mobile responsive */
+  .table-container {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table {
+    min-width: 600px !important;
+  }
+
+  table th,
+  table td {
+    padding: 0.5rem !important;
+    font-size: 0.875rem !important;
+  }
+
+  /* AI Image Generator Modal - Mobile */
+  .ai-image-modal {
+    margin: 0.5rem !important;
+    max-height: calc(100vh - 1rem) !important;
+    border-radius: 1rem !important;
+  }
+
+  .ai-image-modal-header {
+    padding: 1rem !important;
+  }
+
+  .ai-image-modal-content {
+    padding: 1rem !important;
+  }
+
+  .ai-image-suggestions {
+    grid-template-columns: 1fr !important;
+  }
+
+  .ai-image-preview img {
+    max-height: 250px !important;
+  }
+
+  /* Revenue Stats - Mobile */
+  .revenue-stats-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  .revenue-card {
+    padding: 1rem !important;
+  }
+
+  .revenue-card-value {
+    font-size: 1.75rem !important;
+  }
+
+  /* Commission Breakdown - Mobile */
+  .commission-breakdown {
+    padding: 1rem !important;
+  }
+
+  .commission-item {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.75rem !important;
+  }
+
+  .commission-item-stats {
+    width: 100% !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+
+  /* Analytics - Mobile */
+  .analytics-header h2 {
+    font-size: 1.5rem !important;
+  }
+
+  .top-workflows {
+    padding: 1rem !important;
+  }
+
+  .top-workflow-item {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.75rem !important;
+  }
+
+  .top-workflow-rank {
+    width: 2rem !important;
+    height: 2rem !important;
+    font-size: 0.875rem !important;
+  }
+
+  .top-workflow-revenue {
+    font-size: 1.25rem !important;
+  }
+
+  /* Upload Form - Mobile */
+  .upload-form-steps {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+
+  .upload-form-step {
+    width: 100% !important;
+  }
+
+  .upload-form-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .upload-file-dropzone {
+    padding: 1.5rem !important;
+  }
+
+  .upload-file-dropzone svg {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+  }
+
+  /* Buttons - Mobile touch-friendly */
+  button {
+    min-height: 44px !important; /* iOS touch target */
+    padding: 0.75rem 1rem !important;
+  }
+
+  button.btn-sm {
+    min-height: 36px !important;
+    padding: 0.5rem 0.75rem !important;
+  }
+
+  /* Inputs - Mobile */
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px !important; /* Prevent iOS zoom */
+    min-height: 44px !important;
+    padding: 0.75rem !important;
+  }
+
+  textarea {
+    min-height: 120px !important;
+  }
+
+  /* Select dropdowns - Mobile */
+  [role="combobox"],
+  [role="listbox"] {
+    font-size: 16px !important;
+  }
+
+  /* Modals - Mobile fullscreen */
+  [role="dialog"] {
+    max-width: calc(100vw - 1rem) !important;
+    max-height: calc(100vh - 1rem) !important;
+    margin: 0.5rem !important;
+  }
+
+  /* Toast notifications - Mobile */
+  [data-sonner-toast] {
+    max-width: calc(100vw - 2rem) !important;
+    margin: 1rem !important;
+  }
+
+  /* Sidebar - Mobile */
+  .modern-sidebar {
+    width: 100% !important;
+    max-width: 300px !important;
+  }
+
+  /* Header - Mobile */
+  .header-container {
+    padding: 0.75rem 1rem !important;
+  }
+
+  .header-logo {
+    font-size: 1.25rem !important;
+  }
+
+  /* Footer - Mobile */
+  .footer-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+
+  /* Hide on mobile */
+  .hide-mobile {
+    display: none !important;
+  }
+
+  /* Show only on mobile */
+  .show-mobile {
+    display: block !important;
+  }
+}
+
+/* Tablet responsive (768px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .workflow-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .management-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .revenue-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  /* Larger touch targets */
+  a,
+  button,
+  [role="button"],
+  [role="tab"],
+  [role="menuitem"] {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+
+  /* Better hover states for touch */
+  button:active,
+  a:active {
+    opacity: 0.7;
+    transform: scale(0.98);
+  }
+
+  /* Disable hover animations on touch */
+  .hover\\:scale-105:hover {
+    transform: none !important;
+  }
+}
+
+/* Landscape mode on mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .workflow-hero {
+    padding: 1.5rem 1rem !important;
+  }
+
+  .workflow-hero h1 {
+    font-size: 1.75rem !important;
+  }
+
+  .checkout-qr-code img {
+    max-width: 220px !important;
+  }
+
+  .ai-image-modal {
+    max-height: 90vh !important;
+  }
+}
+
+/* Small mobile devices (< 375px) */
+@media (max-width: 374px) {
+  .workflow-hero h1 {
+    font-size: 1.5rem !important;
+  }
+
+  .workflow-card-price {
+    font-size: 1.125rem !important;
+  }
+
+  .revenue-card-value {
+    font-size: 1.5rem !important;
+  }
+
+  .top-workflow-revenue {
+    font-size: 1.125rem !important;
+  }
+}
+
+/* Utility classes */
+.mobile-container {
+  max-width: 100%;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.mobile-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.mobile-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.mobile-scroll::-webkit-scrollbar {
+  height: 4px;
+}
+
+.mobile-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+/* Accessibility - Focus visible for keyboard navigation */
+@media (prefers-reduced-motion: no-preference) {
+  *:focus-visible {
+    outline: 2px solid #a855f7;
+    outline-offset: 2px;
+  }
+}

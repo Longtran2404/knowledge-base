@@ -52,7 +52,16 @@
       "Bash(git checkout:*)",
       "Bash(git push:*)",
       "Bash(vercel:*)",
-      "Bash(claude mcp:*)"
+      "Bash(claude mcp:*)",
+      "Bash(timeout 5 bash -c 'until curl -s http://localhost:3000 > /dev/null 2>&1; do sleep 0.5; done && echo \"\"Server started!\"\"')",
+      "Bash(start http://localhost:3000)",
+      "Bash(npx shadcn@latest add https://reactbits.dev/r/Galaxy-JS-CSS)",
+      "Bash(mkdir:*)",
+      "Bash(rm:*)",
+      "Bash(tee:*)",
+      "Bash(1)",
+      "Bash(do echo \"=== $f ===\")",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,0 +1,73 @@
+
+> namlongcenter@1.0.0 prebuild
+> npm run lint
+
+
+> namlongcenter@1.0.0 lint
+> eslint src --ext .ts,.tsx --fix
+
+
+D:\Web\Nam Long Center\namlongcenter\src\contexts\GlobalDataContext.tsx
+  314:6  warning  React Hook useEffect has a missing dependency: 'refreshUserFiles'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\Web\Nam Long Center\namlongcenter\src\pages\UploadPage.tsx
+  138:6  warning  React Hook useEffect has a missing dependency: 'calculateStatsFromFiles'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\Web\Nam Long Center\namlongcenter\src\pages\WorkflowCheckoutPage.tsx
+  55:6  warning  React Hook useEffect has a missing dependency: 'loadWorkflow'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\Web\Nam Long Center\namlongcenter\src\pages\WorkflowManagementPage.tsx
+   154:6  warning  React Hook useEffect has a missing dependency: 'loadWorkflows'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   844:6  warning  React Hook useEffect has a missing dependency: 'loadOrders'. Either include it or remove the dependency array     react-hooks/exhaustive-deps
+  1052:6  warning  React Hook useEffect has a missing dependency: 'loadStats'. Either include it or remove the dependency array      react-hooks/exhaustive-deps
+
+D:\Web\Nam Long Center\namlongcenter\src\pages\WorkflowMarketplacePage.tsx
+  37:6  warning  React Hook useEffect has a missing dependency: 'loadWorkflows'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+✖ 7 problems (0 errors, 7 warnings)
+
+
+> namlongcenter@1.0.0 build
+> craco build
+
+Creating an optimized production build...
+
+
+Source path: D:\Web\Nam Long Center\namlongcenter\src\index.css
+Setting up new context...
+Finding changed files: 43.659ms
+Reading changed files: 1.113s
+Sorting candidates: 41.662ms
+Generate rules: 1.108s
+Build stylesheet: 21.209ms
+Potential classes:  24113
+Active contexts:  1
+JIT TOTAL: 2.670s
+
+
+
+
+Source path: D:\Web\Nam Long Center\namlongcenter\src\styles\mobile-responsive.css
+
+
+Source path: D:\Web\Nam Long Center\namlongcenter\src\styles\workflow-mobile.css
+JIT TOTAL: 25.863ms
+
+
+
+
+(node:14180) Warning: Label 'JIT TOTAL' already exists for console.time()
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:14180) Warning: No such label 'JIT TOTAL' for console.timeEnd()
+Failed to compile.
+
+TS2345: Argument of type '{ view_count: any; }' is not assignable to parameter of type 'never'.
+  [0m [90m 112 |[39m     [36mawait[39m supabase
+   [90m 113 |[39m       [33m.[39m[36mfrom[39m([32m'nlc_workflows'[39m)
+  [31m[1m>[22m[39m[90m 114 |[39m       [33m.[39mupdate({ view_count[33m:[39m (data[33m.[39mview_count [33m||[39m [35m0[39m) [33m+[39m [35m1[39m })
+   [90m     |[39m               [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 115 |[39m       [33m.[39meq([32m'id'[39m[33m,[39m id)[33m;[39m
+   [90m 116 |[39m
+   [90m 117 |[39m     [36mreturn[39m data [36mas[39m [33mWorkflow[39m[33m;[39m[0m
+
+

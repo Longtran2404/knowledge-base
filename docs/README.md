@@ -1,0 +1,55 @@
+# 📚 Nam Long Center - Documentation
+
+> Tài liệu hướng dẫn cho dự án Nam Long Center
+
+## 📂 Cấu trúc tài liệu
+
+### 🚀 Setup & Deployment
+- [QUICK_START_GUIDE.md](./QUICK_START_GUIDE.md) - Hướng dẫn khởi động nhanh
+- [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) - Hướng dẫn deploy production
+- [TESTING_GUIDE.md](./TESTING_GUIDE.md) - Hướng dẫn test
+
+### 💾 Database
+- [DATABASE_SETUP_GUIDE.md](./DATABASE_SETUP_GUIDE.md) - Setup database
+- [SUPABASE_SETUP_FINAL.md](./SUPABASE_SETUP_FINAL.md) - Cấu hình Supabase
+- [HƯỚNG_DẪN_NHANH_SUPABASE.md](./HƯỚNG_DẪN_NHANH_SUPABASE.md) - Hướng dẫn nhanh (Tiếng Việt)
+- [KHẮC_PHỤC_LỖI_SUPABASE.md](./KHẮC_PHỤC_LỖI_SUPABASE.md) - Khắc phục lỗi (Tiếng Việt)
+
+### 💳 Payment Integration
+- [PAYMENT_SYSTEM_SETUP.md](./PAYMENT_SYSTEM_SETUP.md) - Hệ thống thanh toán
+- [VNPAY_SETUP_GUIDE.md](./VNPAY_SETUP_GUIDE.md) - Tích hợp VNPay
+- [STRIPE_SETUP_GUIDE.md](./STRIPE_SETUP_GUIDE.md) - Tích hợp Stripe
+
+### 🔐 Authentication
+- [EMAIL_AUTH_SETUP.md](./EMAIL_AUTH_SETUP.md) - Xác thực email
+- [EMAILJS_SETUP.md](./EMAILJS_SETUP.md) - Cấu hình EmailJS
+
+### 🛒 Features
+- [CART_FEATURES.md](./CART_FEATURES.md) - Tính năng giỏ hàng
+
+### 📝 Other
+- [CHANGELOG.md](./CHANGELOG.md) - Lịch sử thay đổi
+
+## 🔧 Quick Setup
+
+### Database Setup:
+1. Mở Supabase Dashboard: https://supabase.com/dashboard
+2. Chọn project: `byidgbgvnrfhujprzzge`
+3. Vào SQL Editor
+4. Copy & Run file: `database/setup.sql`
+
+### Run Project:
+```bash
+npm install
+npm start
+```
+
+### Deploy:
+```bash
+npm run build
+vercel --prod
+```
+
+## 📞 Contact
+- Email: tranminhlong2404@gmail.com
+- Version: 1.0.0

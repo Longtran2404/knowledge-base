@@ -14,6 +14,7 @@ import React, {
 import { NLCCartItem, Product, Course } from "../lib/supabase-config";
 import { supabase } from "../lib/supabase-config";
 import { useAuth } from "./UnifiedAuthContext";
+import { toast } from "sonner";
 
 // Types
 export interface CartItemWithDetails {
@@ -306,6 +307,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
         };
 
         dispatch({ type: "ADD_ITEM", payload: cartItem });
+
+        // Success toast with custom styling
+        toast.success(`Đã thêm "${item.name}" vào giỏ hàng`, {
+          description: `Giá: ${item.price.toLocaleString('vi-VN')}đ`,
+          action: {
+            label: "Xem giỏ hàng",
+            onClick: () => window.location.href = "/cart"
+          },
+          duration: 3000,
+        });
       } else {
         // Add to local state only
         const cartItem: CartItemWithDetails = {
@@ -325,10 +336,23 @@ export function CartProvider({ children }: { children: ReactNode }) {
         };
 
         dispatch({ type: "ADD_ITEM", payload: cartItem });
+
+        // Toast for non-logged in users
+        toast.success(`Đã thêm "${item.name}" vào giỏ hàng`, {
+          description: "Đăng nhập để lưu giỏ hàng của bạn",
+          action: {
+            label: "Đăng nhập",
+            onClick: () => window.location.href = "/auth"
+          },
+          duration: 3000,
+        });
       }
     } catch (error) {
       console.error("Error adding to cart:", error);
       dispatch({ type: "SET_ERROR", payload: "Không thể thêm vào giỏ hàng" });
+      toast.error("Không thể thêm vào giỏ hàng", {
+        description: "Vui lòng thử lại sau"
+      });
     } finally {
       dispatch({ type: "SET_LOADING", payload: false });
     }

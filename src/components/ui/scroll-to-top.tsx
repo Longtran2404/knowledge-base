@@ -41,7 +41,7 @@ export function ScrollToTop({
     <button
       onClick={scrollToTop}
       className={cn(
-        "fixed bottom-8 right-8 z-40 p-3 bg-white border border-gray-200 rounded-full shadow-medium hover:shadow-strong transition-all duration-300 transform hover:scale-110 active:scale-95",
+        "fixed bottom-32 right-8 z-40 p-3 bg-white border border-gray-200 rounded-full shadow-medium hover:shadow-strong transition-all duration-300 transform hover:scale-110 active:scale-95",
         "hover:bg-blue-50 hover:border-blue-300 group",
         className
       )}
@@ -85,7 +85,7 @@ export function ScrollToTopWithProgress({
   if (!isVisible) return null;
 
   return (
-    <div className={cn("fixed bottom-8 right-8 z-40", className)}>
+    <div className={cn("fixed bottom-32 right-8 z-40", className)}>
       {/* Progress circle */}
       <div className="relative w-12 h-12 mb-2">
         <svg className="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
@@ -148,7 +148,7 @@ export function FloatingScrollToTop({
   return (
     <div
       className={cn(
-        "fixed bottom-8 right-8 z-40 transition-all duration-500 transform",
+        "fixed bottom-32 right-8 z-40 transition-all duration-500 transform",
         isVisible
           ? "translate-y-0 opacity-100 scale-100"
           : "translate-y-4 opacity-0 scale-95 pointer-events-none",

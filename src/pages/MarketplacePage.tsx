@@ -25,6 +25,7 @@ import {
   TabsTrigger,
 } from "../components/ui/tabs";
 import { useAuth } from "../contexts/UnifiedAuthContext";
+import { useGlobalData } from "../contexts/GlobalDataContext";
 import {
   getCourses,
   purchaseCourse,
@@ -47,9 +48,9 @@ import { toast } from "sonner";
 
 export default function MarketplacePage() {
   const { userProfile: user } = useAuth();
+  const { courses, coursesLoading, refreshCourses } = useGlobalData();
   const navigate = useNavigate();
 
-  const [courses, setCourses] = useState<CourseType[]>([]);
   const [filteredCourses, setFilteredCourses] = useState<CourseType[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -59,111 +60,12 @@ export default function MarketplacePage() {
   const [purchasing, setPurchasing] = useState<string | null>(null);
 
   useEffect(() => {
-    const mockCourses: CourseType[] = [
-      {
-        id: "1",
-        title: "Revit Architecture 2024 - Từ cơ bản đến nâng cao",
-        description:
-          "Học Revit Architecture từ những kiến thức cơ bản nhất đến các kỹ thuật nâng cao cho việc thiết kế kiến trúc chuyên nghiệp.",
-        price: 2500000,
-        image_url:
-          "https://images.unsplash.com/photo-1581093458791-9f3c3270e8b8?w=500",
-        instructor_id: "instructor1",
-        category: "BIM",
-        level: "Cơ bản",
-        duration: "120 giờ",
-        is_published: true,
-        created_at: "2024-01-01",
-        updated_at: "2024-01-01",
-      },
-      {
-        id: "2",
-        title: "AutoCAD 2024 - Vẽ kỹ thuật chuyên nghiệp",
-        description:
-          "Khóa học AutoCAD toàn diện từ cơ bản đến nâng cao, bao gồm 2D và 3D modeling.",
-        price: 1800000,
-        image_url:
-          "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=500",
-        instructor_id: "instructor2",
-        category: "CAD",
-        level: "Trung cấp",
-        duration: "80 giờ",
-        is_published: true,
-        created_at: "2024-01-02",
-        updated_at: "2024-01-02",
-      },
-      {
-        id: "3",
-        title: "SketchUp Pro - Thiết kế kiến trúc 3D",
-        description:
-          "Học SketchUp Pro để tạo ra những mô hình 3D kiến trúc ấn tượng và chuyên nghiệp.",
-        price: 1500000,
-        image_url:
-          "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500",
-        instructor_id: "instructor3",
-        category: "3D",
-        level: "Cơ bản",
-        duration: "60 giờ",
-        is_published: true,
-        created_at: "2024-01-03",
-        updated_at: "2024-01-03",
-      },
-      {
-        id: "4",
-        title: "Lumion - Render kiến trúc chuyên nghiệp",
-        description:
-          "Tạo ra những hình ảnh render và video kiến trúc chất lượng cao với Lumion.",
-        price: 2200000,
-        image_url:
-          "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=500",
-        instructor_id: "instructor4",
-        category: "Render",
-        level: "Nâng cao",
-        duration: "100 giờ",
-        is_published: true,
-        created_at: "2024-01-04",
-        updated_at: "2024-01-04",
-      },
-      {
-        id: "5",
-        title: "Quản lý dự án xây dựng với Microsoft Project",
-        description:
-          "Học cách quản lý dự án xây dựng hiệu quả với Microsoft Project và các công cụ khác.",
-        price: 1200000,
-        image_url:
-          "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=500",
-        instructor_id: "instructor5",
-        category: "Quản lý",
-        level: "Trung cấp",
-        duration: "40 giờ",
-        is_published: true,
-        created_at: "2024-01-05",
-        updated_at: "2024-01-05",
-      },
-      {
-        id: "6",
-        title: "SAP2000 - Tính toán kết cấu",
-        description:
-          "Khóa học SAP2000 để tính toán và phân tích kết cấu công trình một cách chính xác.",
-        price: 2800000,
-        image_url:
-          "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=500",
-        instructor_id: "instructor6",
-        category: "Kết cấu",
-        level: "Nâng cao",
-        duration: "150 giờ",
-        is_published: true,
-        created_at: "2024-01-06",
-        updated_at: "2024-01-06",
-      },
-    ];
-    // Simulate loading courses
-    setTimeout(() => {
-      setCourses(mockCourses);
-      setFilteredCourses(mockCourses);
-      setLoading(false);
-    }, 1000);
-  }, []);
+    refreshCourses();
+  }, [refreshCourses]);
+
+  useEffect(() => {
+    setLoading(coursesLoading);
+  }, [coursesLoading]);
 
   useEffect(() => {
     let filtered = courses.filter((course) => {
@@ -237,11 +139,11 @@ export default function MarketplacePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black">
+      <div className="min-h-screen bg-gradient-to-br from-blue-900 via-indigo-900 to-slate-900">
         <div className="max-w-7xl mx-auto px-4 py-12">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-400">Đang tải khóa học...</p>
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-400 mx-auto"></div>
+            <p className="mt-4 text-gray-300">Đang tải khóa học...</p>
           </div>
         </div>
       </div>
@@ -249,29 +151,28 @@ export default function MarketplacePage() {
   }
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-indigo-900 to-slate-900">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16">
+      <div className="relative text-white py-16">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-200 to-cyan-200 bg-clip-text text-transparent">
               Marketplace Khóa Học
             </h1>
             <p className="text-xl text-blue-100 mb-8">
-              Khám phá hàng trăm khóa học chất lượng cao từ các chuyên gia hàng
-              đầu
+              Khám phá hàng trăm khóa học chất lượng cao từ các chuyên gia hàng đầu
             </p>
-            <div className="flex flex-wrap justify-center gap-4 text-sm">
-              <div className="flex items-center gap-2">
-                <BookOpen className="w-5 h-5" />
+            <div className="flex flex-wrap justify-center gap-6 text-sm">
+              <div className="flex items-center gap-2 bg-blue-500/20 px-4 py-2 rounded-full backdrop-blur-sm">
+                <BookOpen className="w-5 h-5 text-blue-300" />
                 <span>{courses.length}+ Khóa học</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Users className="w-5 h-5" />
+              <div className="flex items-center gap-2 bg-blue-500/20 px-4 py-2 rounded-full backdrop-blur-sm">
+                <Users className="w-5 h-5 text-blue-300" />
                 <span>10,000+ Học viên</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Award className="w-5 h-5" />
+              <div className="flex items-center gap-2 bg-blue-500/20 px-4 py-2 rounded-full backdrop-blur-sm">
+                <Award className="w-5 h-5 text-blue-300" />
                 <span>Chứng chỉ hoàn thành</span>
               </div>
             </div>
@@ -280,7 +181,7 @@ export default function MarketplacePage() {
       </div>
 
       {/* Filters Section */}
-      <div className="bg-white/5 backdrop-blur-sm border border-white/10-b">
+      <div className="relative bg-black/30 backdrop-blur-md border-t border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
             {/* Search */}
@@ -290,7 +191,7 @@ export default function MarketplacePage() {
                 placeholder="Tìm kiếm khóa học..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-400"
               />
             </div>
 
@@ -341,12 +242,12 @@ export default function MarketplacePage() {
       </div>
 
       {/* Courses Grid */}
-      <div className="max-w-7xl mx-auto px-4 py-12">
+      <div className="relative max-w-7xl mx-auto px-4 py-12">
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-white mb-2">
             Tìm thấy {filteredCourses.length} khóa học
           </h2>
-          <p className="text-gray-400">
+          <p className="text-gray-300">
             Chọn khóa học phù hợp với nhu cầu học tập của bạn
           </p>
         </div>
@@ -355,7 +256,7 @@ export default function MarketplacePage() {
           {filteredCourses.map((course) => (
             <Card
               key={course.id}
-              className="group hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden"
+              className="group bg-black/40 backdrop-blur-md border border-white/10 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300 transform hover:-translate-y-2 overflow-hidden"
             >
               <CardHeader className="p-0">
                 <div className="relative h-48 bg-gradient-to-br from-blue-100 to-indigo-200 overflow-hidden">
@@ -390,31 +291,31 @@ export default function MarketplacePage() {
               </CardHeader>
 
               <CardContent className="p-6">
-                <CardTitle className="text-lg mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                <CardTitle className="text-lg mb-2 line-clamp-2 text-white group-hover:text-blue-300 transition-colors">
                   {course.title}
                 </CardTitle>
-                <CardDescription className="text-sm text-gray-400 mb-4 line-clamp-3">
+                <CardDescription className="text-sm text-gray-300 mb-4 line-clamp-3">
                   {course.description}
                 </CardDescription>
 
-                <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                <div className="flex items-center justify-between text-sm text-gray-400 mb-4">
                   <div className="flex items-center gap-1">
                     <Clock className="w-4 h-4" />
                     <span>{course.duration}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    <span>4.8</span>
+                    <span className="text-white">4.8</span>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <div className="text-2xl font-bold text-blue-600">
+                  <div className="text-2xl font-bold text-blue-300">
                     {formatPrice(course.price)}
                   </div>
                   <div className="flex items-center gap-2">
                     <Users className="w-4 h-4 text-gray-400" />
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-gray-300">
                       {Math.floor(Math.random() * 1000) + 100} học viên
                     </span>
                   </div>
@@ -426,7 +327,7 @@ export default function MarketplacePage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1"
+                    className="flex-1 bg-white/5 border-white/10 hover:bg-white/10 text-white"
                     onClick={() => navigate(`/course/${course.id}`)}
                   >
                     <PlayCircle className="w-4 h-4 mr-2" />
@@ -434,7 +335,7 @@ export default function MarketplacePage() {
                   </Button>
                   <Button
                     size="sm"
-                    className="flex-1 bg-blue-600 hover:bg-blue-700"
+                    className="flex-1 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600"
                     onClick={() => handlePurchase(course.id, course.price)}
                     disabled={purchasing === course.id}
                   >
@@ -461,10 +362,11 @@ export default function MarketplacePage() {
             <h3 className="text-xl font-semibold text-white mb-2">
               Không tìm thấy khóa học nào
             </h3>
-            <p className="text-gray-400 mb-6">
+            <p className="text-gray-300 mb-6">
               Hãy thử thay đổi bộ lọc hoặc từ khóa tìm kiếm
             </p>
             <Button
+              className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600"
               onClick={() => {
                 setSearchTerm("");
                 setSelectedCategory("all");

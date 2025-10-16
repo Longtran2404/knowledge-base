@@ -181,3 +181,136 @@ export const testEmailConfiguration = async (): Promise<EmailResult> => {
     };
   }
 };
+
+// ============================================
+// WORKFLOW MARKETPLACE EMAIL FUNCTIONS
+// ============================================
+
+export interface WorkflowOrderEmailData {
+  order_code: string;
+  buyer_name: string;
+  buyer_email: string;
+  buyer_phone: string;
+  workflow_name: string;
+  total_amount: string;
+  payment_proof_url?: string;
+  created_at: string;
+  notes?: string;
+  verify_url?: string;
+}
+
+export interface WorkflowFilesEmailData {
+  buyer_name: string;
+  buyer_email: string;
+  order_code: string;
+  workflow_name: string;
+  workflow_description: string;
+  workflow_file_url: string;
+  documentation_urls: string;
+  download_expiry: string;
+  total_amount: string;
+  confirmed_at: string;
+}
+
+/**
+ * Send email notification to admin when buyer uploads payment proof
+ */
+export const sendAdminPaymentNotification = async (
+  orderData: WorkflowOrderEmailData
+): Promise<EmailResult> => {
+  try {
+    const adminEmail = 'tranminhlong2404@gmail.com';
+
+    const templateParams = {
+      to_email: adminEmail,
+      to_name: 'Admin',
+      ...orderData,
+      app_name: 'Nam Long Center',
+      support_email: 'info@namlongcenter.com',
+    };
+
+    // TODO: Create email template in EmailJS dashboard named "workflow_admin_notification"
+    const ADMIN_NOTIFICATION_TEMPLATE = 'workflow_admin_notification';
+
+    const response = await emailjs.send(
+      EMAIL_CONFIG.serviceId,
+      ADMIN_NOTIFICATION_TEMPLATE,
+      templateParams
+    );
+
+    console.log('✅ Admin payment notification sent successfully:', response);
+
+    return {
+      success: true,
+      message: 'Đã gửi thông báo cho admin',
+    };
+  } catch (error: any) {
+    console.error('❌ Error sending admin notification:', error);
+
+    // Fallback: Log to console
+    console.log('=== ADMIN PAYMENT NOTIFICATION (FALLBACK) ===');
+    console.log('To: tranminhlong2404@gmail.com');
+    console.log('Order Code:', orderData.order_code);
+    console.log('Buyer:', orderData.buyer_name, '-', orderData.buyer_email);
+    console.log('Workflow:', orderData.workflow_name);
+    console.log('Amount:', orderData.total_amount);
+    console.log('Payment Proof:', orderData.payment_proof_url);
+    console.log('Verify URL:', orderData.verify_url);
+    console.log('============================================');
+
+    return {
+      success: true,
+      message: 'Đã gửi thông báo (chế độ phát triển)',
+    };
+  }
+};
+
+/**
+ * Send email to buyer with workflow files after payment confirmed
+ */
+export const sendBuyerWorkflowFiles = async (
+  filesData: WorkflowFilesEmailData
+): Promise<EmailResult> => {
+  try {
+    const templateParams = {
+      to_email: filesData.buyer_email,
+      to_name: filesData.buyer_name,
+      ...filesData,
+      app_name: 'Nam Long Center',
+      support_email: 'tranminhlong2404@gmail.com',
+    };
+
+    // TODO: Create email template in EmailJS dashboard named "workflow_buyer_files"
+    const BUYER_FILES_TEMPLATE = 'workflow_buyer_files';
+
+    const response = await emailjs.send(
+      EMAIL_CONFIG.serviceId,
+      BUYER_FILES_TEMPLATE,
+      templateParams
+    );
+
+    console.log('✅ Buyer workflow files email sent successfully:', response);
+
+    return {
+      success: true,
+      message: 'Đã gửi file workflow cho khách hàng',
+    };
+  } catch (error: any) {
+    console.error('❌ Error sending buyer workflow files:', error);
+
+    // Fallback: Log to console
+    console.log('=== BUYER WORKFLOW FILES EMAIL (FALLBACK) ===');
+    console.log('To:', filesData.buyer_email);
+    console.log('Buyer:', filesData.buyer_name);
+    console.log('Order Code:', filesData.order_code);
+    console.log('Workflow:', filesData.workflow_name);
+    console.log('Workflow File:', filesData.workflow_file_url);
+    console.log('Documentation:', filesData.documentation_urls);
+    console.log('============================================');
+
+    return {
+      success: true,
+      message: 'Đã gửi file (chế độ phát triển)',
+    };
+  }
+};

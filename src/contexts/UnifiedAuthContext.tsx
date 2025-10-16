@@ -187,41 +187,33 @@ export function UnifiedAuthProvider({
 
       setIsLoadingProfile(true);
       try {
-        // Try to get account from nlc_accounts first by auth user ID
-        const { data: account, error } = await supabase
-          .from("nlc_accounts")
-          .select("*")
-          .eq("user_id", userId)
-          .single();
-
-        if (error || !account) {
-          // Try fallback to email lookup
-          if (userEmail) {
-            const { data: emailAccount, error: emailError } = await supabase
+        // Single query with timeout - try both user_id and email in one OR query
+        const accountQuery = userEmail
+          ? supabase
               .from("nlc_accounts")
               .select("*")
-              .eq("email", userEmail)
+              .or(`user_id.eq.${userId},email.eq.${userEmail}`)
+              .limit(1)
+              .single()
+          : supabase
+              .from("nlc_accounts")
+              .select("*")
+              .eq("user_id", userId)
               .single();
 
-            if (emailAccount && !emailError) {
-              const profile = convertNLCAccountToUserProfile(
-                emailAccount as NLCAccount,
-                userId
-              );
-              logger.info("User profile loaded via email lookup", {
-                userId,
-                email: userEmail,
-              });
-              setUserProfile(profile);
-              setProfileLoaded(true);
-              return;
-            }
-          }
+        const { data: account, error } = await Promise.race([
+          accountQuery,
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Profile load timeout')), 3000)
+          )
+        ]) as any;
 
-          // Use fallback profile for new users
+        if (error || !account) {
+          // Immediate fallback - no more retries
+
           const fallbackProfile: UserProfile = {
             id: userId,
-            user_id: userId, // Use same as Supabase auth ID
+            user_id: userId,
             email: userEmail || "",
             full_name: userFullName || userEmail?.split("@")[0] || "User",
             account_role: "sinh_vien",
@@ -235,49 +227,35 @@ export function UnifiedAuthProvider({
             updated_at: new Date().toISOString(),
           };
 
-          logger.info("Using fallback profile for new/unregistered user", {
-            userId,
-            email: userEmail,
-          });
+          logger.info("Using fallback profile", { userId });
           setUserProfile(fallbackProfile);
           setProfileLoaded(true);
 
-          // Try to create account in database for future use
-          try {
-            await (supabase as any).from('nlc_accounts').insert([{
-              user_id: userId,
-              email: userEmail || "",
-              full_name: userFullName || userEmail?.split("@")[0] || "User",
-              account_role: "sinh_vien",
-              membership_plan: "free",
-              account_status: "active",
-              is_paid: false,
-              is_verified: false,
-              auth_provider: "email",
-              login_count: 0,
-            }]);
-            logger.info("Account created in nlc_accounts", { userId });
-          } catch (createError) {
-            logger.warn("Could not create account record", createError);
-          }
+          // Create account in background (non-blocking)
+          (supabase as any).from('nlc_accounts').insert([{
+            user_id: userId,
+            email: userEmail || "",
+            full_name: userFullName || userEmail?.split("@")[0] || "User",
+            account_role: "sinh_vien",
+            membership_plan: "free",
+            account_status: "active",
+            is_paid: false,
+            is_verified: false,
+            auth_provider: "email",
+            login_count: 0,
+          }]).catch(() => {});
         } else {
-          // Convert NLCAccount to UserProfile format
           const profile = convertNLCAccountToUserProfile(
             account as NLCAccount,
             userId
           );
 
-          logger.info("User profile loaded successfully from nlc_accounts", {
-            userId,
-            accountRole: profile.account_role,
-          });
+          logger.info("Profile loaded from nlc_accounts", { userId });
           setUserProfile(profile);
           setProfileLoaded(true);
 
-          // Update last login time
-          await nlcApi.accounts.updateLoginInfo(userId).catch((err) => {
-            logger.warn("Could not update login info", err);
-          });
+          // Update last login in background (non-blocking)
+          nlcApi.accounts.updateLoginInfo(userId).catch(() => {});
         }
       } catch (error: any) {
         const appError = ErrorHandler.handleSupabaseError(error, { userId });
@@ -325,15 +303,12 @@ export function UnifiedAuthProvider({
         logger.info("Initializing auth state...");
         setIsLoading(true);
         
-        // Check current session with timeout
-        const sessionPromise = supabase.auth.getSession();
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Session check timeout')), 5000)
-        );
-        
+        // Check current session with 2s timeout
         const { data: { session }, error } = await Promise.race([
-          sessionPromise,
-          timeoutPromise
+          supabase.auth.getSession(),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Session timeout')), 2000)
+          )
         ]) as any;
         
         if (error) {
@@ -367,13 +342,14 @@ export function UnifiedAuthProvider({
   // Listen to auth state changes
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         logger.info("Auth state changed", { event, userId: session?.user?.id });
-        
+
         if (event === 'SIGNED_IN' && session?.user) {
           setUser(session.user);
           setIsAuthenticated(true);
-          await loadUserProfile(session.user.id, session.user.email, session.user.user_metadata?.full_name);
+          // Load profile in background (non-blocking)
+          loadUserProfile(session.user.id, session.user.email, session.user.user_metadata?.full_name);
         } else if (event === 'SIGNED_OUT') {
           setUser(null);
           setUserProfile(null);
