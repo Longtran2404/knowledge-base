@@ -170,6 +170,7 @@ export class ErrorHandler {
   }
 
   private getErrorCode(error: any): string {
+    if (!error) return 'UNKNOWN_ERROR';
     if (error.response?.status) {
       return `HTTP_${error.response.status}`;
     }

@@ -27,6 +27,8 @@ import {
   Plus,
   LayoutDashboard,
   CreditCard,
+  Settings,
+  Globe,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/UnifiedAuthContext';
 
@@ -37,6 +39,7 @@ interface NavItem {
   path: string;
   badge?: number;
   gradient?: string;
+  adminOnly?: boolean; // Chỉ hiển thị cho admin
 }
 
 interface QuickAction {
@@ -105,6 +108,47 @@ const mainNavItems: NavItem[] = [
     icon: <Sparkles className="h-5 w-5" />,
     path: '/workflows',
     gradient: 'from-cyan-500 to-blue-500',
+  },
+  // Admin Navigation Items
+  {
+    id: 'admin-dashboard',
+    label: 'Dashboard Admin',
+    icon: <LayoutDashboard className="h-5 w-5" />,
+    path: '/admin/dashboard',
+    gradient: 'from-red-500 to-orange-500',
+    adminOnly: true,
+  },
+  {
+    id: 'admin-users',
+    label: 'Quản lý Người dùng',
+    icon: <Users className="h-5 w-5" />,
+    path: '/admin/users',
+    gradient: 'from-blue-500 to-indigo-500',
+    adminOnly: true,
+  },
+  {
+    id: 'admin-subscriptions',
+    label: 'Quản lý Subscriptions',
+    icon: <CreditCard className="h-5 w-5" />,
+    path: '/admin/subscriptions',
+    gradient: 'from-violet-500 to-purple-500',
+    adminOnly: true,
+  },
+  {
+    id: 'admin-cms',
+    label: 'Quản lý Nội dung',
+    icon: <Globe className="h-5 w-5" />,
+    path: '/admin/cms',
+    gradient: 'from-teal-500 to-cyan-500',
+    adminOnly: true,
+  },
+  {
+    id: 'admin-payments',
+    label: 'Phương thức Thanh toán',
+    icon: <Settings className="h-5 w-5" />,
+    path: '/admin/payment-methods',
+    gradient: 'from-fuchsia-500 to-pink-500',
+    adminOnly: true,
   },
 ];
 
@@ -206,9 +250,16 @@ export function ModernSidebarV2() {
     },
   ];
 
-  const filteredItems = mainNavItems.filter((item) =>
-    item.label.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Lọc items dựa trên role và search query
+  const filteredItems = mainNavItems.filter((item) => {
+    // Nếu là admin-only item, chỉ hiển thị cho admin và quan_ly
+    if (item.adminOnly) {
+      const isAdmin = userProfile?.account_role === 'admin' || userProfile?.account_role === 'quan_ly';
+      if (!isAdmin) return false;
+    }
+    // Lọc theo search query
+    return item.label.toLowerCase().includes(searchQuery.toLowerCase());
+  });
 
   const handleNavClick = () => {
     if (!isDesktop) {
@@ -487,26 +538,26 @@ export function ModernSidebarV2() {
                           whileTap={{ scale: 0.95 }}
                           onClick={(e) => {
                             e.stopPropagation();
-                            navigate('/quan-ly');
+                            navigate('/admin/dashboard');
                             handleNavClick();
                           }}
                           className="px-3 py-2 rounded-lg bg-blue-500/20 text-blue-400 text-xs font-medium hover:bg-blue-500/30 transition-all flex items-center justify-center gap-1.5"
                         >
                           <LayoutDashboard className="h-3.5 w-3.5" />
-                          Quản lý
+                          Dashboard
                         </motion.button>
                         <motion.button
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                           onClick={(e) => {
                             e.stopPropagation();
-                            navigate('/admin/thanh-toan');
+                            navigate('/admin/subscriptions');
                             handleNavClick();
                           }}
                           className="px-3 py-2 rounded-lg bg-purple-500/20 text-purple-400 text-xs font-medium hover:bg-purple-500/30 transition-all flex items-center justify-center gap-1.5"
                         >
                           <CreditCard className="h-3.5 w-3.5" />
-                          Thanh toán
+                          Subscriptions
                         </motion.button>
                       </div>
                     )}

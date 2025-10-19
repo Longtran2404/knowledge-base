@@ -3,7 +3,7 @@
  * Generate beautiful workflow thumbnail images using Google Gemini API
  */
 
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || '';
+const GEMINI_API_KEY = (import.meta as any).env?.VITE_GEMINI_API_KEY || '';
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
 export interface ImageGenerationOptions {

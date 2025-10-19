@@ -132,11 +132,6 @@ export default function UploadPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userProfile?.id, authLoading]);
 
-  useEffect(() => {
-    setLoading(filesLoading);
-    calculateStatsFromFiles(userFiles);
-  }, [userFiles, filesLoading]);
-
   const calculateStatsFromFiles = useCallback((fileData: any[]) => {
     const newStats: UserStats = {
       totalFiles: fileData.length,
@@ -153,6 +148,11 @@ export default function UploadPage() {
 
     setStats(newStats);
   }, []);
+
+  useEffect(() => {
+    setLoading(filesLoading);
+    calculateStatsFromFiles(userFiles);
+  }, [userFiles, filesLoading, calculateStatsFromFiles]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

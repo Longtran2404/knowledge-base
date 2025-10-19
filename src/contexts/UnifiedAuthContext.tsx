@@ -19,6 +19,7 @@ import { activityService } from "../lib/activity-service";
 import { authPersistence } from "../lib/auth-persistence";
 import { logger } from "../lib/logger/logger";
 import { ErrorHandler, AppError } from "../lib/errors/app-error";
+import StorageService from "../lib/storage-service";
 import type { User, Session } from "@supabase/supabase-js";
 import type { NLCAccount } from "../types/database";
 
@@ -436,6 +437,11 @@ export function UnifiedAuthProvider({
 
           setUserProfile(fallbackProfile);
           setProfileLoaded(true);
+
+          // 🆕 Tạo storage folders cho user mới (non-blocking)
+          StorageService.createUserStorage(data.user.id).catch((err) => {
+            logger.warn("Failed to create user storage", err);
+          });
         }
 
         return { success: true };

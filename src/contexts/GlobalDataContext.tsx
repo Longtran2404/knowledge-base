@@ -311,7 +311,7 @@ export function GlobalDataProvider({ children }: { children: ReactNode }) {
     if (userProfile?.id) {
       refreshUserFiles();
     }
-  }, [userProfile?.id]);
+  }, [userProfile?.id, refreshUserFiles]);
 
   const value: GlobalDataContextType = {
     ...state,

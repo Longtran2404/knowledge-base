@@ -106,6 +106,8 @@ export interface WorkflowOrder {
   workflow_id: string;
   workflow_name: string;
   workflow_price: number;
+  total_amount: number; // Same as workflow_price for now
+  workflow?: Workflow; // Optional joined workflow data
 
   payment_method: 'qr_vnpay' | 'bank_transfer' | 'card';
   payment_qr_image?: string;
@@ -255,6 +257,21 @@ export interface WorkflowStats {
     month: string;
     revenue: number;
     orders: number;
+  }>;
+
+  // Optional camelCase aliases for backward compatibility
+  totalWorkflows?: number;
+  totalRevenue?: number;
+  totalSales?: number;
+  publishedWorkflows?: number;
+  pendingWorkflows?: number;
+  totalDownloads?: number;
+  monthlyRevenue?: number;
+  monthlyGrowth?: number;
+  topWorkflows?: Array<{
+    workflow_name: string;
+    purchase_count: number;
+    revenue: number;
   }>;
 }
 

@@ -51,12 +51,16 @@ import {
   UserCheck,
   School,
   Building,
+  Zap,
+  Crown,
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { ProfileCard } from "../components/ui/profile-card";
 import { FluidGlass } from "../components/ui/fluid-glass";
 import { supabase } from "../lib/supabase-config";
+import { userSubscriptionsApi } from "../lib/api/subscription-api";
+import { UserSubscription } from "../types/subscription";
 
 interface ExtendedUser {
   id: string;
@@ -123,6 +127,10 @@ export default function ProfilePage() {
 
   const [originalProfileData, setOriginalProfileData] = useState<ExtendedUser>(profileData);
 
+  // Subscription state
+  const [currentSubscription, setCurrentSubscription] = useState<UserSubscription | null>(null);
+  const [subscriptionLoading, setSubscriptionLoading] = useState(true);
+
   // Mock courses data
   const [userCourses] = useState([
     {
@@ -162,6 +170,7 @@ export default function ProfilePage() {
 
     // Load extended profile data from localStorage or API
     loadExtendedProfile();
+    loadSubscription();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, navigate]);
 
@@ -184,6 +193,20 @@ export default function ProfilePage() {
       const initial = { ...profileData, ...user };
       setProfileData(initial);
       setOriginalProfileData(initial);
+    }
+  };
+
+  const loadSubscription = async () => {
+    if (!user) return;
+
+    try {
+      setSubscriptionLoading(true);
+      const subscription = await userSubscriptionsApi.getCurrentSubscription();
+      setCurrentSubscription(subscription);
+    } catch (error) {
+      console.error("Error loading subscription:", error);
+    } finally {
+      setSubscriptionLoading(false);
     }
   };
 
@@ -595,14 +618,22 @@ export default function ProfilePage() {
             transition={{ duration: 0.5, delay: 0.4 }}
           >
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-5 mb-6">
+              <TabsList className="grid w-full grid-cols-7 mb-6">
                 <TabsTrigger value="profile" className="text-xs sm:text-sm">
                   <User className="w-4 h-4 mr-1 sm:mr-2" />
                   <span className="hidden sm:inline">Thông tin</span>
                 </TabsTrigger>
+                <TabsTrigger value="subscription" className="text-xs sm:text-sm">
+                  <Crown className="w-4 h-4 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">Gói dịch vụ</span>
+                </TabsTrigger>
                 <TabsTrigger value="courses" className="text-xs sm:text-sm">
                   <BookOpen className="w-4 h-4 mr-1 sm:mr-2" />
                   <span className="hidden sm:inline">Khóa học</span>
+                </TabsTrigger>
+                <TabsTrigger value="study-time" className="text-xs sm:text-sm">
+                  <Clock className="w-4 h-4 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">Giờ học</span>
                 </TabsTrigger>
                 <TabsTrigger value="certificates" className="text-xs sm:text-sm">
                   <Award className="w-4 h-4 mr-1 sm:mr-2" />
@@ -772,6 +803,205 @@ export default function ProfilePage() {
                 </Card>
               </TabsContent>
 
+              {/* Subscription Tab */}
+              <TabsContent value="subscription" className="space-y-6">
+                <Card className="relative overflow-hidden">
+                  {/* Background Gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 via-blue-600/10 to-pink-600/10" />
+
+                  <CardHeader className="relative">
+                    <CardTitle className="flex items-center gap-2">
+                      <Crown className="w-5 h-5 text-yellow-500" />
+                      Gói dịch vụ hiện tại
+                    </CardTitle>
+                    <CardDescription>
+                      Quản lý gói dịch vụ và nâng cấp tài khoản
+                    </CardDescription>
+                  </CardHeader>
+
+                  <CardContent className="relative space-y-6">
+                    {subscriptionLoading ? (
+                      <div className="flex items-center justify-center py-8">
+                        <Loading size="lg" text="Đang tải thông tin gói dịch vụ..." />
+                      </div>
+                    ) : currentSubscription ? (
+                      <>
+                        {/* Current Plan Info */}
+                        <div className="bg-white/50 backdrop-blur-sm rounded-xl p-6 border-2 border-purple-200">
+                          <div className="flex items-start justify-between mb-4">
+                            <div>
+                              <h3 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                                {currentSubscription.plan?.display_name || "Gói Miễn phí"}
+                              </h3>
+                              <p className="text-gray-600 mt-1">
+                                {currentSubscription.plan?.description || "Gói cơ bản"}
+                              </p>
+                            </div>
+                            <Badge
+                              className={`${
+                                currentSubscription.status === "active"
+                                  ? "bg-green-100 text-green-800"
+                                  : currentSubscription.status === "pending"
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : "bg-gray-100 text-gray-800"
+                              }`}
+                            >
+                              {currentSubscription.status === "active"
+                                ? "Đang hoạt động"
+                                : currentSubscription.status === "pending"
+                                ? "Chờ xác nhận"
+                                : "Không hoạt động"}
+                            </Badge>
+                          </div>
+
+                          {/* Plan Price */}
+                          {currentSubscription.plan && (
+                            <div className="mb-4">
+                              <div className="flex items-baseline gap-2">
+                                <span className="text-3xl font-bold text-gray-900">
+                                  {currentSubscription.plan.price === 0
+                                    ? "Miễn phí"
+                                    : `${currentSubscription.plan.price.toLocaleString("vi-VN")}đ`}
+                                </span>
+                                {currentSubscription.plan.price > 0 && (
+                                  <span className="text-gray-500">
+                                    /{currentSubscription.plan.billing_period === "monthly" ? "tháng" : "năm"}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Plan Features */}
+                          {currentSubscription.plan?.features && currentSubscription.plan.features.length > 0 && (
+                            <div className="space-y-2 mb-4">
+                              <h4 className="font-semibold text-gray-900">Tính năng:</h4>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                {currentSubscription.plan.features.map((feature: string, idx: number) => (
+                                  <div key={idx} className="flex items-center gap-2 text-sm">
+                                    <Zap className="w-4 h-4 text-green-600" />
+                                    <span>{feature}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Plan Limits */}
+                          {currentSubscription.plan?.limits && (
+                            <div className="space-y-2 pt-4 border-t">
+                              <h4 className="font-semibold text-gray-900">Giới hạn:</h4>
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                <div>
+                                  <div className="text-gray-500">Dung lượng</div>
+                                  <div className="font-semibold">{currentSubscription.plan.limits.storage_gb || 0} GB</div>
+                                </div>
+                                <div>
+                                  <div className="text-gray-500">Số file</div>
+                                  <div className="font-semibold">
+                                    {currentSubscription.plan.limits.max_files === -1
+                                      ? "Không giới hạn"
+                                      : currentSubscription.plan.limits.max_files || 0}
+                                  </div>
+                                </div>
+                                <div>
+                                  <div className="text-gray-500">Workflows</div>
+                                  <div className="font-semibold">
+                                    {currentSubscription.plan.limits.max_workflows === -1
+                                      ? "Không giới hạn"
+                                      : currentSubscription.plan.limits.max_workflows || 0}
+                                  </div>
+                                </div>
+                                <div>
+                                  <div className="text-gray-500">Hỗ trợ</div>
+                                  <div className="font-semibold capitalize">
+                                    {currentSubscription.plan.limits.support || "Email"}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Subscription Dates */}
+                          <div className="flex items-center justify-between pt-4 border-t mt-4 text-sm text-gray-600">
+                            <div>
+                              <span className="font-medium">Bắt đầu:</span>{" "}
+                              {new Date(currentSubscription.started_at).toLocaleDateString("vi-VN")}
+                            </div>
+                            {currentSubscription.expires_at && (
+                              <div>
+                                <span className="font-medium">Hết hạn:</span>{" "}
+                                {new Date(currentSubscription.expires_at).toLocaleDateString("vi-VN")}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Upgrade CTA */}
+                        {currentSubscription.plan?.plan_name === "free" && (
+                          <motion.div
+                            className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl p-6 text-white"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 }}
+                          >
+                            <div className="flex items-center gap-4">
+                              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                                <Zap className="w-6 h-6" />
+                              </div>
+                              <div className="flex-1">
+                                <h4 className="text-lg font-bold mb-1">Nâng cấp lên Premium hoặc Business</h4>
+                                <p className="text-white/90 text-sm">
+                                  Mở khóa tất cả tính năng cao cấp, tăng dung lượng và nhận hỗ trợ ưu tiên
+                                </p>
+                              </div>
+                              <Button
+                                onClick={() => navigate("/account/upgrade")}
+                                className="bg-white text-purple-600 hover:bg-gray-100"
+                              >
+                                <Crown className="w-4 h-4 mr-2" />
+                                Nâng cấp ngay
+                              </Button>
+                            </div>
+                          </motion.div>
+                        )}
+
+                        {/* View All Plans */}
+                        <div className="flex justify-center">
+                          <Button
+                            variant="outline"
+                            onClick={() => navigate("/account/upgrade")}
+                            className="w-full md:w-auto"
+                          >
+                            <CreditCard className="w-4 h-4 mr-2" />
+                            Xem tất cả các gói dịch vụ
+                          </Button>
+                        </div>
+                      </>
+                    ) : (
+                      /* No Subscription - Show CTA */
+                      <div className="text-center py-12">
+                        <div className="w-20 h-20 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                          <Crown className="w-10 h-10 text-white" />
+                        </div>
+                        <h3 className="text-2xl font-bold mb-2">Chưa có gói dịch vụ</h3>
+                        <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                          Nâng cấp tài khoản để trải nghiệm đầy đủ các tính năng cao cấp và nhận được nhiều lợi ích hơn
+                        </p>
+                        <Button
+                          onClick={() => navigate("/account/upgrade")}
+                          size="lg"
+                          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                        >
+                          <Crown className="w-5 h-5 mr-2" />
+                          Khám phá các gói dịch vụ
+                        </Button>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
               {/* Courses Tab */}
               <TabsContent value="courses" className="space-y-6">
                 <Card>
@@ -877,6 +1107,168 @@ export default function ProfilePage() {
                         </Button>
                       </div>
                     )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* Study Time Tab */}
+              <TabsContent value="study-time" className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Clock className="w-5 h-5" />
+                      Thống kê giờ học
+                    </CardTitle>
+                    <CardDescription>
+                      Theo dõi thời gian học tập và hoạt động của bạn
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                      {/* Total Study Time */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white"
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <Clock className="w-8 h-8 opacity-80" />
+                          <Badge className="bg-white/20 text-white border-0">Tổng</Badge>
+                        </div>
+                        <div className="text-3xl font-bold mb-1">42.5h</div>
+                        <div className="text-blue-100 text-sm">Tổng thời gian học</div>
+                      </motion.div>
+
+                      {/* This Week */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white"
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <TrendingUp className="w-8 h-8 opacity-80" />
+                          <Badge className="bg-white/20 text-white border-0">Tuần này</Badge>
+                        </div>
+                        <div className="text-3xl font-bold mb-1">8.2h</div>
+                        <div className="text-purple-100 text-sm">+15% so với tuần trước</div>
+                      </motion.div>
+
+                      {/* Average per Day */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white"
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <Target className="w-8 h-8 opacity-80" />
+                          <Badge className="bg-white/20 text-white border-0">Trung bình</Badge>
+                        </div>
+                        <div className="text-3xl font-bold mb-1">1.2h</div>
+                        <div className="text-green-100 text-sm">Mỗi ngày</div>
+                      </motion.div>
+                    </div>
+
+                    {/* Weekly Chart */}
+                    <div className="mb-8">
+                      <h4 className="font-semibold mb-4 flex items-center gap-2">
+                        <Calendar className="w-4 h-4" />
+                        Giờ học 7 ngày qua
+                      </h4>
+                      <div className="space-y-3">
+                        {[
+                          { day: "Thứ 2", hours: 1.5, percent: 75 },
+                          { day: "Thứ 3", hours: 2.0, percent: 100 },
+                          { day: "Thứ 4", hours: 1.2, percent: 60 },
+                          { day: "Thứ 5", hours: 1.8, percent: 90 },
+                          { day: "Thứ 6", hours: 0.5, percent: 25 },
+                          { day: "Thứ 7", hours: 2.5, percent: 100 },
+                          { day: "Chủ nhật", hours: 1.7, percent: 85 },
+                        ].map((item, index) => (
+                          <div key={index} className="flex items-center gap-4">
+                            <div className="w-20 text-sm text-gray-600">{item.day}</div>
+                            <div className="flex-1">
+                              <div className="h-8 bg-gray-100 rounded-lg overflow-hidden">
+                                <motion.div
+                                  initial={{ width: 0 }}
+                                  animate={{ width: `${item.percent}%` }}
+                                  transition={{ duration: 0.8, delay: index * 0.1 }}
+                                  className="h-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-end pr-3"
+                                >
+                                  <span className="text-white text-xs font-semibold">
+                                    {item.hours}h
+                                  </span>
+                                </motion.div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Course Breakdown */}
+                    <div>
+                      <h4 className="font-semibold mb-4 flex items-center gap-2">
+                        <BookOpen className="w-4 h-4" />
+                        Phân bổ theo khóa học
+                      </h4>
+                      <div className="space-y-4">
+                        {[
+                          { course: "Lập trình Python cơ bản", hours: 15.5, lessons: 12, color: "bg-blue-500" },
+                          { course: "Thiết kế UI/UX với Figma", hours: 12.3, lessons: 8, color: "bg-purple-500" },
+                          { course: "Marketing số cho người mới", hours: 8.7, lessons: 6, color: "bg-green-500" },
+                          { course: "Excel nâng cao", hours: 6.0, lessons: 5, color: "bg-orange-500" },
+                        ].map((course, index) => (
+                          <motion.div
+                            key={index}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.1 }}
+                            className="border rounded-lg p-4 hover:shadow-md transition-shadow"
+                          >
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center gap-3">
+                                <div className={`w-3 h-3 rounded-full ${course.color}`}></div>
+                                <span className="font-medium">{course.course}</span>
+                              </div>
+                              <div className="text-right">
+                                <div className="font-semibold text-lg">{course.hours}h</div>
+                                <div className="text-xs text-gray-500">{course.lessons} bài học</div>
+                              </div>
+                            </div>
+                            <Progress value={(course.hours / 42.5) * 100} className="h-2" />
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Study Streak */}
+                    <div className="mt-8 p-6 bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl border border-amber-200">
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center">
+                          <Zap className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <div className="text-2xl font-bold text-gray-900">5 ngày</div>
+                          <div className="text-sm text-gray-600">Chuỗi học liên tục</div>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        {[1, 2, 3, 4, 5, 6, 7].map((day) => (
+                          <div
+                            key={day}
+                            className={`flex-1 h-2 rounded-full ${
+                              day <= 5 ? "bg-gradient-to-r from-amber-400 to-orange-500" : "bg-gray-200"
+                            }`}
+                          ></div>
+                        ))}
+                      </div>
+                      <div className="mt-3 text-sm text-gray-600">
+                        Tiếp tục học hôm nay để duy trì chuỗi! 🔥
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>

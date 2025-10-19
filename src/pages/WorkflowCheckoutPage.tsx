@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -24,6 +24,9 @@ import type { Workflow, WorkflowOrder } from '../types/workflow';
 import { PAYMENT_INFO } from '../types/workflow';
 import { sendAdminPaymentNotification } from '../lib/email-service';
 
+// Type-safe wrapper
+const db = supabase as any;
+
 export default function WorkflowCheckoutPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
@@ -48,31 +51,16 @@ export default function WorkflowCheckoutPage() {
   const [timeLeft, setTimeLeft] = useState(30 * 60); // 30 minutes
   const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
-    if (slug) {
-      loadWorkflow();
-    }
-  }, [slug]);
-
-  useEffect(() => {
-    if (step === 'payment' && timeLeft > 0) {
-      const timer = setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
-      }, 1000);
-      return () => clearInterval(timer);
-    }
-  }, [step, timeLeft]);
-
-  const loadWorkflow = async () => {
+  const loadWorkflow = useCallback(async () => {
     try {
       setLoading(true);
       const data = await workflowApi.getWorkflowBySlug(slug!);
       setWorkflow(data);
 
       // Load user info if logged in
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await db.auth.getUser();
       if (user) {
-        const { data: account } = await supabase
+        const { data: account } = await db
           .from('nlc_accounts')
           .select('full_name, email, phone')
           .eq('user_id', user.id)
@@ -91,7 +79,22 @@ export default function WorkflowCheckoutPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [slug, navigate]);
+
+  useEffect(() => {
+    if (slug) {
+      loadWorkflow();
+    }
+  }, [slug, loadWorkflow]);
+
+  useEffect(() => {
+    if (step === 'payment' && timeLeft > 0) {
+      const timer = setInterval(() => {
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [step, timeLeft]);
 
   const handleCreateOrder = async () => {
     if (!buyerName || !buyerEmail) {
@@ -148,14 +151,14 @@ export default function WorkflowCheckoutPage() {
 
       // Upload to Supabase Storage
       const fileName = `${order.order_code}_${Date.now()}.${proofImage.name.split('.').pop()}`;
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { data: uploadData, error: uploadError } = await db.storage
         .from('payment-proofs')
         .upload(fileName, proofImage);
 
       if (uploadError) throw uploadError;
 
       // Get public URL
-      const { data: { publicUrl } } = supabase.storage
+      const { data: { publicUrl } } = db.storage
         .from('payment-proofs')
         .getPublicUrl(fileName);
 

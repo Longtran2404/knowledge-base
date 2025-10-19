@@ -1,6 +1,6 @@
 import React from "react";
-import LoginEnhancement from "../components/auth/LoginEnhancement";
+import SimpleLoginForm from "../components/auth/SimpleLoginForm";
 
 export default function AuthPage() {
-  return <LoginEnhancement />;
+  return <SimpleLoginForm />;
 }

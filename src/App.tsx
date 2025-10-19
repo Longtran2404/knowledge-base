@@ -96,6 +96,21 @@ const WorkflowManagementPage = React.lazy(
 const ShowcasePage = React.lazy(() => import("./pages/ShowcasePage"));
 // const PaymentVerificationPage = React.lazy(() => import("./pages/admin/PaymentVerificationPage"));
 
+// CMS & Payment Management pages
+const AdminCMSPage = React.lazy(() => import("./pages/AdminCMSPage"));
+const PaymentMethodsManagementPage = React.lazy(
+  () => import("./pages/PaymentMethodsManagementPage")
+);
+
+// Account Upgrade page
+const AccountUpgradePage = React.lazy(() => import("./pages/AccountUpgradePage"));
+
+// Admin Dashboard & Subscription Management
+const AdminDashboardPage = React.lazy(() => import("./pages/AdminDashboardPage"));
+const AdminSubscriptionManagementPage = React.lazy(() => import("./pages/AdminSubscriptionManagementPage"));
+const AdminSetupPage = React.lazy(() => import("./pages/AdminSetupPage"));
+const AdminUsersPage = React.lazy(() => import("./pages/AdminUsersPage"));
+
 function App() {
   // Debug configuration in development
   React.useEffect(() => {
@@ -118,6 +133,12 @@ function App() {
     };
 
     const handleError = (event: ErrorEvent) => {
+      // Suppress ResizeObserver errors (non-critical UI errors)
+      if (event.message?.includes('ResizeObserver')) {
+        event.preventDefault();
+        return;
+      }
+
       logger.error("Global error", event.error, {
         component: "App",
         operation: "global_error",
@@ -552,6 +573,72 @@ function App() {
                                             <WorkflowManagementPage />
                                           </PageTransition>
                                         </ProtectedRoute>
+                                      }
+                                    />
+                                    <Route
+                                      path="/admin/dashboard"
+                                      element={
+                                        <ProtectedRoute allowedRoles={['admin']}>
+                                          <PageTransition>
+                                            <AdminDashboardPage />
+                                          </PageTransition>
+                                        </ProtectedRoute>
+                                      }
+                                    />
+                                    <Route
+                                      path="/admin/users"
+                                      element={
+                                        <ProtectedRoute allowedRoles={['admin']}>
+                                          <PageTransition>
+                                            <AdminUsersPage />
+                                          </PageTransition>
+                                        </ProtectedRoute>
+                                      }
+                                    />
+                                    <Route
+                                      path="/admin/cms"
+                                      element={
+                                        <ProtectedRoute allowedRoles={['admin']}>
+                                          <PageTransition>
+                                            <AdminCMSPage />
+                                          </PageTransition>
+                                        </ProtectedRoute>
+                                      }
+                                    />
+                                    <Route
+                                      path="/admin/payment-methods"
+                                      element={
+                                        <ProtectedRoute allowedRoles={['admin']}>
+                                          <PageTransition>
+                                            <PaymentMethodsManagementPage />
+                                          </PageTransition>
+                                        </ProtectedRoute>
+                                      }
+                                    />
+                                    <Route
+                                      path="/admin/subscriptions"
+                                      element={
+                                        <ProtectedRoute allowedRoles={['admin']}>
+                                          <PageTransition>
+                                            <AdminSubscriptionManagementPage />
+                                          </PageTransition>
+                                        </ProtectedRoute>
+                                      }
+                                    />
+                                    <Route
+                                      path="/admin/setup"
+                                      element={
+                                        <PageTransition>
+                                          <AdminSetupPage />
+                                        </PageTransition>
+                                      }
+                                    />
+                                    <Route
+                                      path="/account/upgrade"
+                                      element={
+                                        <PageTransition>
+                                          <AccountUpgradePage />
+                                        </PageTransition>
                                       }
                                     />
 

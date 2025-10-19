@@ -61,7 +61,12 @@
       "Bash(tee:*)",
       "Bash(1)",
       "Bash(do echo \"=== $f ===\")",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(cat:*)",
+      "Bash(CRACO_DEBUG=true npm run build)",
+      "Bash(timeout 30 bash -c 'until curl -s http://localhost:3000 > /dev/null 2>&1; do sleep 1; done && echo \"\"Server started successfully!\"\"')",
+      "Bash(echo $PATH)",
+      "Bash(xargs cat:*)"
     ],
     "deny": [],
     "ask": []

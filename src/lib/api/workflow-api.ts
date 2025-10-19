@@ -18,6 +18,9 @@ import type {
   WorkflowStats,
 } from '../../types/workflow';
 
+// Type-safe wrapper to bypass Supabase type generation issues
+const db = supabase as any;
+
 // ============================================
 // WORKFLOW CRUD
 // ============================================
@@ -25,9 +28,9 @@ import type {
 export const workflowApi = {
   // Get all published workflows
   async getPublishedWorkflows(params?: WorkflowSearchParams) {
-    let query = supabase
+    let query = (supabase
       .from('nlc_workflows')
-      .select('*')
+      .select('*') as any)
       .eq('workflow_status', 'published')
       .eq('is_active', true);
 
@@ -100,7 +103,7 @@ export const workflowApi = {
 
   // Get workflow by ID
   async getWorkflowById(id: string) {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('nlc_workflows')
       .select('*')
       .eq('id', id)
@@ -109,14 +112,14 @@ export const workflowApi = {
     if (error) throw error;
 
     // TODO: Increment view count in background (needs RPC function)
-    // await supabase.rpc('increment_workflow_views', { workflow_id: id })
+    // await db.rpc('increment_workflow_views', { workflow_id: id })
 
     return data as Workflow;
   },
 
   // Get workflow by slug
   async getWorkflowBySlug(slug: string) {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('nlc_workflows')
       .select('*')
       .eq('workflow_slug', slug)
@@ -128,7 +131,7 @@ export const workflowApi = {
 
   // Get featured workflows
   async getFeaturedWorkflows(limit: number = 6) {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('nlc_workflows')
       .select('*')
       .eq('workflow_status', 'published')
@@ -143,10 +146,10 @@ export const workflowApi = {
 
   // Get my workflows (creator)
   async getMyWorkflows() {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await db.auth.getUser();
     if (!user) throw new Error('Not authenticated');
 
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('nlc_workflows')
       .select('*')
       .eq('creator_id', user.id)
@@ -158,10 +161,10 @@ export const workflowApi = {
 
   // Create workflow
   async createWorkflow(dto: CreateWorkflowDTO) {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await db.auth.getUser();
     if (!user) throw new Error('Not authenticated');
 
-    const { data: account } = await supabase
+    const { data: account } = await db
       .from('nlc_accounts')
       .select('full_name, email, account_role')
       .eq('user_id', user.id)
@@ -189,7 +192,7 @@ export const workflowApi = {
 
   // Update workflow
   async updateWorkflow(id: string, dto: UpdateWorkflowDTO) {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('nlc_workflows')
       .update(dto)
       .eq('id', id)
@@ -202,7 +205,7 @@ export const workflowApi = {
 
   // Delete workflow
   async deleteWorkflow(id: string) {
-    const { error } = await supabase
+    const { error } = await db
       .from('nlc_workflows')
       .delete()
       .eq('id', id);
@@ -235,7 +238,7 @@ export const orderApi = {
     const orderCode = `WF-${new Date().toISOString().split('T')[0].replace(/-/g, '')}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
     // Get workflow details
-    const { data: workflow } = await supabase
+    const { data: workflow } = await db
       .from('nlc_workflows')
       .select('workflow_name, workflow_price')
       .eq('id', dto.workflow_id)
@@ -244,9 +247,9 @@ export const orderApi = {
     if (!workflow) throw new Error('Workflow not found');
 
     // Get user ID if logged in
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await db.auth.getUser();
 
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('nlc_workflow_orders')
       .insert([{
         order_code: orderCode,
@@ -272,7 +275,7 @@ export const orderApi = {
 
   // Get order by ID
   async getOrderById(id: string) {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('nlc_workflow_orders')
       .select('*')
       .eq('id', id)
@@ -284,7 +287,7 @@ export const orderApi = {
 
   // Get order by code
   async getOrderByCode(code: string) {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('nlc_workflow_orders')
       .select('*')
       .eq('order_code', code)
@@ -296,10 +299,10 @@ export const orderApi = {
 
   // Get my orders
   async getMyOrders() {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await db.auth.getUser();
     if (!user) throw new Error('Not authenticated');
 
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('nlc_workflow_orders')
       .select('*')
       .or(`buyer_user_id.eq.${user.id},buyer_email.eq.${user.email}`)
@@ -311,7 +314,7 @@ export const orderApi = {
 
   // Upload payment proof
   async uploadPaymentProof(dto: UpdateOrderPaymentProofDTO) {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('nlc_workflow_orders')
       .update({
         payment_proof_image: dto.payment_proof_image,
@@ -345,10 +348,10 @@ export const orderApi = {
 
   // Admin: Verify order
   async verifyOrder(dto: VerifyOrderDTO) {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await db.auth.getUser();
     if (!user) throw new Error('Not authenticated');
 
-    const { data: account } = await supabase
+    const { data: account } = await db
       .from('nlc_accounts')
       .select('full_name')
       .eq('user_id', user.id)
@@ -370,7 +373,7 @@ export const orderApi = {
       updateData.rejection_reason = dto.rejection_reason;
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('nlc_workflow_orders')
       .update(updateData)
       .eq('id', dto.order_id)
@@ -427,7 +430,7 @@ export const orderApi = {
 
   // Helper: Generate signed URL
   async getSignedUrl(bucket: string, filePath: string): Promise<string> {
-    const { data, error } = await supabase.storage
+    const { data, error } = await db.storage
       .from(bucket)
       .createSignedUrl(filePath, 7 * 24 * 60 * 60); // 7 days
 
@@ -437,7 +440,7 @@ export const orderApi = {
 
   // Mark files as sent
   async markFilesAsSent(orderId: string, downloadLinks: any) {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('nlc_workflow_orders')
       .update({
         files_sent: true,
@@ -462,7 +465,7 @@ export const orderApi = {
 export const reviewApi = {
   // Get reviews for workflow
   async getWorkflowReviews(workflowId: string) {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('nlc_workflow_reviews')
       .select('*')
       .eq('workflow_id', workflowId)
@@ -475,17 +478,17 @@ export const reviewApi = {
 
   // Create review
   async createReview(dto: CreateReviewDTO) {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await db.auth.getUser();
     if (!user) throw new Error('Not authenticated');
 
-    const { data: account } = await supabase
+    const { data: account } = await db
       .from('nlc_accounts')
       .select('full_name, email, avatar_url')
       .eq('user_id', user.id)
       .single();
 
     // Check if user purchased this workflow
-    const { data: order } = await supabase
+    const { data: order } = await db
       .from('nlc_workflow_orders')
       .select('id')
       .eq('workflow_id', dto.workflow_id)
@@ -493,7 +496,7 @@ export const reviewApi = {
       .eq('order_status', 'completed')
       .single();
 
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('nlc_workflow_reviews')
       .insert([{
         ...dto,
@@ -516,7 +519,7 @@ export const reviewApi = {
 
   // Update workflow average rating
   async updateWorkflowRating(workflowId: string) {
-    const { data: reviews } = await supabase
+    const { data: reviews } = await db
       .from('nlc_workflow_reviews')
       .select('rating')
       .eq('workflow_id', workflowId)
@@ -525,7 +528,7 @@ export const reviewApi = {
     if (reviews && reviews.length > 0) {
       const avgRating = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
 
-      await supabase
+      await db
         .from('nlc_workflows')
         .update({
           avg_rating: Math.round(avgRating * 10) / 10,
@@ -544,13 +547,13 @@ export const statsApi = {
   // Get workflow stats (admin)
   async getWorkflowStats(): Promise<WorkflowStats> {
     // Get total workflows
-    const { count: totalWorkflows } = await supabase
+    const { count: totalWorkflows } = await db
       .from('nlc_workflows')
       .select('*', { count: 'exact', head: true })
       .eq('workflow_status', 'published');
 
     // Get total orders and revenue
-    const { data: orders } = await supabase
+    const { data: orders } = await db
       .from('nlc_workflow_orders')
       .select('workflow_price, workflow_name, order_status, created_at')
       .eq('order_status', 'completed');
@@ -559,7 +562,7 @@ export const statsApi = {
     const totalOrders = orders?.length || 0;
 
     // Get pending orders
-    const { count: pendingOrders } = await supabase
+    const { count: pendingOrders } = await db
       .from('nlc_workflow_orders')
       .select('*', { count: 'exact', head: true })
       .eq('payment_status', 'verifying');

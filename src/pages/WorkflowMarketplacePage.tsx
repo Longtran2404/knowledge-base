@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '../components/ui/input';
@@ -32,11 +32,7 @@ export default function WorkflowMarketplacePage() {
   const [difficultyFilter, setDifficultyFilter] = useState('all');
   const [sortBy, setSortBy] = useState<'newest' | 'popular' | 'price-low' | 'price-high' | 'rating'>('newest');
 
-  useEffect(() => {
-    loadWorkflows();
-  }, [searchTerm, selectedCategory, priceFilter, difficultyFilter, sortBy]);
-
-  const loadWorkflows = async () => {
+  const loadWorkflows = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -58,7 +54,11 @@ export default function WorkflowMarketplacePage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchTerm, selectedCategory, priceFilter, difficultyFilter, sortBy]);
+
+  useEffect(() => {
+    loadWorkflows();
+  }, [loadWorkflows]);
 
   const handleViewDetails = (workflow: Workflow) => {
     navigate(`/workflows/${workflow.workflow_slug}`);
