@@ -82,7 +82,7 @@ export default function AdminSubscriptionManagementPage() {
 
       // Get user info and plan info separately
       const paymentsWithDetails: PaymentWithDetails[] = await Promise.all(
-        (paymentsData || []).map(async (payment) => {
+        (paymentsData || []).map(async (payment: any) => {
           // Get user info from nlc_accounts
           const { data: userData } = await supabase
             .from("nlc_accounts")
