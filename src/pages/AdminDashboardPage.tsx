@@ -55,6 +55,14 @@ interface PaymentData {
   created_at: string;
 }
 
+interface ActivityData {
+  id: string;
+  action_type: string;
+  description: string;
+  created_at: string;
+  user_id: string;
+}
+
 export default function AdminDashboardPage() {
   const { userProfile, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -165,7 +173,8 @@ export default function AdminDashboardPage() {
       });
 
       // Format recent activities
-      const formattedActivities: RecentActivity[] = (activitiesResult.data || []).map((activity) => ({
+      const activityData = (activitiesResult.data as unknown as ActivityData[]) || [];
+      const formattedActivities: RecentActivity[] = activityData.map((activity) => ({
         id: activity.id,
         type: activity.action_type,
         description: activity.description,
