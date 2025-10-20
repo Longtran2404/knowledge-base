@@ -1,0 +1,110 @@
+{
+  "app": {
+    "name": "Nam Long Center",
+    "tagline": "Nền Tảng Học Tập & Quy Trình Làm Việc Được Hỗ Trợ Bởi AI Toàn Cầu",
+    "description": "Biến đổi hành trình học tập của bạn với các khóa học được hỗ trợ bởi AI, quy trình làm việc và đề xuất cá nhân hóa"
+  },
+  "nav": {
+    "home": "Trang Chủ",
+    "courses": "Khóa Học",
+    "workflows": "Quy Trình",
+    "marketplace": "Chợ",
+    "pricing": "Bảng Giá",
+    "about": "Giới Thiệu",
+    "contact": "Liên Hệ",
+    "login": "Đăng Nhập",
+    "signup": "Đăng Ký",
+    "dashboard": "Bảng Điều Khiển",
+    "profile": "Hồ Sơ",
+    "logout": "Đăng Xuất"
+  },
+  "hero": {
+    "title": "Học Thông Minh Hơn Với AI",
+    "subtitle": "Lộ trình học tập cá nhân hóa, đề xuất thông minh và nội dung được tạo bởi chuyên gia",
+    "cta": "Bắt Đầu Miễn Phí",
+    "ctaSecondary": "Khám Phá Khóa Học"
+  },
+  "features": {
+    "ai_tutor": {
+      "title": "Gia Sư AI 24/7",
+      "description": "Nhận câu trả lời tức thì cho câu hỏi của bạn với gia sư AI được hỗ trợ bởi GPT-4"
+    },
+    "personalized": {
+      "title": "Học Tập Cá Nhân Hóa",
+      "description": "Đề xuất được điều khiển bởi AI phù hợp với mục tiêu và trình độ của bạn"
+    },
+    "workflows": {
+      "title": "Chợ Quy Trình",
+      "description": "Mua và bán quy trình tự động hóa được tạo bởi các chuyên gia"
+    },
+    "realtime": {
+      "title": "Cộng Tác Thời Gian Thực",
+      "description": "Học cùng nhau với lập trình trực tiếp, cuộc gọi video và không gian làm việc chia sẻ"
+    },
+    "certificates": {
+      "title": "Chứng Chỉ Blockchain",
+      "description": "Kiếm chứng chỉ NFT có thể xác minh trên blockchain"
+    },
+    "global": {
+      "title": "Cộng Đồng Toàn Cầu",
+      "description": "Học bằng ngôn ngữ của bạn với hỗ trợ hơn 10 ngôn ngữ"
+    }
+  },
+  "common": {
+    "loading": "Đang tải...",
+    "error": "Lỗi",
+    "success": "Thành công",
+    "cancel": "Hủy",
+    "save": "Lưu",
+    "delete": "Xóa",
+    "edit": "Sửa",
+    "create": "Tạo",
+    "update": "Cập nhật",
+    "submit": "Gửi",
+    "search": "Tìm kiếm",
+    "filter": "Lọc",
+    "sort": "Sắp xếp",
+    "viewAll": "Xem Tất Cả",
+    "learnMore": "Tìm Hiểu Thêm",
+    "getStarted": "Bắt Đầu",
+    "tryFree": "Dùng Thử Miễn Phí",
+    "premium": "Cao Cấp",
+    "comingSoon": "Sắp Ra Mắt",
+    "new": "Mới"
+  },
+  "subscription": {
+    "free": "Miễn Phí",
+    "premium": "Cao Cấp",
+    "business": "Doanh Nghiệp",
+    "enterprise": "Doanh Nghiệp Lớn",
+    "upgrade": "Nâng Cấp",
+    "currentPlan": "Gói Hiện Tại",
+    "choosePlan": "Chọn Gói"
+  },
+  "currency": {
+    "usd": "USD",
+    "vnd": "VNĐ",
+    "eur": "EUR",
+    "jpy": "JPY",
+    "cny": "CNY"
+  },
+  "time": {
+    "seconds": "giây",
+    "minutes": "phút",
+    "hours": "giờ",
+    "days": "ngày",
+    "weeks": "tuần",
+    "months": "tháng",
+    "years": "năm",
+    "ago": "trước",
+    "justNow": "vừa xong"
+  },
+  "validation": {
+    "required": "Trường này là bắt buộc",
+    "email": "Địa chỉ email không hợp lệ",
+    "minLength": "Phải có ít nhất {{min}} ký tự",
+    "maxLength": "Phải có nhiều nhất {{max}} ký tự",
+    "password": "Mật khẩu phải chứa chữ hoa, chữ thường, số và ký tự đặc biệt",
+    "passwordMatch": "Mật khẩu không khớp"
+  }
+}

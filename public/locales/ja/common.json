@@ -1,0 +1,95 @@
+{
+  "app": {
+    "name": "南龍センター",
+    "tagline": "グローバルAI搭載の学習とワークフロープラットフォーム",
+    "description": "AI搭載のコース、ワークフロー、パーソナライズされた推奨で学習の旅を変革"
+  },
+  "nav": {
+    "home": "ホーム",
+    "courses": "コース",
+    "workflows": "ワークフロー",
+    "marketplace": "マーケットプレイス",
+    "pricing": "料金",
+    "about": "概要",
+    "contact": "お問い合わせ",
+    "login": "ログイン",
+    "signup": "サインアップ",
+    "dashboard": "ダッシュボード",
+    "profile": "プロフィール",
+    "logout": "ログアウト"
+  },
+  "hero": {
+    "title": "AIでもっとスマートに学ぶ",
+    "subtitle": "パーソナライズされた学習パス、インテリジェントな推奨、エキスパート作成のコンテンツ",
+    "cta": "無料で始める",
+    "ctaSecondary": "コースを探す"
+  },
+  "features": {
+    "ai_tutor": {
+      "title": "AIチューター24/7",
+      "description": "GPT-4搭載のAIチューターで質問への即座の回答を取得"
+    },
+    "personalized": {
+      "title": "パーソナライズされた学習",
+      "description": "目標とスキルレベルに合わせたAI駆動の推奨"
+    },
+    "workflows": {
+      "title": "ワークフローマーケットプレイス",
+      "description": "エキスパートが作成した自動化ワークフローを売買"
+    },
+    "realtime": {
+      "title": "リアルタイムコラボレーション",
+      "description": "ライブコーディング、ビデオ通話、共有ワークスペースで一緒に学ぶ"
+    },
+    "certificates": {
+      "title": "ブロックチェーン証明書",
+      "description": "ブロックチェーン上で検証可能なNFT証明書を獲得"
+    },
+    "global": {
+      "title": "グローバルコミュニティ",
+      "description": "10以上の言語をサポートし、あなたの言語で学ぶ"
+    }
+  },
+  "common": {
+    "loading": "読み込み中...",
+    "error": "エラー",
+    "success": "成功",
+    "cancel": "キャンセル",
+    "save": "保存",
+    "delete": "削除",
+    "edit": "編集",
+    "create": "作成",
+    "update": "更新",
+    "submit": "送信",
+    "search": "検索",
+    "filter": "フィルター",
+    "sort": "並べ替え",
+    "viewAll": "すべて表示",
+    "learnMore": "詳細を見る",
+    "getStarted": "始める",
+    "tryFree": "無料で試す",
+    "premium": "プレミアム",
+    "comingSoon": "近日公開",
+    "new": "新規"
+  },
+  "subscription": {
+    "free": "無料",
+    "premium": "プレミアム",
+    "business": "ビジネス",
+    "enterprise": "エンタープライズ",
+    "upgrade": "アップグレード",
+    "currentPlan": "現在のプラン",
+    "choosePlan": "プランを選択"
+  },
+  "time": {
+    "seconds": "秒",
+    "minutes": "分",
+    "hours": "時間",
+    "days": "日",
+    "weeks": "週",
+    "months": "月",
+    "years": "年",
+    "ago": "前",
+    "justNow": "たった今"
+  }
+}

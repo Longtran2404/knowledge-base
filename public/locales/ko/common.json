@@ -1,0 +1,95 @@
+{
+  "app": {
+    "name": "남롱 센터",
+    "tagline": "글로벌 AI 기반 학습 및 워크플로우 플랫폼",
+    "description": "AI 기반 코스, 워크플로우 및 맞춤형 추천으로 학습 여정을 변화시키세요"
+  },
+  "nav": {
+    "home": "홈",
+    "courses": "코스",
+    "workflows": "워크플로우",
+    "marketplace": "마켓플레이스",
+    "pricing": "가격",
+    "about": "소개",
+    "contact": "연락처",
+    "login": "로그인",
+    "signup": "가입하기",
+    "dashboard": "대시보드",
+    "profile": "프로필",
+    "logout": "로그아웃"
+  },
+  "hero": {
+    "title": "AI로 더 스마트하게 학습하기",
+    "subtitle": "맞춤형 학습 경로, 지능형 추천 및 전문가가 만든 콘텐츠",
+    "cta": "무료로 시작하기",
+    "ctaSecondary": "코스 둘러보기"
+  },
+  "features": {
+    "ai_tutor": {
+      "title": "AI 튜터 24/7",
+      "description": "GPT-4 기반 AI 튜터로 질문에 즉시 답변 받기"
+    },
+    "personalized": {
+      "title": "맞춤형 학습",
+      "description": "목표와 기술 수준에 맞춘 AI 기반 추천"
+    },
+    "workflows": {
+      "title": "워크플로우 마켓플레이스",
+      "description": "전문가가 만든 자동화 워크플로우 구매 및 판매"
+    },
+    "realtime": {
+      "title": "실시간 협업",
+      "description": "라이브 코딩, 화상 통화 및 공유 작업 공간으로 함께 학습"
+    },
+    "certificates": {
+      "title": "블록체인 인증서",
+      "description": "블록체인에서 검증 가능한 NFT 인증서 획득"
+    },
+    "global": {
+      "title": "글로벌 커뮤니티",
+      "description": "10개 이상의 언어를 지원하며 당신의 언어로 학습"
+    }
+  },
+  "common": {
+    "loading": "로딩 중...",
+    "error": "오류",
+    "success": "성공",
+    "cancel": "취소",
+    "save": "저장",
+    "delete": "삭제",
+    "edit": "편집",
+    "create": "만들기",
+    "update": "업데이트",
+    "submit": "제출",
+    "search": "검색",
+    "filter": "필터",
+    "sort": "정렬",
+    "viewAll": "전체 보기",
+    "learnMore": "자세히 알아보기",
+    "getStarted": "시작하기",
+    "tryFree": "무료 체험",
+    "premium": "프리미엄",
+    "comingSoon": "출시 예정",
+    "new": "새로운"
+  },
+  "subscription": {
+    "free": "무료",
+    "premium": "프리미엄",
+    "business": "비즈니스",
+    "enterprise": "엔터프라이즈",
+    "upgrade": "업그레이드",
+    "currentPlan": "현재 플랜",
+    "choosePlan": "플랜 선택"
+  },
+  "time": {
+    "seconds": "초",
+    "minutes": "분",
+    "hours": "시간",
+    "days": "일",
+    "weeks": "주",
+    "months": "개월",
+    "years": "년",
+    "ago": "전",
+    "justNow": "방금"
+  }
+}

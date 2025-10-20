@@ -1,0 +1,110 @@
+{
+  "app": {
+    "name": "Nam Long Center",
+    "tagline": "Global AI-Powered Learning & Workflow Platform",
+    "description": "Transform your learning journey with AI-powered courses, workflows, and personalized recommendations"
+  },
+  "nav": {
+    "home": "Home",
+    "courses": "Courses",
+    "workflows": "Workflows",
+    "marketplace": "Marketplace",
+    "pricing": "Pricing",
+    "about": "About Us",
+    "contact": "Contact",
+    "login": "Login",
+    "signup": "Sign Up",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "hero": {
+    "title": "Learn Smarter with AI",
+    "subtitle": "Personalized learning paths, intelligent recommendations, and expert-created content",
+    "cta": "Get Started Free",
+    "ctaSecondary": "Explore Courses"
+  },
+  "features": {
+    "ai_tutor": {
+      "title": "AI Tutor 24/7",
+      "description": "Get instant answers to your questions with our GPT-4 powered AI tutor"
+    },
+    "personalized": {
+      "title": "Personalized Learning",
+      "description": "AI-driven recommendations tailored to your goals and skill level"
+    },
+    "workflows": {
+      "title": "Workflow Marketplace",
+      "description": "Buy and sell automation workflows created by experts"
+    },
+    "realtime": {
+      "title": "Real-time Collaboration",
+      "description": "Learn together with live coding, video calls, and shared workspaces"
+    },
+    "certificates": {
+      "title": "Blockchain Certificates",
+      "description": "Earn verifiable NFT certificates on blockchain"
+    },
+    "global": {
+      "title": "Global Community",
+      "description": "Learn in your language with support for 10+ languages"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "update": "Update",
+    "submit": "Submit",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "viewAll": "View All",
+    "learnMore": "Learn More",
+    "getStarted": "Get Started",
+    "tryFree": "Try Free",
+    "premium": "Premium",
+    "comingSoon": "Coming Soon",
+    "new": "New"
+  },
+  "subscription": {
+    "free": "Free",
+    "premium": "Premium",
+    "business": "Business",
+    "enterprise": "Enterprise",
+    "upgrade": "Upgrade",
+    "currentPlan": "Current Plan",
+    "choosePlan": "Choose Plan"
+  },
+  "currency": {
+    "usd": "USD",
+    "vnd": "VND",
+    "eur": "EUR",
+    "jpy": "JPY",
+    "cny": "CNY"
+  },
+  "time": {
+    "seconds": "seconds",
+    "minutes": "minutes",
+    "hours": "hours",
+    "days": "days",
+    "weeks": "weeks",
+    "months": "months",
+    "years": "years",
+    "ago": "ago",
+    "justNow": "just now"
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Invalid email address",
+    "minLength": "Must be at least {{min}} characters",
+    "maxLength": "Must be at most {{max}} characters",
+    "password": "Password must contain uppercase, lowercase, number and special character",
+    "passwordMatch": "Passwords do not match"
+  }
+}

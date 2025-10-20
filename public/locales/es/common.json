@@ -1,0 +1,95 @@
+{
+  "app": {
+    "name": "Centro Nam Long",
+    "tagline": "Plataforma Global de Aprendizaje y Flujos de Trabajo Impulsada por IA",
+    "description": "Transforma tu viaje de aprendizaje con cursos impulsados por IA, flujos de trabajo y recomendaciones personalizadas"
+  },
+  "nav": {
+    "home": "Inicio",
+    "courses": "Cursos",
+    "workflows": "Flujos de Trabajo",
+    "marketplace": "Mercado",
+    "pricing": "Precios",
+    "about": "Acerca de",
+    "contact": "Contacto",
+    "login": "Iniciar Sesión",
+    "signup": "Registrarse",
+    "dashboard": "Panel",
+    "profile": "Perfil",
+    "logout": "Cerrar Sesión"
+  },
+  "hero": {
+    "title": "Aprende Más Inteligente con IA",
+    "subtitle": "Rutas de aprendizaje personalizadas, recomendaciones inteligentes y contenido creado por expertos",
+    "cta": "Comenzar Gratis",
+    "ctaSecondary": "Explorar Cursos"
+  },
+  "features": {
+    "ai_tutor": {
+      "title": "Tutor IA 24/7",
+      "description": "Obtén respuestas instantáneas a tus preguntas con nuestro tutor IA impulsado por GPT-4"
+    },
+    "personalized": {
+      "title": "Aprendizaje Personalizado",
+      "description": "Recomendaciones impulsadas por IA adaptadas a tus objetivos y nivel de habilidad"
+    },
+    "workflows": {
+      "title": "Mercado de Flujos de Trabajo",
+      "description": "Compra y vende flujos de trabajo de automatización creados por expertos"
+    },
+    "realtime": {
+      "title": "Colaboración en Tiempo Real",
+      "description": "Aprende junto con codificación en vivo, videollamadas y espacios de trabajo compartidos"
+    },
+    "certificates": {
+      "title": "Certificados Blockchain",
+      "description": "Gana certificados NFT verificables en blockchain"
+    },
+    "global": {
+      "title": "Comunidad Global",
+      "description": "Aprende en tu idioma con soporte para más de 10 idiomas"
+    }
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "create": "Crear",
+    "update": "Actualizar",
+    "submit": "Enviar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "viewAll": "Ver Todo",
+    "learnMore": "Saber Más",
+    "getStarted": "Comenzar",
+    "tryFree": "Probar Gratis",
+    "premium": "Premium",
+    "comingSoon": "Próximamente",
+    "new": "Nuevo"
+  },
+  "subscription": {
+    "free": "Gratis",
+    "premium": "Premium",
+    "business": "Negocios",
+    "enterprise": "Empresarial",
+    "upgrade": "Actualizar",
+    "currentPlan": "Plan Actual",
+    "choosePlan": "Elegir Plan"
+  },
+  "time": {
+    "seconds": "segundos",
+    "minutes": "minutos",
+    "hours": "horas",
+    "days": "días",
+    "weeks": "semanas",
+    "months": "meses",
+    "years": "años",
+    "ago": "hace",
+    "justNow": "justo ahora"
+  }
+}

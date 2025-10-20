@@ -1,0 +1,95 @@
+{
+  "app": {
+    "name": "南龙中心",
+    "tagline": "全球AI驱动的学习与工作流程平台",
+    "description": "通过AI驱动的课程、工作流程和个性化推荐改变您的学习之旅"
+  },
+  "nav": {
+    "home": "首页",
+    "courses": "课程",
+    "workflows": "工作流程",
+    "marketplace": "市场",
+    "pricing": "价格",
+    "about": "关于我们",
+    "contact": "联系我们",
+    "login": "登录",
+    "signup": "注册",
+    "dashboard": "仪表板",
+    "profile": "个人资料",
+    "logout": "登出"
+  },
+  "hero": {
+    "title": "用AI更聪明地学习",
+    "subtitle": "个性化学习路径、智能推荐和专家创建的内容",
+    "cta": "免费开始",
+    "ctaSecondary": "探索课程"
+  },
+  "features": {
+    "ai_tutor": {
+      "title": "AI导师24/7",
+      "description": "使用GPT-4驱动的AI导师即时获得问题答案"
+    },
+    "personalized": {
+      "title": "个性化学习",
+      "description": "AI驱动的推荐符合您的目标和技能水平"
+    },
+    "workflows": {
+      "title": "工作流程市场",
+      "description": "购买和出售专家创建的自动化工作流程"
+    },
+    "realtime": {
+      "title": "实时协作",
+      "description": "通过实时编码、视频通话和共享工作空间一起学习"
+    },
+    "certificates": {
+      "title": "区块链证书",
+      "description": "在区块链上获得可验证的NFT证书"
+    },
+    "global": {
+      "title": "全球社区",
+      "description": "支持10多种语言，用您的语言学习"
+    }
+  },
+  "common": {
+    "loading": "加载中...",
+    "error": "错误",
+    "success": "成功",
+    "cancel": "取消",
+    "save": "保存",
+    "delete": "删除",
+    "edit": "编辑",
+    "create": "创建",
+    "update": "更新",
+    "submit": "提交",
+    "search": "搜索",
+    "filter": "过滤",
+    "sort": "排序",
+    "viewAll": "查看全部",
+    "learnMore": "了解更多",
+    "getStarted": "开始",
+    "tryFree": "免费试用",
+    "premium": "高级",
+    "comingSoon": "即将推出",
+    "new": "新"
+  },
+  "subscription": {
+    "free": "免费",
+    "premium": "高级",
+    "business": "商业",
+    "enterprise": "企业",
+    "upgrade": "升级",
+    "currentPlan": "当前计划",
+    "choosePlan": "选择计划"
+  },
+  "time": {
+    "seconds": "秒",
+    "minutes": "分钟",
+    "hours": "小时",
+    "days": "天",
+    "weeks": "周",
+    "months": "月",
+    "years": "年",
+    "ago": "前",
+    "justNow": "刚刚"
+  }
+}
