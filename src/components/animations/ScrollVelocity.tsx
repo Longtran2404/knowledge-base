@@ -1,6 +1,7 @@
 /**
  * Scroll Velocity Text
  * Infinite scrolling text with velocity-based speed - inspired by reactbits.dev
+ * Optimized for mobile performance
  */
 
 import React, { useRef, useState, useEffect } from 'react';
@@ -17,11 +18,22 @@ export function ScrollVelocity({ text, baseVelocity = 2, className = '' }: Scrol
   const baseX = useMotionValue(0);
   const { scrollY } = useScroll();
   const scrollVelocity = useVelocity(scrollY);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth <= 768);
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Reduce spring complexity on mobile
   const smoothVelocity = useSpring(scrollVelocity, {
-    damping: 50,
-    stiffness: 400,
+    damping: isMobile ? 100 : 50,
+    stiffness: isMobile ? 200 : 400,
   });
-  const velocityFactor = useTransform(smoothVelocity, [0, 1000], [0, 5], {
+
+  const velocityFactor = useTransform(smoothVelocity, [0, 1000], [0, isMobile ? 2 : 5], {
     clamp: false,
   });
 
@@ -30,6 +42,9 @@ export function ScrollVelocity({ text, baseVelocity = 2, className = '' }: Scrol
   const directionFactor = useRef<number>(1);
 
   useAnimationFrame((t, delta) => {
+    // Reduce animation frequency on mobile
+    if (isMobile && Math.random() > 0.5) return;
+
     let moveBy = directionFactor.current * baseVelocity * (delta / 1000);
 
     if (velocityFactor.get() < 0) {
@@ -44,12 +59,12 @@ export function ScrollVelocity({ text, baseVelocity = 2, className = '' }: Scrol
   });
 
   return (
-    <div className={`overflow-hidden whitespace-nowrap flex ${className}`}>
-      <motion.div style={{ x }} className="flex gap-8">
+    <div className={`overflow-hidden whitespace-nowrap flex w-full ${className}`}>
+      <motion.div style={{ x }} className="flex gap-8 md:gap-12 lg:gap-16">
         {[...text, ...text, ...text, ...text].map((item, index) => (
           <span
             key={index}
-            className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent"
+            className="text-3xl md:text-5xl lg:text-7xl font-bold bg-gradient-to-r from-white via-blue-100 to-gray-300 bg-clip-text text-transparent inline-block"
           >
             {item}
           </span>

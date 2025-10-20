@@ -6,6 +6,9 @@
 @import './styles/mobile-responsive.css';
 @import './styles/workflow-mobile.css';
 
+/* Global Layout Fixes - Text overflow, centering, alignment */
+@import './styles/global-fixes.css';
+
 /* Enhanced Toast Animations */
 @keyframes shimmer {
   0% { transform: translateX(-100%); }

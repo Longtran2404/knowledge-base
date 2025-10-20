@@ -28,10 +28,9 @@ import { FluidGlass } from '../components/ui/fluid-glass';
 import { SplashCursor } from '../components/animations/SplashCursor';
 import { ScrollFloat } from '../components/animations/ScrollFloat';
 import { VariableProximity } from '../components/animations/VariableProximity';
-import { ScrollVelocityMulti } from '../components/animations/ScrollVelocity';
 import { RotatingText } from '../components/animations/RotatingText';
 import { GradualBlur, ScrollGradualBlur } from '../components/animations/GradualBlur';
-// import { CanvasLaserFlow } from '../components/animations/LaserFlow'; // Removed - using GalaxyBackground globally
+import { LogoLoopMulti, LogoSVGs } from '../components/animations/LogoLoop';
 import { BentoHero } from '../components/layout/MagicBento';
 import { SEO } from '../components/SEO';
 
@@ -268,24 +267,49 @@ export default function EnhancedGioiThieuPage() {
             </div>
           </section>
 
-          {/* Partners & Brands Scroll Velocity */}
-          <section className="py-20 relative overflow-hidden">
-            <div className="container mx-auto px-4 mb-12">
+          {/* Partners & Brands Logo Loop */}
+          <section className="py-20 relative overflow-hidden w-full">
+            <div className="container mx-auto px-4 mb-16">
               <ScrollGradualBlur>
                 <h2 className="text-4xl md:text-6xl font-bold text-center mb-6 bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent">
                   Đối tác & Thương hiệu
                 </h2>
-                <p className="text-xl text-gray-400 text-center mb-12">
-                  Hợp tác cùng các công ty hàng đầu thế giới
+                <p className="text-xl text-gray-400 text-center">
+                  Hợp tác cùng các công ty hàng đầu Việt Nam và thế giới
                 </p>
               </ScrollGradualBlur>
             </div>
 
-            <ScrollVelocityMulti
+            <LogoLoopMulti
               rows={[
-                { text: partners, velocity: 2 },
-                { text: brands, velocity: -1.5 },
-                { text: [...partners, ...brands], velocity: 2.5 },
+                {
+                  logos: [
+                    { name: 'Autodesk', icon: <LogoSVGs.Autodesk /> },
+                    { name: 'Microsoft', icon: <LogoSVGs.Microsoft /> },
+                    { name: 'Google', icon: <LogoSVGs.Google /> },
+                    { name: 'AWS', icon: <LogoSVGs.AWS /> },
+                    { name: 'Oracle', icon: <LogoSVGs.Oracle /> },
+                    { name: 'SAP', icon: <LogoSVGs.SAP /> },
+                    { name: 'IBM', icon: <LogoSVGs.IBM /> },
+                    { name: 'Adobe', icon: <LogoSVGs.Adobe /> },
+                  ],
+                  speed: 25,
+                  direction: 'left',
+                },
+                {
+                  logos: [
+                    { name: 'Vingroup', icon: <LogoSVGs.Vingroup /> },
+                    { name: 'Hòa Phát', icon: <LogoSVGs.HoaPhat /> },
+                    { name: 'Coteccons', icon: <LogoSVGs.Coteccons /> },
+                    { name: 'Vinaconex', icon: <LogoSVGs.Vinaconex /> },
+                    { name: 'Hưng Thịnh', icon: <LogoSVGs.HungThinh /> },
+                    { name: 'Novaland', icon: <LogoSVGs.Novaland /> },
+                    { name: 'FPT', icon: <LogoSVGs.FPT /> },
+                    { name: 'VNPT', icon: <LogoSVGs.VNPT /> },
+                  ],
+                  speed: 30,
+                  direction: 'right',
+                },
               ]}
             />
           </section>
