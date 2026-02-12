@@ -290,7 +290,7 @@ export function getResourceTimings() {
   return summary;
 }
 
-export default {
+const performanceMonitoring = {
   init: initPerformanceMonitoring,
   getSummary: getPerformanceSummary,
   clear: clearPerformanceData,
@@ -300,3 +300,5 @@ export default {
   monitorMemory,
   getResourceTimings,
 };
+
+export default performanceMonitoring;

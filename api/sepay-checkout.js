@@ -73,10 +73,10 @@ module.exports = async (req, res) => {
       formFields: checkoutFormfields,
     });
   } catch (err) {
-    // Không log message lỗi chi tiết có thể chứa thông tin nhạy cảm
     console.error('[SePay Checkout] Error');
+    // Không trả err.message ra client (tránh lộ cấu hình / stack)
     return res.status(500).json({
-      error: err.message || 'Lỗi tạo phiên thanh toán SePay',
+      error: 'Lỗi tạo phiên thanh toán SePay',
     });
   }
 };

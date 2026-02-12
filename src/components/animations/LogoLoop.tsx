@@ -30,9 +30,9 @@ export function LogoLoop({
   const duplicatedLogos = [...logos, ...logos, ...logos];
 
   return (
-    <div className={`relative w-full overflow-hidden ${className}`}>
-      <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-black to-transparent z-10" />
-      <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-black to-transparent z-10" />
+    <div className={`relative w-full overflow-hidden py-2 ${className}`}>
+      <div className="absolute inset-y-0 left-0 w-16 md:w-24 bg-gradient-to-r from-black via-black/80 to-transparent z-10 pointer-events-none" />
+      <div className="absolute inset-y-0 right-0 w-16 md:w-24 bg-gradient-to-l from-black via-black/80 to-transparent z-10 pointer-events-none" />
 
       <motion.div
         className="flex gap-12 items-center"

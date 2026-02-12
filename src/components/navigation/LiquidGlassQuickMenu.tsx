@@ -10,18 +10,14 @@ import {
   Upload,
   MessageCircle,
   BookOpen,
-  Users,
-  Settings,
   HelpCircle,
-  FileText,
   ShoppingBag,
   Phone,
   Mail,
 } from 'lucide-react';
-import { useAuth } from '../../contexts/UnifiedAuthContext';
-import { ComponentWithIcon } from '../../types/common';
 
-interface QuickAction extends ComponentWithIcon {
+interface QuickAction {
+  icon: React.ComponentType<{ className?: string }>;
   label: string;
   href?: string;
   onClick?: () => void;
@@ -31,7 +27,6 @@ interface QuickAction extends ComponentWithIcon {
 
 export default function LiquidGlassQuickMenu() {
   const [isOpen, setIsOpen] = useState(false);
-  const { userProfile } = useAuth();
 
   const quickActions: QuickAction[] = [
     {
@@ -96,155 +91,55 @@ export default function LiquidGlassQuickMenu() {
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
-      {/* Quick Actions */}
+      {/* Quick Actions - dropdown đơn giản, đủ rộng để không bị cắt chữ */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute bottom-20 right-0 space-y-3"
+            transition={{ duration: 0.15 }}
+            className="absolute bottom-20 right-0 space-y-2"
           >
             {quickActions.map((action, index) => (
               <motion.button
                 key={action.label}
-                initial={{ scale: 0, x: 20 }}
-                animate={{ scale: 1, x: 0 }}
-                exit={{ scale: 0, x: 20 }}
-                transition={{
-                  type: "spring",
-                  stiffness: 500,
-                  damping: 30,
-                  delay: index * 0.1,
-                }}
-                whileHover={{ scale: 1.05, x: -5 }}
-                whileTap={{ scale: 0.95 }}
+                initial={{ opacity: 0, x: 8 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 8 }}
+                transition={{ duration: 0.15, delay: index * 0.03 }}
                 onClick={() => handleActionClick(action)}
-                className={`group relative flex items-center gap-3 p-4 rounded-2xl ${action.bgColor} backdrop-blur-md border border-white/30 shadow-soft hover:shadow-medium transition-all duration-300 min-w-52 hover:scale-105 active:scale-95`}
+                className={`flex items-center gap-3 rounded-xl px-4 py-3 min-w-[220px] w-max ${action.bgColor} border border-white/30 shadow-md hover:shadow-lg transition-shadow duration-200`}
               >
-                <div className={`p-3 rounded-xl bg-white/40 backdrop-blur-sm ${action.color} shadow-soft`}>
+                <div className={`flex-shrink-0 p-2 rounded-lg bg-white/50 ${action.color}`}>
                   <action.icon className="w-5 h-5" />
                 </div>
-                <span className="font-semibold text-gray-800 text-sm">
+                <span className="font-medium text-gray-800 text-sm whitespace-nowrap">
                   {action.label}
                 </span>
-
-                {/* Enhanced glass reflection effect */}
-                <motion.div
-                  className="absolute inset-0 rounded-2xl bg-gradient-to-r from-white/30 via-white/10 to-transparent"
-                  initial={{ scale: 0, opacity: 0, rotate: -45 }}
-                  whileHover={{ scale: 1.1, opacity: 1, rotate: 0 }}
-                  transition={{ duration: 0.4, ease: "easeOut" }}
-                />
-
-                {/* Subtle glow effect */}
-                <motion.div
-                  className="absolute -inset-1 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  style={{
-                    background: `linear-gradient(45deg, ${action.color.replace('text-', '').replace('-700', '-200')}, transparent)`,
-                    filter: 'blur(8px)',
-                    zIndex: -1,
-                  }}
-                />
               </motion.button>
             ))}
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Enhanced Main FAB Button */}
+      {/* Nút FAB chính - đơn giản, ít animation để giảm lag */}
       <motion.button
-        whileHover={{ scale: 1.1, rotate: isOpen ? 0 : 10 }}
-        whileTap={{ scale: 0.9 }}
+        whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="relative w-16 h-16 rounded-full shadow-strong hover:shadow-glow transition-all duration-300 overflow-hidden group"
+        className="relative w-14 h-14 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-200 flex items-center justify-center"
         style={{
           background: isOpen
-            ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%)'
-            : 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 50%, #1e40af 100%)',
-          backdropFilter: 'blur(20px)',
-          border: '2px solid rgba(255, 255, 255, 0.2)',
+            ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
+            : 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+          border: '2px solid rgba(255, 255, 255, 0.25)',
         }}
       >
-        {/* Animated Icons with enhanced transitions */}
-        <motion.div
-          animate={{
-            rotate: isOpen ? 45 : 0,
-            scale: isOpen ? 1.1 : 1
-          }}
-          transition={{
-            type: "spring",
-            stiffness: 300,
-            damping: 25,
-            duration: 0.3
-          }}
-          className="absolute inset-0 flex items-center justify-center"
-        >
-          <motion.div
-            animate={{ opacity: isOpen ? 0 : 1 }}
-            transition={{ duration: 0.2 }}
-            className="absolute"
-          >
-            <Plus className="w-7 h-7 text-white" />
-          </motion.div>
-          <motion.div
-            animate={{ opacity: isOpen ? 1 : 0 }}
-            transition={{ duration: 0.2 }}
-            className="absolute"
-          >
-            <X className="w-7 h-7 text-white" />
-          </motion.div>
-        </motion.div>
-
-        {/* Enhanced liquid ripple effect */}
-        <motion.div
-          className="absolute inset-0 rounded-full bg-gradient-to-r from-white/40 via-white/20 to-transparent"
-          initial={{ scale: 0, opacity: 0, rotate: -90 }}
-          whileHover={{ scale: 1.3, opacity: 1, rotate: 90 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-        />
-
-        {/* Pulse animation with improved timing */}
-        {!isOpen && (
-          <>
-            <motion.div
-              className="absolute inset-0 rounded-full border-2 border-blue-300/60"
-              animate={{
-                scale: [1, 1.6, 1],
-                opacity: [0.8, 0, 0.8],
-              }}
-              transition={{
-                duration: 2.5,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: 0,
-              }}
-            />
-            <motion.div
-              className="absolute inset-0 rounded-full border border-blue-200/40"
-              animate={{
-                scale: [1, 1.8, 1],
-                opacity: [0.6, 0, 0.6],
-              }}
-              transition={{
-                duration: 2.5,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: 0.5,
-              }}
-            />
-          </>
+        {isOpen ? (
+          <X className="w-6 h-6 text-white" />
+        ) : (
+          <Plus className="w-6 h-6 text-white" />
         )}
-
-        {/* Subtle inner glow */}
-        <motion.div
-          className="absolute inset-1 rounded-full opacity-50 group-hover:opacity-70 transition-opacity duration-300"
-          style={{
-            background: isOpen
-              ? 'radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%)'
-              : 'radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%)',
-          }}
-        />
       </motion.button>
 
       {/* Backdrop for mobile */}

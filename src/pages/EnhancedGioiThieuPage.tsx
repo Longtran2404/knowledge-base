@@ -267,8 +267,8 @@ export default function EnhancedGioiThieuPage() {
             </div>
           </section>
 
-          {/* Partners & Brands Logo Loop */}
-          <section className="py-20 relative overflow-hidden w-full">
+          {/* Partners & Brands Logo Loop - có padding để chữ logo không bị cắt */}
+          <section className="py-20 relative w-full">
             <div className="container mx-auto px-4 mb-16">
               <ScrollGradualBlur>
                 <h2 className="text-4xl md:text-6xl font-bold text-center mb-6 bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent">
@@ -280,6 +280,7 @@ export default function EnhancedGioiThieuPage() {
               </ScrollGradualBlur>
             </div>
 
+            <div className="overflow-hidden px-4 md:px-8">
             <LogoLoopMulti
               rows={[
                 {
@@ -312,6 +313,7 @@ export default function EnhancedGioiThieuPage() {
                 },
               ]}
             />
+            </div>
           </section>
 
           {/* CTA Section */}
