@@ -53,7 +53,25 @@ SePay gửi thông báo khi có giao dịch thanh toán thành công tới **IPN
 
 ---
 
-## 4. Tóm tắt
+## 4. Sau khi deploy lên Vercel – Bật bảo mật (Merchant ID & Secret Key)
 
-- **Khoá thông tin:** Chỉ dùng env server, không REACT_APP_ cho secret, không commit `.env`.
-- **IPN từng trang web:** Cấu hình một IPN URL cho từng domain/môi trường (local qua ngrok, staging, production) trong dashboard SePay và dùng đúng URL tương ứng.
+1. **Deploy:** Nếu chưa deploy, chạy `vercel login` rồi `vercel --prod`, hoặc kết nối repo GitHub trong [vercel.com](https://vercel.com) → New Project → Import.
+2. **Thêm biến môi trường (tuyệt mật):**
+   - Vào Vercel → Project → **Settings** → **Environment Variables**.
+   - Thêm:
+     - `SEPAY_MERCHANT_ID` = MERCHANT ID (ví dụ `SP-TEST-TM7B444B` cho sandbox).
+     - `SEPAY_SECRET_KEY` = SECRET KEY (ví dụ bắt đầu `spsk_test_...` cho sandbox).
+   - Chọn môi trường: Production, Preview, Development (ít nhất chọn Production).
+   - **Lưu** rồi **Redeploy** để áp dụng.
+3. **IPN URL để gửi test:** Sau khi deploy, URL trang sẽ dạng `https://<tên-project>.vercel.app`. Trong SePay > Cấu hình IPN nhận thông báo, nhập:
+   ```text
+   https://<tên-project>.vercel.app/api/sepay-ipn
+   ```
+   Bấm **Lưu lại**, sau đó bấm **Gửi test** để kiểm tra.
+
+---
+
+## 5. Tóm tắt
+
+- **Khoá thông tin:** Chỉ dùng env server (Vercel Environment Variables), không REACT_APP_ cho secret, không commit `.env`.
+- **IPN từng trang web:** Cấu hình một IPN URL cho từng domain/môi trường (Vercel URL, staging, production) trong dashboard SePay và dùng đúng URL tương ứng.
