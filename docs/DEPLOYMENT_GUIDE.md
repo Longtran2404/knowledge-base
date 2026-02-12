@@ -6,7 +6,7 @@ Hướng dẫn deploy dự án Knowledge Base lên Vercel với GitHub integrati
 
 ## 🔗 GitHub Repository
 
-- **Repository**: https://github.com/Longtran2404/nam-long-center
+- **Repository**: https://github.com/Longtran2404/knowledge-base
 - **Branch**: main
 - **Framework**: Create React App (CRA)
 
@@ -20,7 +20,7 @@ Hướng dẫn deploy dự án Knowledge Base lên Vercel với GitHub integrati
 
 ### Bước 2: Import từ GitHub
 
-1. Tìm repository `nam-long-center` trong danh sách
+1. Tìm repository `knowledge-base` trong danh sách
 2. Click "Import" để bắt đầu deploy
 3. Vercel sẽ tự động detect Create React App
 

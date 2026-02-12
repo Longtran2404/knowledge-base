@@ -1,5 +1,5 @@
 -- =====================================================
--- NAM LONG CENTER - PRODUCTION DATABASE SETUP
+-- KNOWLEDGE BASE - PRODUCTION DATABASE SETUP
 -- File duy nhất để setup database hoàn chỉnh
 -- =====================================================
 
@@ -656,5 +656,5 @@ ORDER BY table_name;
 
 -- Success message cuối cùng
 SELECT
-    '✅ NAM LONG CENTER DATABASE IS READY FOR PRODUCTION! ✅' as final_message,
+    '✅ KNOWLEDGE BASE DATABASE IS READY FOR PRODUCTION! ✅' as final_message,
     '7 tables, indexes, triggers, sample data - everything is set up correctly!' as description;

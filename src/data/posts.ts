@@ -3,7 +3,7 @@ import { Post } from "../types/post";
 export const postsData: Post[] = [
   {
     id: "post-01",
-    slug: "nam-long-center-ra-mat",
+    slug: "knowledge-base-ra-mat",
     title: "Knowledge Base chính thức ra mắt",
     excerpt:
       "Nền tảng học thuật & automation hàng đầu dành cho kỹ sư xây dựng Việt Nam. Khám phá hành trình mới trong giáo dục công nghệ xây dựng.",

@@ -9,7 +9,7 @@
 ### Tables hiện có (5/14):
 - ✅ products
 - ✅ user_activities
-- ✅ account_nam_long_center
+- ✅ account_nam_long_center (tên bảng giữ nguyên cho tương thích)
 - ✅ nlc_courses
 - ✅ nlc_payment_transactions
 

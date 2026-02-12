@@ -114,6 +114,6 @@ export default defineConfig({
   /* Metadata */
   metadata: {
     'test-type': 'e2e',
-    'app-name': 'Nam Long Center',
+    'app-name': 'Knowledge Base',
   },
 });

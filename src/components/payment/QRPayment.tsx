@@ -33,7 +33,7 @@ interface BankInfo {
 const BANK_INFO: BankInfo = {
   bankName: 'Vietcombank',
   accountNumber: '1234567890',
-  accountName: 'NGUYEN VAN NAM LONG',
+  accountName: 'Knowledge Base',
   swiftCode: 'BFTVVNVX',
 };
 

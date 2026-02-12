@@ -45,21 +45,21 @@ const bankAccounts: BankAccount[] = [
     bankName: 'Vietcombank',
     bankCode: 'VCB',
     accountNumber: '1234567890',
-    accountName: 'CONG TY NAM LONG CENTER',
+    accountName: 'CONG TY KNOWLEDGE BASE',
     color: 'bg-green-600'
   },
   {
     bankName: 'Techcombank',
     bankCode: 'TCB',
     accountNumber: '9876543210',
-    accountName: 'CONG TY NAM LONG CENTER',
+    accountName: 'CONG TY KNOWLEDGE BASE',
     color: 'bg-blue-600'
   },
   {
     bankName: 'BIDV',
     bankCode: 'BIDV',
     accountNumber: '5555666677',
-    accountName: 'CONG TY NAM LONG CENTER',
+    accountName: 'CONG TY KNOWLEDGE BASE',
     color: 'bg-yellow-600'
   }
 ];

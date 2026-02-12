@@ -218,7 +218,7 @@ Chỉnh sửa file `src/components/payment/QRPayment.tsx`:
 const BANK_INFO: BankInfo = {
   bankName: 'Vietcombank',           // Tên ngân hàng
   accountNumber: '1234567890',       // Số tài khoản
-  accountName: 'NGUYEN VAN NAM LONG', // Tên tài khoản
+  accountName: 'Knowledge Base', // Tên tài khoản / công ty
   swiftCode: 'BFTVVNVX',            // Mã SWIFT (tùy chọn)
 };
 ```
