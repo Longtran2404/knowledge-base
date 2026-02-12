@@ -1,7 +1,7 @@
 {
-  "name": "Nam Long Center",
-  "short_name": "Nam Long Center",
-  "description": "Trung tâm đào tạo và phát triển kỹ năng",
+  "name": "Knowledge Base",
+  "short_name": "Knowledge Base",
+  "description": "Nền tảng giáo dục và workflow marketplace",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

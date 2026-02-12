@@ -20,7 +20,7 @@ Hệ thống mới cần các bảng sau để hoạt động:
 ### Bước 1: Truy cập Supabase Dashboard
 1. Mở browser và vào: https://app.supabase.com
 2. Đăng nhập với tài khoản của bạn
-3. Chọn project: **Nam Long Center**
+3. Chọn project: **Knowledge Base**
 
 ### Bước 2: Mở SQL Editor
 1. Ở menu bên trái, click **SQL Editor**

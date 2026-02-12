@@ -46,7 +46,7 @@ export default function PrivacyPolicyPage() {
                 Chính sách bảo mật
               </h1>
               <p className="text-gray-600">
-                Nam Long Center - Cập nhật lần cuối:{" "}
+                Knowledge Base - Cập nhật lần cuối:{" "}
                 {new Date().toLocaleDateString("vi-VN")}
               </p>
             </div>
@@ -72,14 +72,14 @@ export default function PrivacyPolicyPage() {
               </h2>
               <div className="prose prose-gray max-w-none">
                 <p className="text-gray-700 leading-relaxed">
-                  Nam Long Center ("chúng tôi", "công ty", "trung tâm") cam kết
+                  Knowledge Base ("chúng tôi", "công ty", "trung tâm") cam kết
                   bảo vệ quyền riêng tư và thông tin cá nhân của người dùng.
                   Chính sách bảo mật này giải thích cách chúng tôi thu thập, sử
                   dụng, lưu trữ và bảo vệ thông tin cá nhân của bạn khi sử dụng
                   dịch vụ của chúng tôi.
                 </p>
                 <p className="text-gray-700 leading-relaxed mt-4">
-                  Bằng việc sử dụng dịch vụ của Nam Long Center, bạn đồng ý với
+                  Bằng việc sử dụng dịch vụ của Knowledge Base, bạn đồng ý với
                   việc thu thập và sử dụng thông tin theo chính sách này. Nếu
                   bạn không đồng ý với bất kỳ phần nào của chính sách này, vui
                   lòng không sử dụng dịch vụ của chúng tôi.
@@ -308,7 +308,7 @@ export default function PrivacyPolicyPage() {
                     <div className="flex items-center gap-3">
                       <Mail className="h-5 w-5 text-blue-600" />
                       <span className="text-gray-700">
-                        info@namlongcenter.com
+                        info@knowledgebase.com
                       </span>
                     </div>
                     <div className="flex items-center gap-3">

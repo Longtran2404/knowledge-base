@@ -99,7 +99,7 @@ export const supabase: SupabaseClient<Database> = createClient(
     },
     global: {
       headers: {
-        "X-Client-Info": "namlongcenter@1.0.0",
+        "X-Client-Info": "knowledge-base@1.0.0",
         "X-Client-Version": "1.0.0",
       },
     },
@@ -766,7 +766,7 @@ export type Course = Database["public"]["Tables"]["courses"]["Row"];
 export type BlogPost = Database["public"]["Tables"]["blog_posts"]["Row"];
 export type UserCourse = Database["public"]["Tables"]["user_courses"]["Row"];
 export type Purchase = Database["public"]["Tables"]["purchases"]["Row"];
-export type AccountNamLongCenter =
+export type AccountKnowledgeBase =
   Database["public"]["Tables"]["account_nam_long_center"]["Row"];
 export type Manager = Database["public"]["Tables"]["managers"]["Row"];
 export type ManagerApproval =

@@ -141,7 +141,7 @@ USING (bucket_id = 'workflow-thumbnails');
 1. Email Services → Add New Service
 2. Chọn **Gmail**
 3. Connect account: `tranminhlong2404@gmail.com`
-4. Copy **Service ID**: `service_namlongcenter`
+4. Copy **Service ID**: `service_knowledgebase`
 
 ### 3.3. Create Email Templates
 
@@ -189,7 +189,7 @@ Subject: 🎉 Workflow {{workflow_name}} đã sẵn sàng tải về!
 
 Vào **Account → API Keys**, copy:
 - Public Key: `YOUR_PUBLIC_KEY`
-- Service ID: `service_namlongcenter`
+- Service ID: `service_knowledgebase`
 
 ---
 
@@ -202,7 +202,7 @@ Thêm vào `.env`:
 VITE_GEMINI_API_KEY=YOUR_NEW_GEMINI_KEY_HERE
 
 # EmailJS (Already configured for auth)
-VITE_EMAILJS_SERVICE_ID=service_namlongcenter
+VITE_EMAILJS_SERVICE_ID=service_knowledgebase
 VITE_EMAILJS_PUBLIC_KEY=YOUR_EMAILJS_PUBLIC_KEY
 VITE_EMAILJS_TEMPLATE_ADMIN=workflow_admin_notification
 VITE_EMAILJS_TEMPLATE_BUYER=workflow_buyer_files

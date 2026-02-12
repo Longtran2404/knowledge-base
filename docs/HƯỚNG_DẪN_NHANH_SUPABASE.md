@@ -20,7 +20,7 @@
 
 3. **Tạo project:**
    ```
-   Name: Nam Long Center
+   Name: Knowledge Base
    Database Password: [TẠO PASSWORD MẠNH - GHI LẠI!]
    Region: Southeast Asia (Singapore)
    ```

@@ -150,7 +150,7 @@ export default function HomePage() {
             {/* Title with BlurText */}
             <div className="mb-6">
               <BlurTextWords
-                text="Nam Long Center"
+                text="Knowledge Base"
                 className="text-6xl md:text-8xl font-bold mb-4"
                 wordClassName="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent"
                 variant="blur-slide"
@@ -239,7 +239,7 @@ export default function HomePage() {
               Tại sao chọn chúng tôi
             </motion.div>
             <BlurTextWords
-              text="Tại sao chọn Nam Long Center?"
+              text="Tại sao chọn Knowledge Base?"
               className="text-4xl md:text-6xl font-bold mb-6"
               wordClassName="text-white"
               variant="blur-in"
@@ -347,7 +347,7 @@ export default function HomePage() {
               />
 
               <BlurText
-                text="Tham gia cộng đồng Nam Long Center ngay hôm nay để nâng cao kỹ năng và kết nối với các chuyên gia hàng đầu"
+                text="Tham gia cộng đồng Knowledge Base ngay hôm nay để nâng cao kỹ năng và kết nối với các chuyên gia hàng đầu"
                 className="text-xl text-gray-300 mb-8"
                 delay={0.3}
               />

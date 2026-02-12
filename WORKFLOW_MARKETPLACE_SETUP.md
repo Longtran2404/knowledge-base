@@ -168,7 +168,7 @@ USING (bucket_id = 'workflow-thumbnails');
 1. Vào **Email Services** → **Add New Service**
 2. Chọn **Gmail**
 3. **Connect Account**: Đăng nhập Gmail của bạn
-4. Copy **Service ID** (ví dụ: `service_namlongcenter`)
+4. Copy **Service ID** (ví dụ: `service_knowledgebase`)
 
 ### 3.3. Tạo 2 Email Templates
 
@@ -188,7 +188,7 @@ USING (bucket_id = 'workflow-thumbnails');
 <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
   <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 10px; color: white;">
     <h1 style="margin: 0;">🔔 Thông báo thanh toán mới</h1>
-    <p style="margin: 5px 0 0 0; opacity: 0.9;">Nam Long Center - Workflow Marketplace</p>
+    <p style="margin: 5px 0 0 0; opacity: 0.9;">Knowledge Base - Workflow Marketplace</p>
   </div>
 
   <div style="background: #f8f9fa; padding: 30px; border-radius: 10px; margin-top: 20px;">
@@ -244,7 +244,7 @@ USING (bucket_id = 'workflow-thumbnails');
   </div>
 
   <div style="text-align: center; margin-top: 20px; color: #666; font-size: 12px;">
-    <p>Email này được gửi tự động từ hệ thống Nam Long Center</p>
+    <p>Email này được gửi tự động từ hệ thống Knowledge Base</p>
   </div>
 </body>
 </html>
@@ -277,7 +277,7 @@ USING (bucket_id = 'workflow-thumbnails');
 <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
   <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 10px; color: white;">
     <h1 style="margin: 0;">🎉 Thanh toán thành công!</h1>
-    <p style="margin: 5px 0 0 0; opacity: 0.9;">Nam Long Center - Workflow Marketplace</p>
+    <p style="margin: 5px 0 0 0; opacity: 0.9;">Knowledge Base - Workflow Marketplace</p>
   </div>
 
   <div style="background: #f8f9fa; padding: 30px; border-radius: 10px; margin-top: 20px;">
@@ -332,7 +332,7 @@ USING (bucket_id = 'workflow-thumbnails');
   </div>
 
   <div style="text-align: center; margin-top: 20px; color: #666; font-size: 12px;">
-    <p>Cảm ơn bạn đã tin tưởng và sử dụng dịch vụ của Nam Long Center! 🙏</p>
+    <p>Cảm ơn bạn đã tin tưởng và sử dụng dịch vụ của Knowledge Base! 🙏</p>
   </div>
 </body>
 </html>
@@ -354,7 +354,7 @@ USING (bucket_id = 'workflow-thumbnails');
 
 1. Vào **Account** → **API Keys**
 2. Copy:
-   - **Service ID**: `service_namlongcenter`
+   - **Service ID**: `service_knowledgebase`
    - **Public Key**: `YOUR_PUBLIC_KEY`
    - **Template IDs**:
      - Admin Notification: `workflow_admin_notification`
@@ -368,7 +368,7 @@ Thêm vào file `.env`:
 
 ```bash
 # EmailJS Configuration (đã có sẵn nếu đã setup auth email)
-VITE_EMAILJS_SERVICE_ID=service_namlongcenter
+VITE_EMAILJS_SERVICE_ID=service_knowledgebase
 VITE_EMAILJS_PUBLIC_KEY=YOUR_PUBLIC_KEY_HERE
 
 # Workflow Marketplace Email Templates

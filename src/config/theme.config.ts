@@ -1,6 +1,6 @@
 /**
  * Unified Theme Configuration
- * Light mode liquid glass theme for Nam Long Center
+ * Light mode liquid glass theme for Knowledge Base
  */
 
 export const theme = {

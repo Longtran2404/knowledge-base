@@ -75,7 +75,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   private handleReportError = () => {
     const { error, errorInfo } = this.state;
-    const subject = encodeURIComponent('Error Report - Nam Long Center');
+    const subject = encodeURIComponent('Error Report - Knowledge Base');
     const body = encodeURIComponent(`
 Error: ${error?.message || 'Unknown error'}
 

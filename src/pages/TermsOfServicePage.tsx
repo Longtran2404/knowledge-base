@@ -44,7 +44,7 @@ export default function TermsOfServicePage() {
                 Điều khoản sử dụng
               </h1>
               <p className="text-gray-600">
-                Nam Long Center - Cập nhật lần cuối:{" "}
+                Knowledge Base - Cập nhật lần cuối:{" "}
                 {new Date().toLocaleDateString("vi-VN")}
               </p>
             </div>
@@ -57,7 +57,7 @@ export default function TermsOfServicePage() {
               Điều khoản và điều kiện sử dụng dịch vụ
             </CardTitle>
             <CardDescription className="text-center">
-              Quy định sử dụng dịch vụ đào tạo trực tuyến của Nam Long Center
+              Quy định sử dụng dịch vụ đào tạo trực tuyến của Knowledge Base
             </CardDescription>
           </CardHeader>
 
@@ -70,7 +70,7 @@ export default function TermsOfServicePage() {
               </h2>
               <div className="prose prose-gray max-w-none">
                 <p className="text-gray-700 leading-relaxed">
-                  Chào mừng bạn đến với Nam Long Center ("chúng tôi", "công ty",
+                  Chào mừng bạn đến với Knowledge Base ("chúng tôi", "công ty",
                   "trung tâm"). Điều khoản sử dụng này ("Điều khoản") quy định
                   việc sử dụng dịch vụ đào tạo trực tuyến của chúng tôi.
                 </p>
@@ -216,7 +216,7 @@ export default function TermsOfServicePage() {
                   5.1. Quyền sở hữu
                 </h3>
                 <p className="text-blue-800 mb-3">
-                  Tất cả nội dung trên nền tảng Nam Long Center, bao gồm nhưng
+                  Tất cả nội dung trên nền tảng Knowledge Base, bao gồm nhưng
                   không giới hạn:
                 </p>
                 <ul className="list-disc list-inside text-blue-800 space-y-1">
@@ -227,7 +227,7 @@ export default function TermsOfServicePage() {
                   <li>Cơ sở dữ liệu và thuật toán</li>
                 </ul>
                 <p className="text-blue-800 mt-3">
-                  Đều thuộc sở hữu của Nam Long Center hoặc được cấp phép sử
+                  Đều thuộc sở hữu của Knowledge Base hoặc được cấp phép sử
                   dụng. Bạn không được sao chép, phân phối, hoặc sử dụng cho mục
                   đích thương mại mà không có sự đồng ý bằng văn bản.
                 </p>
@@ -364,7 +364,7 @@ export default function TermsOfServicePage() {
               </h2>
               <div className="bg-gray-50 p-4 rounded-lg">
                 <p className="text-gray-700">
-                  Trong mọi trường hợp, trách nhiệm của Nam Long Center không
+                  Trong mọi trường hợp, trách nhiệm của Knowledge Base không
                   vượt quá số tiền bạn đã thanh toán cho dịch vụ trong 12 tháng
                   trước khi xảy ra sự kiện gây thiệt hại.
                 </p>
@@ -402,7 +402,7 @@ export default function TermsOfServicePage() {
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <p className="text-gray-700">
-                      <strong>Email:</strong> info@namlongcenter.com
+                      <strong>Email:</strong> info@knowledgebase.com
                     </p>
                     <p className="text-gray-700">
                       <strong>Điện thoại:</strong> 0123 456 789

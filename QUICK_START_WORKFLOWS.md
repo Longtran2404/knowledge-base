@@ -29,7 +29,7 @@ Supabase Dashboard → Storage → Create:
 ### 4️⃣ Environment (.env)
 ```bash
 VITE_GEMINI_API_KEY=your_new_key
-VITE_EMAILJS_SERVICE_ID=service_namlongcenter
+VITE_EMAILJS_SERVICE_ID=service_knowledgebase
 VITE_EMAILJS_PUBLIC_KEY=your_key
 ```
 

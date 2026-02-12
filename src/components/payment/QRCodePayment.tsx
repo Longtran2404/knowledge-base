@@ -391,7 +391,7 @@ export const QRCodePayment: React.FC<QRCodePaymentProps> = ({
             </div>
             <div className="space-y-1">
               <div className="font-medium">Email</div>
-              <div className="text-blue-600">support@namlongcenter.com</div>
+              <div className="text-blue-600">support@knowledgebase.com</div>
             </div>
             <div className="space-y-1">
               <div className="font-medium">Chat</div>

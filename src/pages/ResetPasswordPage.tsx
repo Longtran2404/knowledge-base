@@ -267,7 +267,7 @@ export default function ResetPasswordPage() {
             <CardTitle className="text-2xl font-bold text-gray-900">
               Đặt lại mật khẩu
             </CardTitle>
-            <CardDescription>Nam Long Center</CardDescription>
+            <CardDescription>Knowledge Base</CardDescription>
           </CardHeader>
           <CardContent>{renderContent()}</CardContent>
         </Card>
@@ -276,10 +276,10 @@ export default function ResetPasswordPage() {
           <p className="text-sm text-gray-600">
             Cần hỗ trợ? Liên hệ{" "}
             <a
-              href="mailto:info@namlongcenter.com"
+              href="mailto:info@knowledgebase.com"
               className="text-blue-600 hover:underline"
             >
-              info@namlongcenter.com
+              info@knowledgebase.com
             </a>
           </p>
         </div>

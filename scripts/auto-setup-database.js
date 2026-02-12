@@ -13,7 +13,7 @@ require('dotenv').config();
 const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL || 'https://byidgbgvnrfhujprzzge.supabase.co';
 const SERVICE_ROLE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5aWRnYmd2bnJmaHVqcHJ6emdlIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MjUyNDEyMCwiZXhwIjoyMDU4MTAwMTIwfQ.bzSL7yQ91iztmvnyVymih7fUH9MOZCMcnCuaXEzqaKE';
 
-console.log('🚀 Auto Setup Database for Nam Long Center\n');
+console.log('🚀 Auto Setup Database for Knowledge Base\n');
 console.log('📍 Project URL:', SUPABASE_URL);
 console.log('📍 Using service_role key for admin access\n');
 

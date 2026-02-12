@@ -1,12 +1,12 @@
 /**
- * React Hook for Nam Long Center Real-time Features
+ * React Hook for Knowledge Base Real-time Features
  * Provides easy-to-use hooks for real-time subscriptions
  */
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useAuth } from "../contexts/UnifiedAuthContext";
 import {
-  nlcRealtime,
+  kbRealtime,
   subscribeToUserData,
   subscribeToAdminData,
   type RealtimeEvent,
@@ -14,7 +14,7 @@ import {
   type EnrollmentHandler,
   type ApprovalHandler,
   type ActivityHandler,
-} from "../lib/realtime/nlc-realtime";
+} from "../lib/realtime/kb-realtime";
 import type {
   NLCNotification,
   NLCEnrollment,
@@ -74,7 +74,7 @@ export function useNotifications() {
     setIsLoading(true);
 
     // Subscribe to real-time updates
-    unsubscribeRef.current = nlcRealtime.subscribeToUserNotifications(
+    unsubscribeRef.current = kbRealtime.subscribeToUserNotifications(
       userProfile.user_id,
       handleNotification
     );
@@ -137,7 +137,7 @@ export function useEnrollments() {
 
     setIsLoading(true);
 
-    unsubscribeRef.current = nlcRealtime.subscribeToUserEnrollments(
+    unsubscribeRef.current = kbRealtime.subscribeToUserEnrollments(
       userProfile.user_id,
       handleEnrollment
     );
@@ -256,8 +256,8 @@ export function useRealtimeStatus() {
 
   useEffect(() => {
     const checkStatus = () => {
-      setIsConnected(nlcRealtime.getConnectionStatus());
-      setSubscriptionCount(nlcRealtime.getActiveSubscriptionsCount());
+      setIsConnected(kbRealtime.getConnectionStatus());
+      setSubscriptionCount(kbRealtime.getActiveSubscriptionsCount());
     };
 
     // Check status initially
@@ -272,7 +272,7 @@ export function useRealtimeStatus() {
   return {
     isConnected,
     subscriptionCount,
-    details: nlcRealtime.getSubscriptionDetails(),
+    details: kbRealtime.getSubscriptionDetails(),
   };
 }
 

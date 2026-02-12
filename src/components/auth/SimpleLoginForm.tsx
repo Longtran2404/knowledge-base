@@ -63,7 +63,7 @@ export default function SimpleLoginForm() {
               {mode === 'login' ? 'Đăng nhập' : 'Đăng ký'}
             </h1>
             <p className="text-slate-400">
-              Nam Long Center
+              Knowledge Base
             </p>
           </div>
 

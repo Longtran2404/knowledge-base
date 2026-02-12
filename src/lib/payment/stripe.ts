@@ -183,7 +183,7 @@ export class CommissionService {
       id: `comm_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       orderId,
       partnerId,
-      platformId: "namlong_platform",
+      platformId: "kb_platform",
       grossAmount: commission.grossAmount,
       platformCommission: commission.platformCommission,
       partnerCommission: commission.partnerCommission,

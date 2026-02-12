@@ -149,7 +149,7 @@ const ProductsPage: React.FC = () => {
               Sản phẩm & <span className="text-blue-600">Khóa học</span>
             </h1>
             <p className="text-xl text-gray-400 max-w-3xl mx-auto mb-8 leading-relaxed">
-              Khám phá các khóa học BIM, AutoCAD và sản phẩm chất lượng cao từ Nam Long Center
+              Khám phá các khóa học BIM, AutoCAD và sản phẩm chất lượng cao từ Knowledge Base
             </p>
           </div>
         </section>

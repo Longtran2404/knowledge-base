@@ -170,7 +170,7 @@ FROM nlc_transactions;
 EXISTS (
   SELECT 1 FROM nlc_accounts
   WHERE id = auth.uid()
-  AND (email LIKE '%@admin.namlongcenter.com' OR role = 'admin')
+  AND (email LIKE '%@admin.knowledgebase.com' OR role = 'admin')
 )
 ```
 
@@ -183,7 +183,7 @@ EXISTS (
 supabase db push
 
 # Or manually execute the SQL file
-psql -U postgres -d namlongcenter < supabase/migrations/create_transactions_table.sql
+psql -U postgres -d knowledgebase < supabase/migrations/create_transactions_table.sql
 ```
 
 ### Bước 2: Cấu hình Supabase Storage
@@ -226,7 +226,7 @@ const BANK_INFO: BankInfo = {
 ### Bước 4: Cấu hình admin role
 
 **Option 1: Email domain**
-Admin email phải có domain `@admin.namlongcenter.com`
+Admin email phải có domain `@admin.knowledgebase.com`
 
 **Option 2: Role field**
 Update role trong database:
@@ -405,7 +405,7 @@ Empty transaction list for admin
 ```
 **Giải pháp:**
 1. Kiểm tra role = 'admin' trong `nlc_accounts`
-2. Hoặc email phải có domain `@admin.namlongcenter.com`
+2. Hoặc email phải có domain `@admin.knowledgebase.com`
 
 ### QR Code không hiển thị
 ```
@@ -441,4 +441,4 @@ Nếu cần hỗ trợ:
 1. Check logs trong Supabase Dashboard
 2. Review RLS policies trong SQL Editor
 3. Test với Postman/Thunder Client
-4. Contact: admin@namlongcenter.com
+4. Contact: admin@knowledgebase.com

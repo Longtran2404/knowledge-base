@@ -223,7 +223,7 @@ class AuthPersistenceService {
   private async saveToIndexedDB(authData: StoredAuthData): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        const request = indexedDB.open('NamLongCenterAuth', 1);
+        const request = indexedDB.open('KBAuth', 1);
 
         request.onerror = () => {
           console.warn('IndexedDB open failed');
@@ -285,7 +285,7 @@ class AuthPersistenceService {
   private async getFromIndexedDB(): Promise<StoredAuthData | null> {
     return new Promise((resolve) => {
       try {
-        const request = indexedDB.open('NamLongCenterAuth', 1);
+        const request = indexedDB.open('KBAuth', 1);
 
         request.onerror = () => resolve(null);
 
@@ -369,7 +369,7 @@ class AuthPersistenceService {
   private async clearIndexedDB(): Promise<void> {
     return new Promise((resolve) => {
       try {
-        const request = indexedDB.open('NamLongCenterAuth', 1);
+        const request = indexedDB.open('KBAuth', 1);
 
         request.onsuccess = () => {
           try {

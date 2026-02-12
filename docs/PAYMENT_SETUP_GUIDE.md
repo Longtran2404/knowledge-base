@@ -2,7 +2,7 @@
 
 ## Overview
 
-Nam Long Center now includes a comprehensive payment system supporting Vietnamese payment gateways (VNPay and MoMo) with complete order management, invoice generation, and PDF export capabilities.
+Knowledge Base now includes a comprehensive payment system supporting Vietnamese payment gateways (VNPay and MoMo) with complete order management, invoice generation, and PDF export capabilities.
 
 ## Features Implemented
 

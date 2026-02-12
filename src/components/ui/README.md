@@ -1,6 +1,6 @@
 # UI Components Library
 
-Thư viện component UI hiện đại cho dự án Nam Long Center, được xây dựng với React, TypeScript và Tailwind CSS.
+Thư viện component UI hiện đại cho dự án Knowledge Base, được xây dựng với React, TypeScript và Tailwind CSS.
 
 ## 🚀 Tính năng chính
 

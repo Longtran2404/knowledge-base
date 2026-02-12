@@ -48,7 +48,7 @@ export default function SupportPage() {
       icon: <Mail className="h-6 w-6" />,
       title: "Email Support",
       description: "Gửi email và nhận phản hồi trong 24h",
-      availability: "support@namlongcenter.com",
+      availability: "support@knowledgebase.com",
       action: "Gửi email",
       color: "from-purple-500 to-pink-500",
     },

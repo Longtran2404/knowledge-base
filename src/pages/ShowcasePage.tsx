@@ -26,7 +26,7 @@ export default function ShowcasePage() {
     <>
       <SEO
         title="Showcase - Công nghệ hiện đại"
-        description="Khám phá các công nghệ và tính năng hiện đại nhất của Nam Long Center"
+        description="Khám phá các công nghệ và tính năng hiện đại nhất của Knowledge Base"
         keywords={['showcase', 'công nghệ', 'hiện đại', 'tính năng']}
         url="/showcase"
       />
@@ -282,7 +282,7 @@ export default function ShowcasePage() {
                 Sẵn sàng bắt đầu?
               </h2>
               <p className="text-xl text-gray-400 mb-12">
-                Tham gia cùng 50,000+ học viên đang học tập và phát triển kỹ năng tại Nam Long Center
+                Tham gia cùng 50,000+ học viên đang học tập và phát triển kỹ năng tại Knowledge Base
               </p>
 
               <motion.button

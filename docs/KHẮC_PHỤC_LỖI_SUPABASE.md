@@ -42,7 +42,7 @@ location.reload();
 
 1. Vào https://app.supabase.com/new
 2. Tạo project mới:
-   - **Name**: Nam Long Center
+   - **Name**: Knowledge Base
    - **Database Password**: Tạo password mạnh (lưu lại!)
    - **Region**: Southeast Asia (Singapore) - gần VN nhất
 3. Đợi project được tạo (2-3 phút)
@@ -125,7 +125,7 @@ curl https://byidgbgvnrfhujprzzge.supabase.co/rest/v1/
 3. Điền thông tin:
    ```
    Organization: Chọn organization của bạn
-   Name: Nam Long Center
+   Name: Knowledge Base
    Database Password: [Tạo password mạnh - LƯU LẠI!]
    Region: Southeast Asia (Singapore)
    Pricing Plan: Free
@@ -145,7 +145,7 @@ curl https://byidgbgvnrfhujprzzge.supabase.co/rest/v1/
 
 1. Vào **SQL Editor** (icon database)
 2. Click **"New query"**
-3. Mở file `d:\Web\Nam Long Center\namlongcenter\database\setup.sql`
+3. Mở file `d:\Projects\Web\knowledge-base\database\setup.sql`
 4. Copy toàn bộ nội dung
 5. Paste vào SQL Editor
 6. Click **"RUN"** hoặc Ctrl+Enter

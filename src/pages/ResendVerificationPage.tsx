@@ -65,7 +65,7 @@ const ResendVerificationPage: React.FC = () => {
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             Gửi lại email xác thực
           </h1>
-          <p className="text-gray-600">Nam Long Center</p>
+          <p className="text-gray-600">Knowledge Base</p>
         </div>
 
         {/* Form */}
@@ -149,10 +149,10 @@ const ResendVerificationPage: React.FC = () => {
           <p className="text-sm text-gray-500">
             Cần hỗ trợ? Liên hệ{" "}
             <a
-              href="mailto:info@namlongcenter.com"
+              href="mailto:info@knowledgebase.com"
               className="text-blue-600 hover:underline"
             >
-              info@namlongcenter.com
+              info@knowledgebase.com
             </a>
           </p>
         </div>

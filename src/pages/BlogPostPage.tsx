@@ -86,7 +86,7 @@ export default function BlogPostPage() {
             <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500">
               <div className="flex items-center gap-2">
                 <User className="h-4 w-4" />
-                <span>Nam Long Center</span>
+                <span>Knowledge Base</span>
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
@@ -173,7 +173,7 @@ export default function BlogPostPage() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-900">
-                      Nam Long Center
+                      Knowledge Base
                     </h4>
                     <p className="text-sm text-gray-600">Chuyên gia BIM</p>
                   </div>

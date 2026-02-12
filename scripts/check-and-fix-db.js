@@ -127,7 +127,7 @@ async function fixDuplicates() {
 // Main execution
 (async () => {
   console.log('═══════════════════════════════════════════════');
-  console.log('   Nam Long Center - Database Diagnostic Tool');
+  console.log('   Knowledge Base - Database Diagnostic Tool');
   console.log('═══════════════════════════════════════════════\n');
 
   await checkAndFixDatabase();

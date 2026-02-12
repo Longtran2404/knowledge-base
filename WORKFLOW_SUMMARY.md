@@ -131,7 +131,7 @@ src/components/navigation/ModernSidebarV2.tsx  ✅ Added "n8n Workflows" link
 ```bash
 # Add to .env
 VITE_GEMINI_API_KEY=your_new_gemini_key
-VITE_EMAILJS_SERVICE_ID=service_namlongcenter
+VITE_EMAILJS_SERVICE_ID=service_knowledgebase
 VITE_EMAILJS_PUBLIC_KEY=your_public_key
 VITE_EMAILJS_TEMPLATE_ADMIN=workflow_admin_notification
 VITE_EMAILJS_TEMPLATE_BUYER=workflow_buyer_files

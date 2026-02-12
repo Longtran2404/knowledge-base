@@ -79,7 +79,7 @@ const Footer = () => {
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                    Nam Long Center
+                    Knowledge Base
                   </h3>
                   <p className="text-sm text-gray-400 font-medium">
                     Xây dựng tương lai
@@ -107,7 +107,7 @@ const Footer = () => {
                 </div>
                 <div className="flex items-center gap-3 text-sm">
                   <Mail className="w-4 h-4 text-blue-400 flex-shrink-0" />
-                  <span className="text-gray-300">info@namlongcenter.vn</span>
+                  <span className="text-gray-300">info@knowledgebase.com</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm">
                   <Clock className="w-4 h-4 text-blue-400 flex-shrink-0" />
@@ -251,7 +251,7 @@ const Footer = () => {
         <div className="py-6 border-t border-gray-800">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="text-sm text-gray-400 text-center md:text-left">
-              © {new Date().getFullYear()} Nam Long Center. Tất cả quyền được
+              © {new Date().getFullYear()} Knowledge Base. Tất cả quyền được
               bảo lưu.
             </div>
 

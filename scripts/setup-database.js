@@ -22,7 +22,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function setupDatabase() {
   try {
-    console.log('🚀 Setting up Nam Long Center Database...');
+    console.log('🚀 Setting up Knowledge Base Database...');
     
     // Read the SQL file
     const sqlPath = path.join(__dirname, '..', 'database', 'setup.sql');

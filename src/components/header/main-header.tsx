@@ -123,7 +123,7 @@ export default function MainHeader() {
               </div>
               <div className="hidden sm:block">
                 <div className="text-lg font-bold text-foreground group-hover:text-blue-600 transition-colors duration-300">
-                  Nam Long Center
+                  Knowledge Base
                 </div>
                 <div className="text-xs text-muted-foreground font-medium">
                   Xây dựng tương lai
@@ -345,7 +345,7 @@ export default function MainHeader() {
                   <SheetHeader>
                     <SheetTitle>Menu</SheetTitle>
                     <SheetDescription>
-                      Điều hướng Nam Long Center
+                      Điều hướng Knowledge Base
                     </SheetDescription>
                   </SheetHeader>
 

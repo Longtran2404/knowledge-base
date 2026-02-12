@@ -1,6 +1,6 @@
 /**
  * Storage Service - Quản lý Supabase Storage
- * Tạo và quản lý buckets cho Nam Long Center
+ * Tạo và quản lý buckets cho Knowledge Base
  */
 
 import { supabase } from "../supabase-config";

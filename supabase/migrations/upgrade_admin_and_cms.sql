@@ -83,7 +83,7 @@ CREATE INDEX IF NOT EXISTS idx_site_content_active ON nlc_site_content(is_active
 INSERT INTO nlc_site_content (page_key, section_key, content_key, content_value, content_type, display_order)
 VALUES
   -- Hero Section
-  ('home', 'hero', 'title', 'Chào mừng đến với Nam Long Center', 'text', 1),
+  ('home', 'hero', 'title', 'Chào mừng đến với Knowledge Base', 'text', 1),
   ('home', 'hero', 'subtitle', 'Nền tảng học tập và công nghệ hàng đầu Việt Nam', 'text', 2),
   ('home', 'hero', 'description', 'Khám phá các khóa học chất lượng cao, n8n workflows, và nhiều tài nguyên học tập khác', 'text', 3),
   ('home', 'hero', 'cta_primary_text', 'Khám phá ngay', 'text', 4),
@@ -106,8 +106,8 @@ VALUES
   ('contact', 'info', 'address', 'Hà Nội, Việt Nam', 'text', 3),
 
   -- Footer Section
-  ('global', 'footer', 'copyright', '© 2025 Nam Long Center. All rights reserved.', 'text', 1),
-  ('global', 'footer', 'company_name', 'Nam Long Center', 'text', 2),
+  ('global', 'footer', 'copyright', '© 2025 Knowledge Base. All rights reserved.', 'text', 1),
+  ('global', 'footer', 'company_name', 'Knowledge Base', 'text', 2),
   ('global', 'footer', 'company_description', 'Nền tảng học tập và công nghệ hàng đầu', 'text', 3)
 ON CONFLICT (page_key, section_key, content_key) DO NOTHING;
 

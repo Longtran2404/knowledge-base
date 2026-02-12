@@ -4,7 +4,7 @@ export const postsData: Post[] = [
   {
     id: "post-01",
     slug: "nam-long-center-ra-mat",
-    title: "Nam Long Center chính thức ra mắt",
+    title: "Knowledge Base chính thức ra mắt",
     excerpt:
       "Nền tảng học thuật & automation hàng đầu dành cho kỹ sư xây dựng Việt Nam. Khám phá hành trình mới trong giáo dục công nghệ xây dựng.",
     category: "Company",

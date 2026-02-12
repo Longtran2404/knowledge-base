@@ -84,7 +84,7 @@ const MembershipPlans: React.FC = () => {
       <div className="text-center space-y-4">
         <h2 className="text-3xl font-bold text-gray-900">Chọn gói thành viên phù hợp</h2>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          Nâng cấp tài khoản để truy cập đầy đủ tính năng và nội dung cao cấp của Nam Long Center
+          Nâng cấp tài khoản để truy cập đầy đủ tính năng và nội dung cao cấp của Knowledge Base
         </p>
 
         {profile && (
@@ -249,7 +249,7 @@ const MembershipPlans: React.FC = () => {
       <div className="text-center text-sm text-gray-600 space-y-2">
         <p>💳 Hỗ trợ thanh toán qua VNPay, MoMo, và chuyển khoản ngân hàng</p>
         <p>🔒 Thanh toán an toàn và bảo mật</p>
-        <p>📞 Hỗ trợ 24/7: <a href="mailto:support@namlongcenter.com" className="text-blue-600 hover:underline">support@namlongcenter.com</a></p>
+        <p>📞 Hỗ trợ 24/7: <a href="mailto:support@knowledgebase.com" className="text-blue-600 hover:underline">support@knowledgebase.com</a></p>
       </div>
     </div>
   );

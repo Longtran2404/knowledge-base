@@ -1,6 +1,6 @@
 /**
  * Subscription Management Service
- * Quản lý subscription và auto-recurring payments cho Nam Long Center
+ * Quản lý subscription và auto-recurring payments cho Knowledge Base
  */
 
 import { supabase } from "../supabase-config";

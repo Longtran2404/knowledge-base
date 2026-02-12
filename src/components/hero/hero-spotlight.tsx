@@ -115,7 +115,7 @@ export default function HeroSpotlight({ className }: HeroSpotlightProps) {
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="text-center text-white">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-              Nam Long Center
+              Knowledge Base
             </h1>
             <p className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto">
               Nền tảng giáo dục và thương mại hàng đầu cho ngành xây dựng Việt Nam
@@ -244,7 +244,7 @@ export default function HeroSpotlight({ className }: HeroSpotlightProps) {
                 
                 {/* Card Info */}
                 <div className="text-white space-y-4">
-                  <h3 className="text-xl font-bold">Nam Long Center</h3>
+                  <h3 className="text-xl font-bold">Knowledge Base</h3>
                   <p className="text-white/80 text-sm">
                     Nền tảng giáo dục xây dựng hàng đầu
                   </p>

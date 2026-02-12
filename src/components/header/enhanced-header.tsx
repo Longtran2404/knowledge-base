@@ -60,7 +60,7 @@ const navigationItems = [
     label: "Trang chủ",
     href: "/",
     icon: Building2,
-    description: "Về trang chủ Nam Long Center",
+    description: "Về trang chủ Knowledge Base",
   },
   {
     label: "Khóa học",
@@ -206,7 +206,7 @@ export default function EnhancedHeader() {
               </motion.div>
               <div className="hidden sm:block">
                 <div className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-                  Nam Long Center
+                  Knowledge Base
                 </div>
                 <div className="text-xs text-gray-500 font-medium">
                   Xây dựng tương lai
@@ -531,7 +531,7 @@ export default function EnhancedHeader() {
                       Menu điều hướng
                     </SheetTitle>
                     <SheetDescription className="text-gray-600">
-                      Khám phá Nam Long Center
+                      Khám phá Knowledge Base
                     </SheetDescription>
                   </SheetHeader>
 

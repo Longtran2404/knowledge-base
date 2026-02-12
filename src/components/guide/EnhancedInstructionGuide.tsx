@@ -422,7 +422,7 @@ const EnhancedInstructionGuide: React.FC<EnhancedInstructionGuideProps> = ({
               Hướng dẫn toàn diện
             </h2>
             <p className="text-blue-100">
-              Khám phá tất cả tính năng của Nam Long Center một cách dễ dàng
+              Khám phá tất cả tính năng của Knowledge Base một cách dễ dàng
             </p>
           </div>
           <div className="text-right">

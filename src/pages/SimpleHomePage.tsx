@@ -28,7 +28,7 @@ export default function SimpleHomePage() {
           </Badge>
 
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-            Nam Long <span className="text-blue-600">Center</span>
+            Knowledge <span className="text-blue-600">Base</span>
           </h1>
 
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8 leading-relaxed">
@@ -78,7 +78,7 @@ export default function SimpleHomePage() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Tại sao chọn Nam Long Center?
+              Tại sao chọn Knowledge Base?
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Cung cấp giải pháp toàn diện cho việc học tập và phát triển trong ngành xây dựng
@@ -168,7 +168,7 @@ export default function SimpleHomePage() {
             Sẵn sàng bắt đầu hành trình học tập?
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
-            Tham gia cộng đồng Nam Long Center ngay hôm nay để nâng cao kỹ năng
+            Tham gia cộng đồng Knowledge Base ngay hôm nay để nâng cao kỹ năng
             và kết nối với các chuyên gia hàng đầu trong ngành xây dựng
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

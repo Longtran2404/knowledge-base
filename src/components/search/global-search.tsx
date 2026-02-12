@@ -72,7 +72,7 @@ export function GlobalSearch({
 
   // Load recent searches from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem('nam-long-center-recent-searches');
+    const saved = localStorage.getItem('kb-recent-searches');
     if (saved) {
       try {
         setRecentSearches(JSON.parse(saved));
@@ -85,7 +85,7 @@ export function GlobalSearch({
   const saveRecentSearch = useCallback((searchTerm: string) => {
     const updated = [searchTerm, ...recentSearches.filter(s => s !== searchTerm)].slice(0, 5);
     setRecentSearches(updated);
-    localStorage.setItem('nam-long-center-recent-searches', JSON.stringify(updated));
+    localStorage.setItem('kb-recent-searches', JSON.stringify(updated));
   }, [recentSearches]);
 
   const handleResultClick = useCallback((result: SearchResult) => {
@@ -209,7 +209,7 @@ export function GlobalSearch({
 
   const clearRecentSearches = () => {
     setRecentSearches([]);
-    localStorage.removeItem('nam-long-center-recent-searches');
+    localStorage.removeItem('kb-recent-searches');
     toast.success('Đã xóa lịch sử tìm kiếm');
   };
 

@@ -248,7 +248,7 @@ export default function BlogPage() {
                       <div className="flex items-center gap-6 text-sm text-white/90">
                         <div className="flex items-center gap-2">
                           <User className="h-4 w-4" />
-                          <span>Nam Long Center</span>
+                          <span>Knowledge Base</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <Calendar className="h-4 w-4" />
@@ -393,7 +393,7 @@ export default function BlogPage() {
                               <div className="flex items-center justify-between text-sm text-muted-foreground">
                                 <div className="flex items-center gap-2">
                                   <User className="h-4 w-4" />
-                                  <span>Nam Long Center</span>
+                                  <span>Knowledge Base</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <Calendar className="h-4 w-4" />

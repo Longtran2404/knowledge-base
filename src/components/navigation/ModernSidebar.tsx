@@ -142,7 +142,7 @@ export function ModernSidebar() {
       id: "email",
       title: "Email",
       icon: <Mail className="h-5 w-5" />,
-      path: "mailto:contact@namlongcenter.com",
+      path: "mailto:contact@knowledgebase.com",
     },
   ];
 
@@ -261,7 +261,7 @@ export function ModernSidebar() {
                   <span className="text-white font-bold text-xl">NL</span>
                 </div>
                 <div>
-                  <h2 className="text-white font-bold text-lg">Nam Long Center</h2>
+                  <h2 className="text-white font-bold text-lg">Knowledge Base</h2>
                   <p className="text-gray-400 text-xs">Xây dựng tương lai</p>
                 </div>
               </div>

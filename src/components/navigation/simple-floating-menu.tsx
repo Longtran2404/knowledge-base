@@ -31,7 +31,7 @@ const menuItems: MenuItem[] = [
   {
     id: "home",
     title: "Trang chủ",
-    description: "Về trang chủ Nam Long Center",
+    description: "Về trang chủ Knowledge Base",
     icon: <Home className="h-5 w-5" />,
     path: "/",
     color: "text-blue-700",

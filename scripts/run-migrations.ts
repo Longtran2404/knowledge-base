@@ -57,7 +57,7 @@ async function runMigration(filePath: string) {
 }
 
 async function main() {
-  console.log('🔧 Nam Long Center - Database Migration Tool\n');
+  console.log('🔧 Knowledge Base - Database Migration Tool\n');
 
   const migrationsDir = path.join(__dirname, '..', 'supabase', 'migrations');
 

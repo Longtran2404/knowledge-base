@@ -80,7 +80,7 @@ export const getHomePageTourSteps = (): TourStep[] => [
   {
     id: "home-hero",
     target: ".hero-section",
-    title: "Chào mừng đến với Nam Long Center",
+    title: "Chào mừng đến với Knowledge Base",
     description:
       "Đây là trang chủ của chúng tôi. Bạn có thể khám phá các khóa học và dịch vụ tại đây.",
     position: "bottom",

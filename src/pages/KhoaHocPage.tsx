@@ -363,7 +363,7 @@ export default function KhoaHocPage() {
                     videoUrl={selectedCourse.videoUrl}
                     courseId={selectedCourse.id}
                     allowDownload={false}
-                    watermarkText={userProfile?.email ? `${userProfile.email} - ${selectedCourse.title}` : `Nam Long Center - ${selectedCourse.title}`}
+                    watermarkText={userProfile?.email ? `${userProfile.email} - ${selectedCourse.title}` : `Knowledge Base - ${selectedCourse.title}`}
                     onProgress={(progress) => {
                       // Track video progress (can be saved to database later)
                     }}

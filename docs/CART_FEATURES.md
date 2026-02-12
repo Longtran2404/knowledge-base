@@ -2,7 +2,7 @@
 
 ## Tổng quan
 
-Hệ thống giỏ hàng hoàn chỉnh cho Nam Long Center với các tính năng:
+Hệ thống giỏ hàng hoàn chỉnh cho Knowledge Base với các tính năng:
 
 - ✅ **Giỏ hàng cá nhân**: Mỗi user có giỏ hàng riêng biệt
 - ✅ **Đồng bộ Supabase**: Lưu trữ và đồng bộ với database

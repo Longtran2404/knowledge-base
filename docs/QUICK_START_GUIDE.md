@@ -1,4 +1,4 @@
-# 🚀 Quick Start Guide - Nam Long Center
+# 🚀 Quick Start Guide - Knowledge Base
 
 ## Mục tiêu tiếp theo: Đạt 10/10
 

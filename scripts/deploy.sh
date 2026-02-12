@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Nam Long Center - Auto Deploy Script
+# Knowledge Base - Auto Deploy Script
 # This script automates the deployment process
 
-echo "🚀 Starting Nam Long Center Deployment..."
+echo "🚀 Starting Knowledge Base Deployment..."
 
 # Colors for output
 RED='\033[0;31m'

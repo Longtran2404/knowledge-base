@@ -1,6 +1,6 @@
-# Database Schema - Nam Long Center
+# Database Schema - Knowledge Base
 
-Thư mục này chứa schema database hoàn chỉnh cho Nam Long Center.
+Thư mục này chứa schema database hoàn chỉnh cho Knowledge Base.
 
 ## 📁 Files
 

@@ -20,7 +20,7 @@ export function SuccessNotification({
   isVisible,
   onClose,
   title = "Đăng ký thành công!",
-  message = "Chào mừng bạn đến với Nam Long Center",
+  message = "Chào mừng bạn đến với Knowledge Base",
   type = "registration",
   autoClose = true,
   duration = 5000,

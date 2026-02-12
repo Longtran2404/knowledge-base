@@ -1,6 +1,6 @@
 /**
  * Web3 Wallet Service
- * Blockchain wallet integration for Nam Long Center
+ * Blockchain wallet integration for Knowledge Base
  *
  * Features:
  * - MetaMask, WalletConnect, Coinbase Wallet support

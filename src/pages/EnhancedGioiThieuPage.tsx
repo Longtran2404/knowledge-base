@@ -94,7 +94,7 @@ export default function EnhancedGioiThieuPage() {
     <>
       <SEO
         title="Giới thiệu"
-        description="Tìm hiểu về Nam Long Center - Nền tảng đào tạo trực tuyến hàng đầu Việt Nam"
+        description="Tìm hiểu về Knowledge Base - Nền tảng đào tạo trực tuyến hàng đầu Việt Nam"
         url="/gioi-thieu"
       />
 
@@ -123,7 +123,7 @@ export default function EnhancedGioiThieuPage() {
                 <GradualBlur delay={0.2}>
                   <h1 className="text-5xl md:text-7xl font-bold mb-6">
                     <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                      Nam Long Center
+                      Knowledge Base
                     </span>
                   </h1>
                 </GradualBlur>
@@ -207,7 +207,7 @@ export default function EnhancedGioiThieuPage() {
               <ScrollGradualBlur>
                 <div className="max-w-5xl mx-auto">
                   <VariableProximity
-                    text="Chúng tôi tin rằng giáo dục chất lượng cao nên được tiếp cận bởi mọi người. Với công nghệ hiện đại và đội ngũ giảng viên chuyên nghiệp, Nam Long Center mang đến trải nghiệm học tập tuyệt vời nhất cho học viên."
+                    text="Chúng tôi tin rằng giáo dục chất lượng cao nên được tiếp cận bởi mọi người. Với công nghệ hiện đại và đội ngũ giảng viên chuyên nghiệp, Knowledge Base mang đến trải nghiệm học tập tuyệt vời nhất cho học viên."
                     className="text-2xl md:text-4xl text-center leading-relaxed text-gray-300"
                     baseSize={24}
                     maxSize={40}

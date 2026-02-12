@@ -9,7 +9,7 @@ async function testLogin() {
   console.log('🔐 Testing Supabase Auth...\n');
 
   // Try to sign up a new user
-  const testEmail = 'test@namlongcenter.com';
+  const testEmail = 'test@knowledgebase.com';
   const testPassword = 'Test@123456';
 
   console.log('📝 Creating test user:');

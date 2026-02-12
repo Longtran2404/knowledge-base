@@ -1,4 +1,4 @@
-# 🏦 Hướng dẫn tích hợp VNPay cho Nam Long Center
+# 🏦 Hướng dẫn tích hợp VNPay cho Knowledge Base
 
 ## 📋 Tổng quan
 
@@ -197,7 +197,7 @@ OTP: 123456
 # Production Environment Variables
 REACT_APP_VNPAY_URL=https://vnpayment.vn/paymentv2/vpcpay.html
 REACT_APP_VNPAY_API_URL=https://vnpayment.vn/merchant_webapi/api/transaction
-REACT_APP_VNPAY_RETURN_URL=https://namlongcenter.com/payment/return
+REACT_APP_VNPAY_RETURN_URL=https://knowledgebase.com/payment/return
 ```
 
 ### 8.2 Whitelist Domain

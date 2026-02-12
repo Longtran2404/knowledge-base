@@ -65,11 +65,11 @@ export interface InvoiceTemplate {
 
 class InvoiceGenerator {
   private defaultCompanyInfo = {
-    name: "Nam Long Center",
+    name: "Knowledge Base",
     address: "Tầng 5, Toà nhà ABC, 123 Đường XYZ, Quận 1, TP. Hồ Chí Minh",
     phone: "(028) 1234 5678",
-    email: "info@namlongcenter.vn",
-    website: "www.namlongcenter.vn",
+    email: "info@knowledgebase.com",
+    website: "www.knowledgebase.com",
     taxCode: "0123456789",
   };
 
@@ -81,7 +81,7 @@ class InvoiceGenerator {
     showTax: true,
     showDiscount: true,
     footerText:
-      "Cảm ơn bạn đã tin tướng và sử dụng dịch vụ của Nam Long Center!",
+      "Cảm ơn bạn đã tin tướng và sử dụng dịch vụ của Knowledge Base!",
   };
 
   /**
@@ -465,7 +465,7 @@ class InvoiceGenerator {
               template.footerText ||
               "Cảm ơn bạn đã tin tướng và sử dụng dịch vụ của chúng tôi!"
             }<br>
-            <small>Hóa đơn được tạo tự động bởi hệ thống Nam Long Center</small>
+            <small>Hóa đơn được tạo tự động bởi hệ thống Knowledge Base</small>
         </div>
     </div>
 </body>

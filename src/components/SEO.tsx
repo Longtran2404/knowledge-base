@@ -16,12 +16,12 @@ export interface SEOProps {
 }
 
 const defaultSEO = {
-  siteName: 'Nam Long Center',
-  defaultTitle: 'Nam Long Center - Học viện đào tạo trực tuyến hàng đầu',
+  siteName: 'Knowledge Base',
+  defaultTitle: 'Knowledge Base - Học viện đào tạo trực tuyến hàng đầu',
   defaultDescription:
-    'Nam Long Center cung cấp các khóa học chất lượng cao về lập trình, kinh doanh, marketing và nhiều lĩnh vực khác. Học từ chuyên gia, thực hành thực tế, nhận chứng chỉ.',
+    'Knowledge Base cung cấp các khóa học chất lượng cao về lập trình, kinh doanh, marketing và nhiều lĩnh vực khác. Học từ chuyên gia, thực hành thực tế, nhận chứng chỉ.',
   defaultKeywords: [
-    'nam long center',
+    'knowledge base',
     'khóa học online',
     'học lập trình',
     'học kinh doanh',
@@ -29,8 +29,8 @@ const defaultSEO = {
     'chứng chỉ',
   ],
   defaultImage: '/images/og-image.png',
-  siteUrl: process.env.REACT_APP_URL || 'https://namlongcenter.com',
-  twitterHandle: '@namlongcenter',
+  siteUrl: process.env.REACT_APP_URL || 'https://knowledgebase.com',
+  twitterHandle: '@knowledgebase',
   facebookAppId: process.env.REACT_APP_FACEBOOK_APP_ID,
 };
 
@@ -155,7 +155,7 @@ export function SEO({
 export function SEOHomePage() {
   return (
     <SEO
-      description="Khám phá hàng nghìn khóa học chất lượng cao tại Nam Long Center. Học từ chuyên gia, thực hành thực tế, nhận chứng chỉ được công nhận."
+      description="Khám phá hàng nghìn khóa học chất lượng cao tại Knowledge Base. Học từ chuyên gia, thực hành thực tế, nhận chứng chỉ được công nhận."
       keywords={[
         'học online',
         'khóa học trực tuyến',
@@ -172,7 +172,7 @@ export function SEOCoursesPage() {
   return (
     <SEO
       title="Khóa học"
-      description="Danh sách các khóa học tại Nam Long Center. Tìm khóa học phù hợp với bạn từ lập trình, kinh doanh, marketing đến thiết kế."
+      description="Danh sách các khóa học tại Knowledge Base. Tìm khóa học phù hợp với bạn từ lập trình, kinh doanh, marketing đến thiết kế."
       keywords={['khóa học', 'danh sách khóa học', 'học trực tuyến']}
       url="/courses"
     />
@@ -219,7 +219,7 @@ export function SEOLoginPage() {
   return (
     <SEO
       title="Đăng nhập"
-      description="Đăng nhập vào Nam Long Center để tiếp tục học tập và phát triển kỹ năng của bạn."
+      description="Đăng nhập vào Knowledge Base để tiếp tục học tập và phát triển kỹ năng của bạn."
       url="/login"
     />
   );
@@ -229,7 +229,7 @@ export function SEORegisterPage() {
   return (
     <SEO
       title="Đăng ký"
-      description="Tạo tài khoản miễn phí tại Nam Long Center và bắt đầu hành trình học tập của bạn ngay hôm nay."
+      description="Tạo tài khoản miễn phí tại Knowledge Base và bắt đầu hành trình học tập của bạn ngay hôm nay."
       url="/register"
     />
   );
@@ -239,7 +239,7 @@ export function SEOAboutPage() {
   return (
     <SEO
       title="Giới thiệu"
-      description="Tìm hiểu về Nam Long Center - Nền tảng đào tạo trực tuyến hàng đầu Việt Nam với sứ mệnh mang kiến thức chất lượng đến mọi người."
+      description="Tìm hiểu về Knowledge Base - Nền tảng đào tạo trực tuyến hàng đầu Việt Nam với sứ mệnh mang kiến thức chất lượng đến mọi người."
       url="/about"
     />
   );
@@ -249,7 +249,7 @@ export function SEOContactPage() {
   return (
     <SEO
       title="Liên hệ"
-      description="Liên hệ với đội ngũ hỗ trợ của Nam Long Center. Chúng tôi luôn sẵn sàng giải đáp thắc mắc và hỗ trợ bạn."
+      description="Liên hệ với đội ngũ hỗ trợ của Knowledge Base. Chúng tôi luôn sẵn sàng giải đáp thắc mắc và hỗ trợ bạn."
       url="/contact"
     />
   );
@@ -259,7 +259,7 @@ export function SEOBlogPage() {
   return (
     <SEO
       title="Blog"
-      description="Đọc các bài viết hữu ích về học tập, phát triển kỹ năng và xu hướng công nghệ tại blog Nam Long Center."
+      description="Đọc các bài viết hữu ích về học tập, phát triển kỹ năng và xu hướng công nghệ tại blog Knowledge Base."
       keywords={['blog', 'bài viết', 'kiến thức', 'chia sẻ']}
       url="/blog"
     />

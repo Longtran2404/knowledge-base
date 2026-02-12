@@ -1,4 +1,4 @@
-# 🗄️ Hướng dẫn Setup Database - Nam Long Center
+# 🗄️ Hướng dẫn Setup Database - Knowledge Base
 
 ## ✅ Tình trạng hiện tại
 
@@ -242,5 +242,5 @@ Sau khi setup, verify các điều sau:
 ---
 
 *Last updated: 2025-10-02*
-*Project: Nam Long Center*
+*Project: Knowledge Base*
 *Supabase Project: byidgbgvnrfhujprzzge*

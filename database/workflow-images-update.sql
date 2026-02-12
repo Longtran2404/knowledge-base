@@ -39,7 +39,7 @@ WHERE workflow_slug = 'data-scraping-analysis';
 -- Add more metadata for better presentation
 UPDATE nlc_workflows
 SET
-    seo_title = workflow_name || ' - n8n Workflow Automation | Nam Long Center',
+    seo_title = workflow_name || ' - n8n Workflow Automation | Knowledge Base',
     seo_description = workflow_description,
     seo_keywords = tags,
     updated_at = NOW()

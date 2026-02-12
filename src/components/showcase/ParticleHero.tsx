@@ -150,7 +150,7 @@ export function ParticleHero() {
             stagger={0.15}
           />
           <BlurTextWords
-            text="cùng Nam Long Center"
+            text="cùng Knowledge Base"
             className="text-5xl md:text-7xl lg:text-8xl font-bold"
             wordClassName="text-white"
             variant="blur-slide"

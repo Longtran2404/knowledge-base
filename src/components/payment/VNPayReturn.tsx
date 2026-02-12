@@ -237,8 +237,8 @@ export const VNPayReturn: React.FC = () => {
               {/* Support Info */}
               <div className="text-xs text-gray-500 border-t pt-4">
                 Cần hỗ trợ? Liên hệ{' '}
-                <a href="mailto:support@namlongcenter.com" className="text-blue-600 hover:underline">
-                  support@namlongcenter.com
+                <a href="mailto:support@knowledgebase.com" className="text-blue-600 hover:underline">
+                  support@knowledgebase.com
                 </a>
                 {paymentResult?.transactionId && (
                   <>

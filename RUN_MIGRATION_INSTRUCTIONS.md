@@ -11,7 +11,7 @@ Database migrations phải được chạy **theo thứ tự** sau trong Supabas
 ### Bước 1: Mở Supabase Dashboard
 
 1. Truy cập: https://supabase.com/dashboard
-2. Chọn project **Nam Long Center**
+2. Chọn project **Knowledge Base**
 3. Vào menu **SQL Editor** (biểu tượng </> bên trái)
 
 ---

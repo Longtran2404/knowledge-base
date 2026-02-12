@@ -65,7 +65,7 @@ const Header = () => {
               </div>
               <div className="hidden sm:block">
                 <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  Nam Long Center
+                  Knowledge Base
                 </h1>
                 <p className="text-xs text-gray-400">Xây dựng tương lai</p>
               </div>

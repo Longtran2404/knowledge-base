@@ -85,7 +85,7 @@ export default function ManagerDashboard() {
       const documents = documentsData ? JSON.parse(documentsData) : [];
 
       // Load users data
-      const usersData = localStorage.getItem("namlong_users_data");
+      const usersData = localStorage.getItem("kb_users_data");
       const users = usersData ? JSON.parse(usersData) : [];
 
       // Calculate stats

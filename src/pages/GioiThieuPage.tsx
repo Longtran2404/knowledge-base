@@ -28,7 +28,7 @@ const milestones = [
   {
     year: "2020",
     title: "Thành lập",
-    description: "Nam Long Center được thành lập với mục tiêu đổi mới giáo dục xây dựng"
+    description: "Knowledge Base được thành lập với mục tiêu đổi mới giáo dục xây dựng"
   },
   {
     year: "2021",
@@ -79,7 +79,7 @@ export default function GioiThieuPage() {
             </motion.div>
 
             <BlurTextWords
-              text="Nam Long Center"
+              text="Knowledge Base"
               className="text-5xl md:text-7xl font-bold mb-6"
               wordClassName="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent"
               variant="blur-slide"
@@ -259,7 +259,7 @@ export default function GioiThieuPage() {
             />
 
             <BlurText
-              text="Tham gia cộng đồng Nam Long Center ngay hôm nay"
+              text="Tham gia cộng đồng Knowledge Base ngay hôm nay"
               className="text-xl text-gray-300 mb-8"
               delay={0.3}
             />

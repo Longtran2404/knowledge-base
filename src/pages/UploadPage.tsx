@@ -240,7 +240,7 @@ export default function UploadPage() {
         is_protected: fileCategory === "video" ? uploadState.metadata.isProtected : false,
         allow_download: uploadState.metadata.allowDownload,
         allow_share: uploadState.metadata.allowShare,
-        watermark_text: uploadState.metadata.watermarkText || (userProfile.email || "Nam Long Center"),
+        watermark_text: uploadState.metadata.watermarkText || (userProfile.email || "Knowledge Base"),
 
         status: "ready",
         upload_progress: 100,
@@ -860,7 +860,7 @@ export default function UploadPage() {
                 <div>
                   <Label className="text-white mb-2 block text-sm">Watermark (tùy chọn)</Label>
                   <Input
-                    placeholder="VD: Nam Long Center - Khóa học XYZ"
+                    placeholder="VD: Knowledge Base - Khóa học XYZ"
                     value={uploadState.metadata.watermarkText || ""}
                     onChange={(e) =>
                       setUploadState((prev) => ({

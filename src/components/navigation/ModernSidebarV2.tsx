@@ -392,7 +392,7 @@ export function ModernSidebarV2() {
                     </motion.div>
                     <div>
                       <h2 className="text-white font-bold text-lg bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                        Nam Long Center
+                        Knowledge Base
                       </h2>
                       <p className="text-gray-400 text-xs">Xây dựng tương lai</p>
                     </div>

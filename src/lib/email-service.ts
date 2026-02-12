@@ -34,8 +34,8 @@ export const sendVerificationEmail = async (
       to_name: fullName,
       verification_url: verificationUrl,
       token: token,
-      app_name: "Nam Long Center",
-      support_email: "info@namlongcenter.com",
+      app_name: "Knowledge Base",
+      support_email: "info@knowledgebase.com",
     };
 
     const response = await emailjs.send(
@@ -83,8 +83,8 @@ export const sendPasswordResetEmail = async (
       to_name: fullName,
       reset_url: resetUrl,
       token: token,
-      app_name: "Nam Long Center",
-      support_email: "info@namlongcenter.com",
+      app_name: "Knowledge Base",
+      support_email: "info@knowledgebase.com",
     };
 
     const response = await emailjs.send(
@@ -127,8 +127,8 @@ export const sendWelcomeEmail = async (
     const templateParams: EmailData = {
       to_email: email,
       to_name: fullName,
-      app_name: "Nam Long Center",
-      support_email: "info@namlongcenter.com",
+      app_name: "Knowledge Base",
+      support_email: "info@knowledgebase.com",
     };
 
     const response = await emailjs.send(
@@ -225,8 +225,8 @@ export const sendAdminPaymentNotification = async (
       to_email: adminEmail,
       to_name: 'Admin',
       ...orderData,
-      app_name: 'Nam Long Center',
-      support_email: 'info@namlongcenter.com',
+      app_name: 'Knowledge Base',
+      support_email: 'info@knowledgebase.com',
     };
 
     // TODO: Create email template in EmailJS dashboard named "workflow_admin_notification"
@@ -276,7 +276,7 @@ export const sendBuyerWorkflowFiles = async (
       to_email: filesData.buyer_email,
       to_name: filesData.buyer_name,
       ...filesData,
-      app_name: 'Nam Long Center',
+      app_name: 'Knowledge Base',
       support_email: 'tranminhlong2404@gmail.com',
     };
 

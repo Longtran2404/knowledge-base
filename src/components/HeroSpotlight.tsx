@@ -140,7 +140,7 @@ const HeroSpotlight: React.FC<HeroSpotlightProps> = ({ spotlightItem }) => {
 
                 {/* Card Content */}
                 <div className="text-white">
-                  <h3 className="text-xl font-bold mb-2">Nam Long Center</h3>
+                  <h3 className="text-xl font-bold mb-2">Knowledge Base</h3>
                   <p className="text-white/80 text-sm mb-4">
                     Nền tảng giáo dục xây dựng hàng đầu
                   </p>

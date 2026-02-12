@@ -56,7 +56,7 @@ const EnhancedInstructionPage: React.FC = () => {
   const sections: GuideSection[] = [
     {
       id: "getting-started",
-      title: "Bắt đầu với Nam Long Center",
+      title: "Bắt đầu với Knowledge Base",
       description:
         "Hướng dẫn cơ bản để làm quen với nền tảng và các tính năng chính",
       icon: <Rocket className="w-6 h-6" />,
@@ -78,7 +78,7 @@ const EnhancedInstructionPage: React.FC = () => {
           id: "intro-2",
           title: "Giới thiệu về nền tảng",
           description:
-            "Tìm hiểu về mục tiêu, giá trị cốt lõi và tầm nhìn của Nam Long Center",
+            "Tìm hiểu về mục tiêu, giá trị cốt lõi và tầm nhìn của Knowledge Base",
           to: "/gioi-thieu",
           icon: <Target className="w-4 h-4" />,
           difficulty: "easy",
@@ -421,7 +421,7 @@ const EnhancedInstructionPage: React.FC = () => {
               Chúc mừng! 🎉
             </h2>
             <p className="text-gray-600 mb-6">
-              Bạn đã hoàn thành hướng dẫn toàn diện về Nam Long Center. Bây giờ
+              Bạn đã hoàn thành hướng dẫn toàn diện về Knowledge Base. Bây giờ
               bạn có thể khám phá tất cả tính năng một cách tự tin!
             </p>
 
@@ -468,7 +468,7 @@ const EnhancedInstructionPage: React.FC = () => {
               </h1>
             </div>
             <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
-              Khám phá tất cả tính năng của Nam Long Center một cách dễ dàng và
+              Khám phá tất cả tính năng của Knowledge Base một cách dễ dàng và
               hiệu quả. Từ cơ bản đến nâng cao, chúng tôi sẽ hướng dẫn bạn từng
               bước một.
             </p>

@@ -215,7 +215,7 @@ export default function HeroSpotlightEnhanced({ className }: HeroSpotlightEnhanc
                       </HoverCardTrigger>
                       <HoverCardContent className="w-auto">
                         <p className="text-sm">
-                          <strong>{stat.value}</strong> {stat.label} đã tin tưởng Nam Long Center
+                          <strong>{stat.value}</strong> {stat.label} đã tin tưởng Knowledge Base
                         </p>
                       </HoverCardContent>
                     </HoverCard>

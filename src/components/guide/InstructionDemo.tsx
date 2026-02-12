@@ -142,7 +142,7 @@ const InstructionDemo: React.FC = () => {
           </div>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
             Khám phá các tính năng hướng dẫn mới được nâng cấp, giúp người dùng
-            dễ dàng làm quen với Nam Long Center
+            dễ dàng làm quen với Knowledge Base
           </p>
 
           {/* Stats */}
@@ -268,7 +268,7 @@ const InstructionDemo: React.FC = () => {
             <CardContent className="p-8">
               <h3 className="text-2xl font-bold mb-4">Sẵn sàng khám phá?</h3>
               <p className="text-blue-100 mb-6">
-                Bắt đầu hành trình khám phá Nam Long Center với hệ thống hướng
+                Bắt đầu hành trình khám phá Knowledge Base với hệ thống hướng
                 dẫn thông minh
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">

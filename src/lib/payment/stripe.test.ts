@@ -275,7 +275,7 @@ describe("CommissionService", () => {
       expect(transaction.id).toMatch(/^comm_\d+_[a-z0-9]+$/);
       expect(transaction.orderId).toBe("order-123");
       expect(transaction.partnerId).toBe("partner-123");
-      expect(transaction.platformId).toBe("namlong_platform");
+      expect(transaction.platformId).toBe("kb_platform");
       expect(transaction.grossAmount).toBe(100000);
       expect(transaction.platformCommission).toBe(15000);
       expect(transaction.partnerCommission).toBe(85000);

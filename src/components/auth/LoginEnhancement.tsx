@@ -366,7 +366,7 @@ export default function LoginEnhancement() {
           </CardTitle>
           <CardDescription>
             {mode === "login"
-              ? "Đăng nhập vào tài khoản Nam Long Center của bạn"
+              ? "Đăng nhập vào tài khoản Knowledge Base của bạn"
               : "Tạo tài khoản mới để bắt đầu học tập"}
           </CardDescription>
         </CardHeader>

@@ -21,7 +21,7 @@ import {
   ExternalLink,
   Loader2,
 } from "lucide-react";
-import { useNotifications } from "../../hooks/useNLCRealtime";
+import { useNotifications } from "../../hooks/useKBRealtime";
 import { nlcApi } from "../../lib/api/nlc-database-api";
 import type { NLCNotification } from "../../types/database";
 

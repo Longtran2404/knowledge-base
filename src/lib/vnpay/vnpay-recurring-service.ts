@@ -82,7 +82,7 @@ export class VNPayRecurringService {
       // Tạo VNPay payment request
       const vnpayRequest: VNPayPaymentRequest = {
         amount: request.amount,
-        orderInfo: `Nam Long Center - ${request.planType === 'premium' ? 'Premium Subscription' : 'Partner Package'}`,
+        orderInfo: `Knowledge Base - ${request.planType === 'premium' ? 'Premium Subscription' : 'Partner Package'}`,
         orderType: request.planType === 'premium' ? 'subscription' : 'other',
         txnRef: txnRef,
         ipAddr: ipAddr,

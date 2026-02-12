@@ -1,5 +1,5 @@
 /**
- * Nam Long Center Real-time Synchronization
+ * Knowledge Base Real-time Synchronization
  * Setup real-time subscriptions for live data updates
  */
 
@@ -26,7 +26,7 @@ export type EnrollmentHandler = (event: RealtimeEvent<NLCEnrollment>) => void;
 export type ApprovalHandler = (event: RealtimeEvent<NLCUserApproval>) => void;
 export type ActivityHandler = (event: RealtimeEvent<NLCActivityLog>) => void;
 
-class NLCRealtimeManager {
+class KBRealtimeManager {
   private subscriptions: Map<string, any> = new Map();
   private isConnected: boolean = false;
 
@@ -317,7 +317,7 @@ class NLCRealtimeManager {
 }
 
 // Create singleton instance
-export const nlcRealtime = new NLCRealtimeManager();
+export const kbRealtime = new KBRealtimeManager();
 
 // Utility functions for common use cases
 export const subscribeToUserData = (
@@ -331,13 +331,13 @@ export const subscribeToUserData = (
 
   if (handlers.onNotification) {
     unsubscribers.push(
-      nlcRealtime.subscribeToUserNotifications(userId, handlers.onNotification)
+      kbRealtime.subscribeToUserNotifications(userId, handlers.onNotification)
     );
   }
 
   if (handlers.onEnrollment) {
     unsubscribers.push(
-      nlcRealtime.subscribeToUserEnrollments(userId, handlers.onEnrollment)
+      kbRealtime.subscribeToUserEnrollments(userId, handlers.onEnrollment)
     );
   }
 
@@ -356,19 +356,19 @@ export const subscribeToAdminData = (handlers: {
 
   if (handlers.onApproval) {
     unsubscribers.push(
-      nlcRealtime.subscribeToApprovals(handlers.onApproval)
+      kbRealtime.subscribeToApprovals(handlers.onApproval)
     );
   }
 
   if (handlers.onActivity) {
     unsubscribers.push(
-      nlcRealtime.subscribeToActivityLogs(handlers.onActivity)
+      kbRealtime.subscribeToActivityLogs(handlers.onActivity)
     );
   }
 
   if (handlers.onCourseUpdate) {
     unsubscribers.push(
-      nlcRealtime.subscribeToCourseUpdates(handlers.onCourseUpdate)
+      kbRealtime.subscribeToCourseUpdates(handlers.onCourseUpdate)
     );
   }
 
@@ -378,4 +378,4 @@ export const subscribeToAdminData = (handlers: {
 };
 
 // React Hook for real-time subscriptions
-export { nlcRealtime as default };
+export { kbRealtime as default };

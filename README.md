@@ -1,6 +1,6 @@
-# Nam Long Center v2.0.0 🚀
+# Knowledge Base v2.0.0
 
-**Global AI-Powered EdTech & Workflow Marketplace Platform**
+**AI-Powered EdTech & Workflow Marketplace Platform**
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)]()
 [![Version](https://img.shields.io/badge/version-2.0.0-blue)]()
@@ -12,9 +12,9 @@
 
 ## 🌟 Overview
 
-Nam Long Center là nền tảng giáo dục và workflow marketplace được hỗ trợ bởi AI, blockchain, và công nghệ real-time. Dự án được thiết kế để mở rộng toàn cầu với khả năng phục vụ hàng triệu người dùng đồng thời.
+Knowledge Base là nền tảng giáo dục và workflow marketplace được hỗ trợ bởi AI, blockchain, và công nghệ real-time. Dự án được thiết kế để mở rộng toàn cầu với khả năng phục vụ hàng triệu người dùng đồng thời.
 
-**Live Demo:** [https://nam-long-center-izb2pzhxo-minh-long-trans-projects.vercel.app](https://nam-long-center-izb2pzhxo-minh-long-trans-projects.vercel.app)
+**Live Demo:** [https://knowledge-base-izb2pzhxo-minh-long-trans-projects.vercel.app](https://knowledge-base-izb2pzhxo-minh-long-trans-projects.vercel.app)
 
 ---
 
@@ -131,8 +131,8 @@ Nam Long Center là nền tảng giáo dục và workflow marketplace được h
 
 ```bash
 # Clone repository
-git clone https://github.com/Longtran2404/nam-long-center.git
-cd nam-long-center
+git clone https://github.com/Longtran2404/knowledge-base.git
+cd knowledge-base
 
 # Install dependencies (đã có 104 new packages!)
 npm install --legacy-peer-deps
@@ -193,7 +193,7 @@ npm run test:all
 ## 📁 Project Structure
 
 ```
-namlongcenter/
+knowledge-base/
 ├── public/
 │   ├── locales/              # Translation files (10 languages)
 │   │   ├── en/
@@ -240,7 +240,7 @@ Tạo file `.env` từ `.env.example`:
 
 ```env
 # Application
-REACT_APP_NAME="Nam Long Center"
+REACT_APP_NAME="Knowledge Base"
 REACT_APP_VERSION="2.0.0"
 
 # Supabase
@@ -372,7 +372,7 @@ npm run build
 
 **Developer:** [Your Name]
 **AI Assistant:** Claude (Anthropic)
-**Repository:** [GitHub](https://github.com/Longtran2404/nam-long-center.git)
+**Repository:** [GitHub](https://github.com/Longtran2404/knowledge-base.git)
 
 ---
 
@@ -394,15 +394,15 @@ MIT License - see [LICENSE](./LICENSE) for details
 
 ## 📞 Support
 
-- **Issues:** [GitHub Issues](https://github.com/Longtran2404/nam-long-center/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/Longtran2404/nam-long-center/discussions)
-- **Email:** support@namlongcenter.com
+- **Issues:** [GitHub Issues](https://github.com/Longtran2404/knowledge-base/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/Longtran2404/knowledge-base/discussions)
+- **Email:** support@knowledgebase.com
 
 ---
 
 ## 🎉 Ready for Billion-Dollar Scale!
 
-Nam Long Center is now equipped with enterprise-grade features:
+Knowledge Base is now equipped with enterprise-grade features:
 
 ✅ AI-powered intelligence
 ✅ Blockchain integration

@@ -1,5 +1,5 @@
 /**
- * Simple Auth Service for Nam Long Center
+ * Simple Auth Service for Knowledge Base
  * Handles authentication with enhanced security
  */
 import CryptoJS from "crypto-js";
@@ -29,7 +29,7 @@ class AuthService {
   private static instance: AuthService;
   private user: User | null = null;
   private listeners: ((state: AuthState) => void)[] = [];
-  private readonly SECRET_KEY = "NamLongCenter2024!@#";
+  private readonly SECRET_KEY = "KnowledgeBase2024!@#";
 
   private constructor() {
     // Load user from localStorage on initialization
@@ -45,7 +45,7 @@ class AuthService {
 
   private loadUserFromStorage(): void {
     try {
-      const stored = localStorage.getItem("namlong_user");
+      const stored = localStorage.getItem("kb_user");
       if (stored) {
         this.user = JSON.parse(stored);
         this.notifyListeners();
@@ -59,9 +59,9 @@ class AuthService {
   private saveUserToStorage(user: User | null): void {
     try {
       if (user) {
-        localStorage.setItem("namlong_user", JSON.stringify(user));
+        localStorage.setItem("kb_user", JSON.stringify(user));
       } else {
-        localStorage.removeItem("namlong_user");
+        localStorage.removeItem("kb_user");
       }
     } catch (error) {
       console.error("Error saving user to storage:", error);
@@ -267,7 +267,7 @@ class AuthService {
 
   private getStoredUsersData(): StoredUserData[] {
     try {
-      const stored = localStorage.getItem("namlong_users_data");
+      const stored = localStorage.getItem("kb_users_data");
       return stored ? JSON.parse(stored) : [];
     } catch (error) {
       console.error("Error loading users data:", error);
@@ -282,7 +282,7 @@ class AuthService {
         ...existingUsers.filter((u) => u.id !== userData.id),
         userData,
       ];
-      localStorage.setItem("namlong_users_data", JSON.stringify(updatedUsers));
+      localStorage.setItem("kb_users_data", JSON.stringify(updatedUsers));
     } catch (error) {
       console.error("Error saving user data to list:", error);
     }
@@ -291,7 +291,7 @@ class AuthService {
   // Legacy support for old user data
   private getStoredUsers(): User[] {
     try {
-      const stored = localStorage.getItem("namlong_users");
+      const stored = localStorage.getItem("kb_users");
       return stored ? JSON.parse(stored) : [];
     } catch (error) {
       console.error("Error loading users:", error);
@@ -306,7 +306,7 @@ class AuthService {
         ...existingUsers.filter((u) => u.id !== user.id),
         user,
       ];
-      localStorage.setItem("namlong_users", JSON.stringify(updatedUsers));
+      localStorage.setItem("kb_users", JSON.stringify(updatedUsers));
     } catch (error) {
       console.error("Error saving user to list:", error);
     }

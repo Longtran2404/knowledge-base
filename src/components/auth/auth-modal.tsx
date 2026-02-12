@@ -173,7 +173,7 @@ export function AuthModal({ children, defaultTab = "login" }: AuthModalProps) {
 
       setUser(mockUser);
       toast.success(
-        `Đăng ký thành công! Chào mừng ${mockUser.name} đến với Nam Long Center!`
+        `Đăng ký thành công! Chào mừng ${mockUser.name} đến với Knowledge Base!`
       );
       setIsOpen(false);
 
@@ -311,7 +311,7 @@ export function AuthModal({ children, defaultTab = "login" }: AuthModalProps) {
                 <div className="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-3xl flex items-center justify-center mb-6">
                   <span className="text-4xl font-bold">NL</span>
                 </div>
-                <h1 className="text-4xl font-bold mb-4">Nam Long Center</h1>
+                <h1 className="text-4xl font-bold mb-4">Knowledge Base</h1>
                 <p className="text-xl text-white/90 mb-8">
                   Xây dựng tương lai với công nghệ BIM
                 </p>
@@ -994,7 +994,7 @@ export function AuthModal({ children, defaultTab = "login" }: AuthModalProps) {
                               >
                                 Chính sách bảo mật
                               </Button>{" "}
-                              của Nam Long Center
+                              của Knowledge Base
                             </Label>
                             <p className="text-xs text-gray-500">
                               Bằng cách đăng ký, bạn đồng ý nhận thông tin về

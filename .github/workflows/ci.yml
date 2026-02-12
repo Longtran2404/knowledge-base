@@ -206,7 +206,7 @@ jobs:
           # Wait for deployment
           sleep 30
           # Check health endpoint
-          curl -f https://namlongcenter.com/api/health || exit 1
+          curl -f https://knowledgebase.com/api/health || exit 1
 
   # Job 7: Notify
   notify:

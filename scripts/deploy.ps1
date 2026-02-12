@@ -1,7 +1,7 @@
-# Nam Long Center - Auto Deploy Script (PowerShell)
+# Knowledge Base - Auto Deploy Script (PowerShell)
 # This script automates the deployment process on Windows
 
-Write-Host "🚀 Starting Nam Long Center Deployment..." -ForegroundColor Green
+Write-Host "🚀 Starting Knowledge Base Deployment..." -ForegroundColor Green
 
 # Function to print colored output
 function Write-Status {

@@ -1,6 +1,6 @@
-# 📚 Nam Long Center - Documentation
+# 📚 Knowledge Base - Documentation
 
-> Tài liệu hướng dẫn cho dự án Nam Long Center
+> Tài liệu hướng dẫn cho dự án Knowledge Base
 
 ## 📂 Cấu trúc tài liệu
 

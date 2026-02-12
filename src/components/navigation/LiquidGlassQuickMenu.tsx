@@ -79,7 +79,7 @@ export default function LiquidGlassQuickMenu() {
     {
       icon: Mail,
       label: 'Email',
-      onClick: () => window.open('mailto:contact@namlongcenter.com', '_self'),
+      onClick: () => window.open('mailto:contact@knowledgebase.com', '_self'),
       color: 'text-rose-700',
       bgColor: 'bg-gradient-to-r from-rose-50 to-rose-100/90',
     },

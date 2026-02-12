@@ -11,7 +11,7 @@ test.describe('Homepage', () => {
 
   test('should display homepage with main navigation', async ({ page }) => {
     // Check page title
-    await expect(page).toHaveTitle(/Nam Long Center/);
+    await expect(page).toHaveTitle(/Knowledge Base/);
 
     // Check main navigation elements
     await expect(page.locator('nav')).toBeVisible();

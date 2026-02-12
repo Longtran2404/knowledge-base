@@ -56,7 +56,7 @@ class ConfigService {
       emailjsPublicKey: process.env.REACT_APP_EMAILJS_PUBLIC_KEY || "",
 
       // App Info
-      appName: process.env.REACT_APP_APP_NAME || "Nam Long Center",
+      appName: process.env.REACT_APP_APP_NAME || "Knowledge Base",
       appVersion: process.env.REACT_APP_APP_VERSION || "1.0.0",
       environment: process.env.REACT_APP_ENVIRONMENT || "development",
 

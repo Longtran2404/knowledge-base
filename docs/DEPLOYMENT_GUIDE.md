@@ -1,8 +1,8 @@
-# 🚀 Nam Long Center - Deployment Guide
+# 🚀 Knowledge Base - Deployment Guide
 
 ## 📋 Tổng quan
 
-Hướng dẫn deploy dự án Nam Long Center lên Vercel với GitHub integration.
+Hướng dẫn deploy dự án Knowledge Base lên Vercel với GitHub integration.
 
 ## 🔗 GitHub Repository
 
@@ -127,4 +127,4 @@ Nếu có vấn đề trong quá trình deploy:
 
 ---
 
-**Nam Long Center** - Deploy thành công! 🚀✨
+**Knowledge Base** - Deploy thành công! 🚀✨

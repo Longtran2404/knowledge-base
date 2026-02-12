@@ -96,7 +96,7 @@ export default function CollabCTA({ className }: CollabCTAProps) {
             </span>
           </h2>
           <p className="text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
-            Tham gia cùng Nam Long Center để tạo ra những giá trị bền vững cho ngành xây dựng Việt Nam
+            Tham gia cùng Knowledge Base để tạo ra những giá trị bền vững cho ngành xây dựng Việt Nam
           </p>
         </div>
 
@@ -203,7 +203,7 @@ export default function CollabCTA({ className }: CollabCTAProps) {
                     <Mail className="w-5 h-5 text-blue-300 group-hover:text-yellow-400 transition-colors" />
                   </div>
                   <div className="text-white font-semibold mb-1">Email</div>
-                  <div className="text-blue-200">partnership@namlongcenter.vn</div>
+                  <div className="text-blue-200">partnership@knowledgebase.com</div>
                 </div>
                 <div className="group">
                   <div className="flex justify-center mb-2">

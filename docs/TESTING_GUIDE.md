@@ -1,4 +1,4 @@
-# 🧪 Nam Long Center - Testing Guide
+# 🧪 Knowledge Base - Testing Guide
 
 ## 📋 Tổng quan
 

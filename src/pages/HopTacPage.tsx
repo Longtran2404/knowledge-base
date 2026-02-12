@@ -168,7 +168,7 @@ export default function CollaborationPage() {
                   Hợp tác cùng
                   <br />
                   <span className="bg-gradient-to-r from-purple-200 to-violet-200 bg-clip-text text-transparent">
-                    Nam Long Center
+                    Knowledge Base
                   </span>
                 </h1>
                 <p className="text-xl text-purple-100 max-w-2xl mx-auto">
@@ -312,7 +312,7 @@ export default function CollaborationPage() {
                 Tại sao nên hợp tác với chúng tôi?
               </h2>
               <p className="text-xl text-purple-100 max-w-3xl mx-auto">
-                Khám phá những lợi ích độc quyền khi trở thành đối tác của Nam Long Center
+                Khám phá những lợi ích độc quyền khi trở thành đối tác của Knowledge Base
               </p>
             </div>
 

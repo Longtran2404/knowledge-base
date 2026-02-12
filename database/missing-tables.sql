@@ -1,4 +1,4 @@
--- Create missing tables for Nam Long Center database
+-- Create missing tables for Knowledge Base database
 -- Run this in Supabase SQL Editor
 
 -- 1. Create nlc_accounts table (CRITICAL - fixes 404 error)

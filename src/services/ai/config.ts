@@ -1,6 +1,6 @@
 /**
  * AI Services Configuration
- * Enterprise-grade AI integration for Nam Long Center
+ * Enterprise-grade AI integration for Knowledge Base
  *
  * Features:
  * - OpenAI GPT-4 integration
@@ -111,7 +111,7 @@ export const MODEL_CAPABILITIES = {
 // Prompt templates
 export const PROMPT_TEMPLATES = {
   tutoring: {
-    system: `You are an expert AI tutor for Nam Long Center. Your role is to:
+    system: `You are an expert AI tutor for Knowledge Base. Your role is to:
 - Provide clear, patient explanations adapted to the student's level
 - Use examples and analogies to clarify complex concepts
 - Encourage critical thinking through Socratic questioning

@@ -509,7 +509,7 @@ export const sendVerificationEmailReal = async (
     emailLogs.push({
       id: Date.now().toString(),
       to_email: email,
-      subject: "Xác thực tài khoản Nam Long Center",
+      subject: "Xác thực tài khoản Knowledge Base",
       template_name: "verification",
       status: "sent",
       created_at: new Date().toISOString(),
@@ -631,7 +631,7 @@ export const requestPasswordReset = async (
       emailLogs.push({
         id: Date.now().toString(),
         to_email: email,
-        subject: "Đặt lại mật khẩu Nam Long Center",
+        subject: "Đặt lại mật khẩu Knowledge Base",
         template_name: "password_reset",
         status: "sent",
         created_at: new Date().toISOString(),

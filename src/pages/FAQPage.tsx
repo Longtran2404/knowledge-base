@@ -30,8 +30,8 @@ export default function FAQPage() {
   const faqs = [
     {
       category: "general",
-      question: "Nam Long Center là gì?",
-      answer: "Nam Long Center là nền tảng học tập trực tuyến chuyên về BIM, AutoCAD và các công nghệ xây dựng hiện đại.",
+      question: "Knowledge Base là gì?",
+      answer: "Knowledge Base là nền tảng học tập trực tuyến chuyên về BIM, AutoCAD và các công nghệ xây dựng hiện đại.",
     },
     {
       category: "courses",

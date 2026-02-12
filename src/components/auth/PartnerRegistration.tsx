@@ -199,7 +199,7 @@ export const PartnerRegistration: React.FC<PartnerRegistrationProps> = ({
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Đăng ký Đối tác</h2>
           <p className="text-gray-600">
-            Trở thành đối tác chiến lược của Nam Long Center
+            Trở thành đối tác chiến lược của Knowledge Base
           </p>
         </div>
       </div>
@@ -455,7 +455,7 @@ export const PartnerRegistration: React.FC<PartnerRegistrationProps> = ({
                 onChange={(e) =>
                   handleInputChange("partnershipGoals", e.target.value)
                 }
-                placeholder="Mô tả mục tiêu và kỳ vọng từ việc hợp tác với Nam Long Center..."
+                placeholder="Mô tả mục tiêu và kỳ vọng từ việc hợp tác với Knowledge Base..."
                 rows={3}
               />
             </div>
@@ -516,7 +516,7 @@ export const PartnerRegistration: React.FC<PartnerRegistrationProps> = ({
                   >
                     Chính sách đối tác
                   </a>{" "}
-                  của Nam Long Center *
+                  của Knowledge Base *
                 </Label>
               </div>
               {errors.agreeToTerms && (
@@ -537,7 +537,7 @@ export const PartnerRegistration: React.FC<PartnerRegistrationProps> = ({
                   htmlFor="agreeToDataProcessing"
                   className="text-sm leading-relaxed"
                 >
-                  Tôi đồng ý cho Nam Long Center xử lý dữ liệu cá nhân theo{" "}
+                  Tôi đồng ý cho Knowledge Base xử lý dữ liệu cá nhân theo{" "}
                   <a href="/privacy" className="text-blue-600 hover:underline">
                     Chính sách bảo mật
                   </a>{" "}

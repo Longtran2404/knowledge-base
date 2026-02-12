@@ -232,7 +232,7 @@ export class VNPayService {
 }
 
 /**
- * Default VNPay configuration for Nam Long Center
+ * Default VNPay configuration for Knowledge Base
  * Note: These should be moved to environment variables in production
  */
 export const createVNPayService = (): VNPayService => {

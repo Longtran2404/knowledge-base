@@ -1,7 +1,7 @@
 # Script to deploy project to GitHub
 # Run this script in PowerShell
 
-Write-Host "Starting deployment of Nam Long Center to GitHub..." -ForegroundColor Green
+Write-Host "Starting deployment of Knowledge Base to GitHub..." -ForegroundColor Green
 
 # Check git status
 Write-Host "Checking git status..." -ForegroundColor Yellow
@@ -21,7 +21,7 @@ Write-Host "Pushing to GitHub..." -ForegroundColor Yellow
 git push origin main
 
 Write-Host "Deployment complete! Project updated on GitHub." -ForegroundColor Green
-Write-Host "View at: https://github.com/LongTran2404/namlongcenter" -ForegroundColor Cyan
+Write-Host "View at: https://github.com/LongTran2404/knowledge-base" -ForegroundColor Cyan
 
 # Show statistics
 Write-Host "`nImprovement statistics:" -ForegroundColor Magenta
@@ -35,4 +35,4 @@ Write-Host "  - Added dark mode and theme switching support" -ForegroundColor Wh
 Write-Host "  - Added Error Boundary and notification system" -ForegroundColor White
 Write-Host "  - Created comprehensive documentation for all components" -ForegroundColor White
 
-Write-Host "`nNam Long Center project has been comprehensively upgraded!" -ForegroundColor Green
+Write-Host "`nKnowledge Base project has been comprehensively upgraded!" -ForegroundColor Green

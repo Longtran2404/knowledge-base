@@ -6,7 +6,7 @@ const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXB
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 async function createTestAdmin() {
-  const email = 'admin@namlongcenter.com';
+  const email = 'admin@knowledgebase.com';
   const password = 'Admin@123456';
 
   console.log('👤 Creating test admin account...');

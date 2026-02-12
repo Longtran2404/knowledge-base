@@ -74,7 +74,7 @@ CREATE POLICY "Admins can view all transactions"
     EXISTS (
       SELECT 1 FROM nlc_accounts
       WHERE id = auth.uid()
-      AND (email LIKE '%@admin.namlongcenter.com' OR role = 'admin')
+      AND (email LIKE '%@admin.knowledgebase.com' OR role = 'admin')
     )
   );
 
@@ -86,7 +86,7 @@ CREATE POLICY "Admins can update any transaction"
     EXISTS (
       SELECT 1 FROM nlc_accounts
       WHERE id = auth.uid()
-      AND (email LIKE '%@admin.namlongcenter.com' OR role = 'admin')
+      AND (email LIKE '%@admin.knowledgebase.com' OR role = 'admin')
     )
   );
 

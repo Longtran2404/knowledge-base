@@ -1,4 +1,4 @@
-# Hệ thống Xác thực Email - Nam Long Center
+# Hệ thống Xác thực Email - Knowledge Base
 
 ## Tổng quan
 
@@ -8,7 +8,7 @@ Hệ thống xác thực email tự xây dựng thay thế Supabase Auth, bao g�
 - Đăng nhập với email và mật khẩu
 - Tự động đăng nhập sau khi xác thực email
 - Đặt lại mật khẩu qua email
-- Gửi email chuyên nghiệp với tên "Nam Long Center"
+- Gửi email chuyên nghiệp với tên "Knowledge Base"
 
 ## Cài đặt
 
@@ -122,7 +122,7 @@ Hệ thống sử dụng 3 loại email template:
 
 ### 1. Email Xác thực
 
-- Thiết kế chuyên nghiệp với logo Nam Long Center
+- Thiết kế chuyên nghiệp với logo Knowledge Base
 - Link xác thực có thời hạn 24 giờ
 - Hướng dẫn rõ ràng cho người dùng
 
@@ -240,7 +240,7 @@ testEmailConfiguration().then((valid) => {
 
 Nếu gặp vấn đề, liên hệ:
 
-- Email: info@namlongcenter.com
+- Email: info@knowledgebase.com
 - Hotline: 0123 456 789
 
 ---

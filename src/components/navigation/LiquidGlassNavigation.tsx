@@ -174,7 +174,7 @@ export default function LiquidGlassNavigation() {
                     </motion.div>
                     <div>
                       <h1 className="text-xl font-bold text-gray-900">
-                        Nam Long Center
+                        Knowledge Base
                       </h1>
                       <p className="text-sm text-gray-600">
                         Xây dựng tương lai

@@ -35,8 +35,8 @@ export default function ContactPage() {
     {
       icon: <Mail className="h-6 w-6" />,
       title: "Email",
-      value: "contact@namlongcenter.com",
-      link: "mailto:contact@namlongcenter.com",
+      value: "contact@knowledgebase.com",
+      link: "mailto:contact@knowledgebase.com",
     },
     {
       icon: <Phone className="h-6 w-6" />,

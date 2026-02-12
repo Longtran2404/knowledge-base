@@ -19,7 +19,7 @@
 
 1. Vào **Email Templates** → **Create New Template**
 2. Template ID: `template_verification`
-3. Subject: `Xác thực tài khoản Nam Long Center`
+3. Subject: `Xác thực tài khoản Knowledge Base`
 4. Nội dung template:
 
 ```html
@@ -27,7 +27,7 @@
   <div
     style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center;"
   >
-    <h1 style="color: white; margin: 0; font-size: 24px;">Nam Long Center</h1>
+    <h1 style="color: white; margin: 0; font-size: 24px;">Knowledge Base</h1>
   </div>
 
   <div style="padding: 30px; background: #f8f9fa;">
@@ -38,7 +38,7 @@
     </p>
 
     <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
-      Cảm ơn bạn đã đăng ký tài khoản tại Nam Long Center. Để hoàn tất quá trình
+      Cảm ơn bạn đã đăng ký tài khoản tại Knowledge Base. Để hoàn tất quá trình
       đăng ký, vui lòng xác thực email của bạn bằng cách nhấn vào nút bên dưới:
     </p>
 
@@ -75,7 +75,7 @@
   <div
     style="background: #333; color: white; padding: 20px; text-align: center; font-size: 14px;"
   >
-    <p style="margin: 0;">© 2024 Nam Long Center. All rights reserved.</p>
+    <p style="margin: 0;">© 2024 Knowledge Base. All rights reserved.</p>
     <p style="margin: 5px 0 0 0;">
       Cần hỗ trợ? Liên hệ:
       <a href="mailto:{{support_email}}" style="color: #667eea;"
@@ -89,13 +89,13 @@
 ### Template 2: Password Reset
 
 1. Template ID: `template_password_reset`
-2. Subject: `Đặt lại mật khẩu Nam Long Center`
+2. Subject: `Đặt lại mật khẩu Knowledge Base`
 3. Nội dung tương tự như verification nhưng thay đổi nội dung
 
 ### Template 3: Welcome Email
 
 1. Template ID: `template_welcome`
-2. Subject: `Chào mừng đến với Nam Long Center`
+2. Subject: `Chào mừng đến với Knowledge Base`
 3. Nội dung chào mừng
 
 ## Bước 4: Lấy Public Key
