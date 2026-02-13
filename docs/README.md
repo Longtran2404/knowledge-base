@@ -27,6 +27,16 @@
 ### 🛒 Features
 - [CART_FEATURES.md](./CART_FEATURES.md) - Tính năng giỏ hàng
 
+### 🔄 Workflow & Migration
+- [QUICK_START_WORKFLOWS.md](./QUICK_START_WORKFLOWS.md) - Workflow nhanh
+- [WORKFLOW_MARKETPLACE_SETUP.md](./WORKFLOW_MARKETPLACE_SETUP.md) - Setup marketplace workflow
+- [WORKFLOW_COMPLETE_GUIDE.md](./WORKFLOW_COMPLETE_GUIDE.md) - Hướng dẫn workflow đầy đủ
+- [WORKFLOW_SUMMARY.md](./WORKFLOW_SUMMARY.md) - Tóm tắt workflow
+- [RUN_MIGRATION.md](./RUN_MIGRATION.md) - Chạy migration
+- [RUN_MIGRATION_INSTRUCTIONS.md](./RUN_MIGRATION_INSTRUCTIONS.md) - Hướng dẫn migration
+- [STORAGE_SETUP.md](./STORAGE_SETUP.md) - Cấu hình storage
+- [UPGRADE_INSTRUCTIONS.md](./UPGRADE_INSTRUCTIONS.md) - Nâng cấp
+
 ### 📝 Other
 - [CHANGELOG.md](./CHANGELOG.md) - Lịch sử thay đổi
 

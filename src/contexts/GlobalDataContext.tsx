@@ -61,6 +61,8 @@ interface GlobalDataContextType extends GlobalDataState {
 const GlobalDataContext = createContext<GlobalDataContextType | undefined>(undefined);
 
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const FETCH_TIMEOUT_MS = 15000; // 15s - đủ cho mạng chậm, tránh toast lỗi
+const LOADING_DELAY_MS = 100; // Chỉ bật skeleton sau 100ms để first paint nhanh
 
 export function GlobalDataProvider({ children }: { children: ReactNode }) {
   const { userProfile } = useAuth();
@@ -106,7 +108,9 @@ export function GlobalDataProvider({ children }: { children: ReactNode }) {
           .select("*")
           .eq("user_id", userProfile.id)
           .order("created_at", { ascending: false }),
-        new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 3000))
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("Timeout")), FETCH_TIMEOUT_MS)
+        )
       ]) as any;
 
       if (error) throw error;
@@ -117,72 +121,120 @@ export function GlobalDataProvider({ children }: { children: ReactNode }) {
         filesLoading: false,
         lastSync: { ...prev.lastSync, files: new Date() }
       }));
-    } catch (error) {
-      console.error("Error loading user files:", error);
+    } catch (err) {
+      const isTimeout = err instanceof Error && err.message === "Timeout";
+      console.error("Error loading user files:", err);
+      if (isTimeout) toast.error("Tải danh sách file quá lâu. Vui lòng thử lại.");
       setState(prev => ({ ...prev, filesLoading: false }));
     }
   }, [userProfile?.id, state.lastSync.files, isCacheValid]);
 
-  // Refresh courses
+  // Refresh courses (delayed loading + retry khi timeout)
   const refreshCourses = useCallback(async () => {
     if (isCacheValid(state.lastSync.courses)) {
       console.log("Using cached courses");
       return;
     }
 
-    setState(prev => ({ ...prev, coursesLoading: true }));
+    const loadingTimer = setTimeout(() => {
+      setState(prev => ({ ...prev, coursesLoading: true }));
+    }, LOADING_DELAY_MS);
+
+    const doFetch = () =>
+      Promise.race([
+        supabase.from("courses").select("*").eq("is_published", true).order("created_at", { ascending: false }),
+        new Promise<never>((_, reject) => setTimeout(() => reject(new Error("Timeout")), FETCH_TIMEOUT_MS))
+      ]) as Promise<{ data: any; error: any }>;
+
     try {
-      const { data, error } = await Promise.race([
-        supabase
-          .from("courses")
-          .select("*")
-          .eq("is_published", true)
-          .order("created_at", { ascending: false }),
-        new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 3000))
-      ]) as any;
+      const result = await doFetch();
+      if (result.error) throw result.error;
 
-      if (error) throw error;
-
+      clearTimeout(loadingTimer);
       setState(prev => ({
         ...prev,
-        courses: data || [],
+        courses: result.data || [],
         coursesLoading: false,
         lastSync: { ...prev.lastSync, courses: new Date() }
       }));
-    } catch (error) {
-      console.error("Error loading courses:", error);
+    } catch (err) {
+      const isTimeout = err instanceof Error && err.message === "Timeout";
+      if (isTimeout) {
+        try {
+          const retry = await doFetch();
+          if (!retry.error) {
+            clearTimeout(loadingTimer);
+            setState(prev => ({
+              ...prev,
+              courses: retry.data || [],
+              coursesLoading: false,
+              lastSync: { ...prev.lastSync, courses: new Date() }
+            }));
+            return;
+          }
+        } catch {
+          /* retry failed */
+        }
+        toast.error("Tải khóa học quá lâu. Vui lòng thử lại.");
+      } else {
+        console.error("Error loading courses:", err);
+      }
+      clearTimeout(loadingTimer);
       setState(prev => ({ ...prev, coursesLoading: false }));
     }
   }, [state.lastSync.courses, isCacheValid]);
 
-  // Refresh products
+  // Refresh products (delayed loading + retry khi timeout)
   const refreshProducts = useCallback(async () => {
     if (isCacheValid(state.lastSync.products)) {
       console.log("Using cached products");
       return;
     }
 
-    setState(prev => ({ ...prev, productsLoading: true }));
+    const loadingTimer = setTimeout(() => {
+      setState(prev => ({ ...prev, productsLoading: true }));
+    }, LOADING_DELAY_MS);
+
+    const doFetch = () =>
+      Promise.race([
+        supabase.from("products").select("*").eq("is_active", true).order("created_at", { ascending: false }),
+        new Promise<never>((_, reject) => setTimeout(() => reject(new Error("Timeout")), FETCH_TIMEOUT_MS))
+      ]) as Promise<{ data: any; error: any }>;
+
     try {
-      const { data, error } = await Promise.race([
-        supabase
-          .from("products")
-          .select("*")
-          .eq("is_active", true)
-          .order("created_at", { ascending: false }),
-        new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 3000))
-      ]) as any;
+      const result = await doFetch();
+      if (result.error) throw result.error;
 
-      if (error) throw error;
-
+      clearTimeout(loadingTimer);
       setState(prev => ({
         ...prev,
-        products: data || [],
+        products: result.data || [],
         productsLoading: false,
         lastSync: { ...prev.lastSync, products: new Date() }
       }));
-    } catch (error) {
-      console.error("Error loading products:", error);
+    } catch (err) {
+      const isTimeout = err instanceof Error && err.message === "Timeout";
+      if (isTimeout) {
+        try {
+          const retry = await doFetch();
+          if (!retry.error) {
+            clearTimeout(loadingTimer);
+            setState(prev => ({
+              ...prev,
+              products: retry.data || [],
+              productsLoading: false,
+              lastSync: { ...prev.lastSync, products: new Date() }
+            }));
+            return;
+          }
+        } catch {
+          /* retry failed */
+        }
+        toast.error("Tải sản phẩm quá lâu. Vui lòng thử lại.");
+      } else {
+        console.error("Error loading products:", err);
+      }
+      clearTimeout(loadingTimer);
       setState(prev => ({ ...prev, productsLoading: false }));
     }
   }, [state.lastSync.products, isCacheValid]);
@@ -204,7 +256,9 @@ export function GlobalDataProvider({ children }: { children: ReactNode }) {
           .eq("status", "ready")
           .order("created_at", { ascending: false })
           .limit(50),
-        new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 3000))
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("Timeout")), FETCH_TIMEOUT_MS)
+        )
       ]) as any;
 
       if (error) throw error;
@@ -215,8 +269,10 @@ export function GlobalDataProvider({ children }: { children: ReactNode }) {
         publicFilesLoading: false,
         lastSync: { ...prev.lastSync, publicFiles: new Date() }
       }));
-    } catch (error) {
-      console.error("Error loading public files:", error);
+    } catch (err) {
+      const isTimeout = err instanceof Error && err.message === "Timeout";
+      console.error("Error loading public files:", err);
+      if (isTimeout) toast.error("Tải tài nguyên công khai quá lâu. Vui lòng thử lại.");
       setState(prev => ({ ...prev, publicFilesLoading: false }));
     }
   }, [state.lastSync.publicFiles, isCacheValid]);
@@ -306,12 +362,19 @@ export function GlobalDataProvider({ children }: { children: ReactNode }) {
     toast.success("Sản phẩm đã được xóa");
   }, []);
 
-  // Auto refresh on mount
+  // Auto refresh user files when user logs in
   useEffect(() => {
     if (userProfile?.id) {
       refreshUserFiles();
     }
   }, [userProfile?.id, refreshUserFiles]);
+
+  // Prefetch courses + products ngay khi app load để trang Sản phẩm/Marketplace mở nhanh
+  useEffect(() => {
+    refreshCourses();
+    refreshProducts();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- chỉ chạy 1 lần khi mount
+  }, []);
 
   const value: GlobalDataContextType = {
     ...state,

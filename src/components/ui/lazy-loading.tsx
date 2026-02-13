@@ -138,11 +138,13 @@ export function LazyComponent<T extends React.ComponentType<any>>(
 ) {
   const Component = lazy(importFunc);
 
-  return (props: React.ComponentProps<T>) => (
+  const Wrapper = (props: React.ComponentProps<T>) => (
     <Suspense fallback={fallback || <Loading size="md" variant="pulse" />}>
       <Component {...props} />
     </Suspense>
   );
+  Wrapper.displayName = 'LazyComponentWrapper';
+  return Wrapper;
 }
 
 // Virtual scrolling for large lists

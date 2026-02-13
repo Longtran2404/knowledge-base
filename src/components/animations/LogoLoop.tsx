@@ -58,6 +58,7 @@ export function LogoLoop({
                 src={logo.url}
                 alt={logo.name}
                 className="max-h-full max-w-full object-contain"
+                onError={(e) => { e.currentTarget.src = '/images/placeholder.svg'; }}
               />
             ) : logo.icon ? (
               <div className="text-white">

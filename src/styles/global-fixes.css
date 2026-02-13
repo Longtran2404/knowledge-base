@@ -282,11 +282,11 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Improve contrast for better readability */
 .text-gray-400 {
-  color: rgb(156 163 175) !important;
+  color: hsl(var(--muted-foreground)) !important;
 }
 
 .text-gray-300 {
-  color: rgb(209 213 219) !important;
+  color: hsl(var(--muted-foreground) / 0.7) !important;
 }
 
 /* Fix gradient text rendering */
@@ -408,7 +408,7 @@ section {
   .bg-gradient-to-br,
   .bg-gradient-to-r,
   .bg-gradient-to-b {
-    background: rgba(59, 130, 246, 0.1) !important;
+    background: hsl(var(--primary) / 0.08) !important;
   }
 
   /* Disable shadow effects on mobile */
@@ -533,13 +533,13 @@ ul, ol {
 
 /* Ensure proper focus states */
 :focus-visible {
-  outline: 2px solid rgb(59 130 246);
+  outline: 2px solid hsl(var(--ring));
   outline-offset: 2px;
 }
 
 /* Fix selection styling */
 ::selection {
-  background-color: rgb(59 130 246 / 0.3);
+  background-color: hsl(var(--primary) / 0.25);
   color: inherit;
 }
 
@@ -578,10 +578,10 @@ ul, ol {
 /* Improve glassmorphism effect */
 [class*="glass"],
 [class*="Glass"] {
-  background: rgba(255, 255, 255, 0.05);
+  background: hsl(var(--card) / 0.9);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid hsl(var(--border));
 }
 
 /* Fix hover states on mobile */
@@ -611,14 +611,14 @@ ul, ol {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
+  background: hsl(var(--muted) / 0.5);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(59, 130, 246, 0.5);
+  background: hsl(var(--primary) / 0.4);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(59, 130, 246, 0.7);
+  background: hsl(var(--primary) / 0.6);
 }

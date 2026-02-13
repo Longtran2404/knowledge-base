@@ -11,7 +11,7 @@ export const resourcesData: Resource[] = [
     accessLevel: "free",
     year: 2025,
     tags: ["BIM", "Standard", "Vietnam"],
-    thumbnail: "/images/resources/bim-std.jpg",
+    thumbnail: "/images/placeholder.svg",
     createdAt: "2025-08-05T00:00:00.000Z",
   },
   {
@@ -24,7 +24,7 @@ export const resourcesData: Resource[] = [
     accessLevel: "member",
     year: 2025,
     tags: ["Revit", "Architecture", "Tutorial"],
-    thumbnail: "/images/resources/revit-guide.jpg",
+    thumbnail: "/images/placeholder.svg",
     createdAt: "2025-07-25T00:00:00.000Z",
   },
   {
@@ -37,7 +37,7 @@ export const resourcesData: Resource[] = [
     accessLevel: "premium",
     year: 2025,
     tags: ["Green Building", "Residential", "Design"],
-    thumbnail: "/images/resources/green-house.jpg",
+    thumbnail: "/images/placeholder.svg",
     createdAt: "2025-07-15T00:00:00.000Z",
   },
   {
@@ -50,7 +50,7 @@ export const resourcesData: Resource[] = [
     accessLevel: "free",
     year: 2018,
     tags: ["Concrete", "Structure", "Standard"],
-    thumbnail: "/images/resources/concrete-std.jpg",
+    thumbnail: "/images/placeholder.svg",
     createdAt: "2025-07-10T00:00:00.000Z",
   },
   {
@@ -63,7 +63,7 @@ export const resourcesData: Resource[] = [
     accessLevel: "member",
     year: 2024,
     tags: ["Construction", "Regulation", "Vietnam"],
-    thumbnail: "/images/resources/construction-reg.jpg",
+    thumbnail: "/images/placeholder.svg",
     createdAt: "2025-07-01T00:00:00.000Z",
   },
   {
@@ -76,7 +76,7 @@ export const resourcesData: Resource[] = [
     accessLevel: "member",
     year: 2025,
     tags: ["AutoCAD", "2D", "3D", "Tutorial"],
-    thumbnail: "/images/resources/autocad-guide.jpg",
+    thumbnail: "/images/placeholder.svg",
     createdAt: "2025-06-28T00:00:00.000Z",
   },
   {
@@ -89,7 +89,7 @@ export const resourcesData: Resource[] = [
     accessLevel: "premium",
     year: 2025,
     tags: ["Bridge", "Road", "Design"],
-    thumbnail: "/images/resources/bridge-project.jpg",
+    thumbnail: "/images/placeholder.svg",
     createdAt: "2025-06-20T00:00:00.000Z",
   },
   {
@@ -102,7 +102,7 @@ export const resourcesData: Resource[] = [
     accessLevel: "free",
     year: 2020,
     tags: ["Fire Safety", "PCCC", "Standard"],
-    thumbnail: "/images/resources/fire-safety.jpg",
+    thumbnail: "/images/placeholder.svg",
     createdAt: "2025-06-15T00:00:00.000Z",
   },
 ];

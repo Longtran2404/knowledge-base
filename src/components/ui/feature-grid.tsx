@@ -40,8 +40,8 @@ export function FeatureGrid({
 
   const renderFeature = (feature: Feature, index: number) => {
     const Icon = feature.icon;
-    const iconBgColor = feature.color?.replace('text-', 'bg-').replace('600', '100') || 'bg-blue-100';
-    const iconColor = feature.color || 'text-blue-600';
+    const iconBgColor = feature.color?.replace('text-', 'bg-').replace('600', '100') || 'bg-primary/10';
+    const iconColor = feature.color || 'text-primary';
 
     if (variant === 'minimal') {
       return (
@@ -60,16 +60,16 @@ export function FeatureGrid({
                 <Icon className={`h-8 w-8 ${iconColor}`} />
               </div>
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+            <h3 className="text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
               {feature.title}
             </h3>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-muted-foreground leading-relaxed">
               {feature.description}
             </p>
             {feature.link && (
               <a
                 href={feature.link}
-                className="inline-flex items-center gap-1 mt-4 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                className="inline-flex items-center gap-1 mt-4 text-sm font-medium text-primary hover:text-primary/90 transition-colors"
               >
                 Tìm hiểu thêm
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -92,12 +92,12 @@ export function FeatureGrid({
           className="relative p-8 rounded-2xl overflow-hidden group cursor-pointer"
           style={{
             background: getGradientBackground(index),
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+            boxShadow: 'var(--shadow-medium)',
           }}
         >
           {feature.badge && (
             <div className="absolute top-4 right-4">
-              <span className="px-3 py-1 text-xs font-semibold bg-white/90 text-gray-700 rounded-full">
+              <span className="px-3 py-1 text-xs font-semibold bg-background/90 text-foreground rounded-full">
                 {feature.badge}
               </span>
             </div>
@@ -150,7 +150,7 @@ export function FeatureGrid({
           <div className="p-8">
             {feature.badge && (
               <div className="mb-4">
-                <span className="px-3 py-1 text-xs font-semibold bg-blue-100 text-blue-700 rounded-full">
+                <span className="px-3 py-1 text-xs font-semibold bg-primary/10 text-primary rounded-full">
                   {feature.badge}
                 </span>
               </div>
@@ -162,18 +162,18 @@ export function FeatureGrid({
               </div>
             </div>
 
-            <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+            <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
               {feature.title}
             </h3>
 
-            <p className="text-gray-600 leading-relaxed mb-4">
+            <p className="text-muted-foreground leading-relaxed mb-4">
               {feature.description}
             </p>
 
             {feature.link && (
               <a
                 href={feature.link}
-                className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors group"
+                className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/90 transition-colors group"
               >
                 Tìm hiểu thêm
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -194,12 +194,12 @@ export function FeatureGrid({
 
 function getGradientBackground(index: number) {
   const gradients = [
-    'linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(37, 99, 235, 0.95) 100%)', // Blue
-    'linear-gradient(135deg, rgba(16, 185, 129, 0.9) 0%, rgba(5, 150, 105, 0.95) 100%)', // Green
-    'linear-gradient(135deg, rgba(139, 92, 246, 0.9) 0%, rgba(124, 58, 237, 0.95) 100%)', // Purple
-    'linear-gradient(135deg, rgba(249, 115, 22, 0.9) 0%, rgba(234, 88, 12, 0.95) 100%)', // Orange
-    'linear-gradient(135deg, rgba(236, 72, 153, 0.9) 0%, rgba(219, 39, 119, 0.95) 100%)', // Pink
-    'linear-gradient(135deg, rgba(14, 165, 233, 0.9) 0%, rgba(2, 132, 199, 0.95) 100%)', // Sky
+    'var(--gradient-primary)',
+    'linear-gradient(135deg, hsl(var(--primary) / 0.95) 0%, hsl(var(--primary) / 0.85) 100%)',
+    'linear-gradient(135deg, hsl(var(--success) / 0.9) 0%, hsl(var(--success) / 0.8) 100%)',
+    'var(--gradient-accent)',
+    'linear-gradient(135deg, hsl(var(--primary) / 0.9) 0%, hsl(var(--info) / 0.85) 100%)',
+    'linear-gradient(135deg, hsl(var(--primary) / 0.92) 0%, hsl(var(--primary) / 0.78) 100%)',
   ];
   return gradients[index % gradients.length];
 }

@@ -104,8 +104,7 @@ export function AuthModal({ children, defaultTab = "login" }: AuthModalProps) {
   }, [isOpen]);
 
   const validateForm = (data: Record<string, unknown>, schema: unknown) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const validation = validateData(schema as any, data);
+    const validation = validateData(schema as import('zod').ZodSchema, data);
     if (!validation.success) {
       setErrors(getValidationErrors(validation.errors!));
       return false;

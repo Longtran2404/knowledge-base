@@ -194,6 +194,7 @@ export const QRCodePayment: React.FC<QRCodePaymentProps> = ({
                   src={getQRCodeImage(selectedBank)}
                   alt="QR Code"
                   className="w-48 h-48 mx-auto"
+                  onError={(e) => { e.currentTarget.src = '/images/placeholder.svg'; }}
                 />
               </div>
 
@@ -323,7 +324,7 @@ export const QRCodePayment: React.FC<QRCodePaymentProps> = ({
                     <strong>Lưu ý quan trọng:</strong>
                     <ul className="mt-1 space-y-1 list-disc list-inside">
                       <li>Chuyển khoản đúng số tiền và nội dung</li>
-                      <li>Sau khi chuyển khoản, nhấn "Tôi đã thanh toán"</li>
+                      <li>Sau khi chuyển khoản, nhấn &quot;Tôi đã thanh toán&quot;</li>
                       <li>Giao dịch sẽ được xác nhận trong 1-3 phút</li>
                     </ul>
                   </div>

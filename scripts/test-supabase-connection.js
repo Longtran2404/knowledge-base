@@ -1,75 +1,79 @@
 /**
  * Test Supabase Connection
- * Quick script to verify Supabase credentials are working
- * 
- * Usage:
- * 1. Make sure .env file exists with credentials
- * 2. Run: node scripts/test-supabase-connection.js
+ * Kiểm tra kết nối đến Supabase project
  */
 
-require('dotenv').config();
+const https = require('https');
 
-const testConnection = async () => {
-  console.log('🔍 Testing Supabase Connection...\n');
-  
-  // Check environment variables
-  const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-  const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
-  
-  console.log('📋 Configuration Check:');
-  console.log('  SUPABASE_URL:', supabaseUrl ? '✅ Set' : '❌ Missing');
-  console.log('  SUPABASE_KEY:', supabaseKey ? '✅ Set' : '❌ Missing');
-  console.log('  URL Value:', supabaseUrl || 'Not set');
-  console.log('  Key Length:', supabaseKey ? `${supabaseKey.length} chars` : 'Not set');
-  console.log('');
-  
-  if (!supabaseUrl || !supabaseKey) {
-    console.error('❌ Missing required environment variables!');
-    console.error('   Please create .env file with:');
-    console.error('   REACT_APP_SUPABASE_URL=your-url');
-    console.error('   REACT_APP_SUPABASE_ANON_KEY=your-key');
-    process.exit(1);
-  }
-  
-  // Test network connectivity
-  console.log('🌐 Testing Network Connectivity...');
-  try {
-    const response = await fetch(`${supabaseUrl}/rest/v1/`, {
-      method: 'HEAD',
-      headers: {
-        'apikey': supabaseKey,
-        'Authorization': `Bearer ${supabaseKey}`
-      }
-    });
-    
-    if (response.ok || response.status === 404) {
-      console.log('  ✅ Network connection successful');
-      console.log('  Status:', response.status, response.statusText);
-    } else {
-      console.log('  ⚠️  Unexpected status:', response.status);
-    }
-  } catch (error) {
-    console.error('  ❌ Network connection failed:', error.message);
-    if (error.message.includes('ENOTFOUND')) {
-      console.error('  💡 DNS resolution failed - check if project exists');
-      console.error('  💡 Project might be paused or deleted');
-    }
-    process.exit(1);
-  }
-  
-  console.log('');
-  console.log('✅ Supabase connection test passed!');
-  console.log('');
-  console.log('Next steps:');
-  console.log('1. Clear browser localStorage');
-  console.log('2. Restart development server');
-  console.log('3. Open http://localhost:3000');
-};
+const SUPABASE_URL = 'https://byidgbgvnrfhujprzzge.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5aWRnYmd2bnJmaHVqcHJ6emdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI1MjQxMjAsImV4cCI6MjA1ODEwMDEyMH0.LJmu6PzY89Uc1K_5W-M7rsD18sWm-mHeMx1SeV4o_Dw';
 
-// Run test
-testConnection().catch(error => {
-  console.error('❌ Test failed:', error);
+console.log('🔍 Testing Supabase Connection...\n');
+console.log('Project URL:', SUPABASE_URL);
+console.log('Project ID: byidgbgvnrfhujprzzge\n');
+
+// Test 1: Health Check
+console.log('📡 Test 1: Health Check Endpoint');
+const healthUrl = new URL('/auth/v1/health', SUPABASE_URL);
+
+https.get(healthUrl, (res) => {
+  console.log('✅ Connection successful!');
+  console.log('Status Code:', res.statusCode);
+  console.log('Headers:', JSON.stringify(res.headers, null, 2));
+
+  let data = '';
+  res.on('data', (chunk) => {
+    data += chunk;
+  });
+
+  res.on('end', () => {
+    console.log('Response:', data);
+    testRestAPI();
+  });
+}).on('error', (err) => {
+  console.error('❌ Connection failed!');
+  console.error('Error:', err.message);
+  console.error('\n⚠️  Possible issues:');
+  console.error('1. Supabase project chưa được tạo hoặc đã bị pause');
+  console.error('2. URL không đúng - kiểm tra lại Project URL trên Supabase Dashboard');
+  console.error('3. Network/Firewall đang block kết nối');
+  console.error('4. DNS chưa propagate (nếu project mới tạo, chờ 5-10 phút)\n');
+
+  console.log('🔧 Hướng dẫn khắc phục:');
+  console.log('1. Truy cập: https://supabase.com/dashboard/projects');
+  console.log('2. Kiểm tra project "byidgbgvnrfhujprzzge" có tồn tại không');
+  console.log('3. Nếu project bị pause, click "Resume" để kích hoạt lại');
+  console.log('4. Copy lại Project URL và API keys từ Settings > API');
   process.exit(1);
 });
 
+// Test 2: REST API
+function testRestAPI() {
+  console.log('\n📡 Test 2: REST API Endpoint');
+  const restUrl = new URL('/rest/v1/', SUPABASE_URL);
 
+  const options = {
+    headers: {
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+    }
+  };
+
+  https.get(restUrl, options, (res) => {
+    console.log('✅ REST API accessible!');
+    console.log('Status Code:', res.statusCode);
+
+    let data = '';
+    res.on('data', (chunk) => {
+      data += chunk;
+    });
+
+    res.on('end', () => {
+      console.log('Response:', data.substring(0, 200));
+      console.log('\n✅ All tests passed! Supabase connection is working.');
+    });
+  }).on('error', (err) => {
+    console.error('❌ REST API test failed!');
+    console.error('Error:', err.message);
+  });
+}

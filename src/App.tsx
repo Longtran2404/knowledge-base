@@ -7,7 +7,6 @@ import { EnhancedToastProvider } from "./components/ui/enhanced-toast";
 import { NotificationProvider as EnhancedNotificationProvider } from "./contexts/NotificationContext";
 import { ClientWrapper } from "./components/client-wrapper";
 import LocatorSetup from "./components/locator-setup";
-// import LiquidGlassQuickMenu from "./components/navigation/LiquidGlassQuickMenu"; // Removed - replaced by ModernSidebarV2
 import { ModernSidebarV2 } from "./components/navigation/ModernSidebarV2";
 import HeaderLayout from "./components/layout/HeaderLayout";
 import PageTransition from "./components/layout/PageTransition";
@@ -30,86 +29,86 @@ import { errorHandler } from "./lib/error-handler";
 import { logger } from "./lib/logger/logger";
 
 // Lazy load pages for better performance
-const HomePage = React.lazy(() => import("./pages/HomePage"));
-const BlogPage = React.lazy(() => import("./pages/BlogPage"));
-const BlogPostPage = React.lazy(() => import("./pages/BlogPostPage"));
-const GioiThieuPage = React.lazy(() => import("./pages/EnhancedGioiThieuPage"));
-const KhoaHocPage = React.lazy(() => import("./pages/KhoaHocPage"));
-const ProductsPage = React.lazy(() => import("./pages/ProductsPage"));
-const TaiNguyenPage = React.lazy(() => import("./pages/TaiNguyenPage"));
-const HopTacPage = React.lazy(() => import("./pages/HopTacPage"));
-const AuthPage = React.lazy(() => import("./pages/AuthPage"));
-const VerifyEmailPage = React.lazy(() => import("./pages/VerifyEmailPage"));
+const HomePage = React.lazy(() => import("./views/HomePage"));
+const BlogPage = React.lazy(() => import("./views/BlogPage"));
+const BlogPostPage = React.lazy(() => import("./views/BlogPostPage"));
+const GioiThieuPage = React.lazy(() => import("./views/EnhancedGioiThieuPage"));
+const KhoaHocPage = React.lazy(() => import("./views/KhoaHocPage"));
+const ProductsPage = React.lazy(() => import("./views/ProductsPage"));
+const TaiNguyenPage = React.lazy(() => import("./views/TaiNguyenPage"));
+const HopTacPage = React.lazy(() => import("./views/HopTacPage"));
+const AuthPage = React.lazy(() => import("./views/AuthPage"));
+const VerifyEmailPage = React.lazy(() => import("./views/VerifyEmailPage"));
 const ForgotPasswordPage = React.lazy(
-  () => import("./pages/ForgotPasswordPage")
+  () => import("./views/ForgotPasswordPage")
 );
-const ResetPasswordPage = React.lazy(() => import("./pages/ResetPasswordPage"));
+const ResetPasswordPage = React.lazy(() => import("./views/ResetPasswordPage"));
 const ResendVerificationPage = React.lazy(
-  () => import("./pages/ResendVerificationPage")
+  () => import("./views/ResendVerificationPage")
 );
-const PrivacyPolicyPage = React.lazy(() => import("./pages/PrivacyPolicyPage"));
+const PrivacyPolicyPage = React.lazy(() => import("./views/PrivacyPolicyPage"));
 const TermsOfServicePage = React.lazy(
-  () => import("./pages/TermsOfServicePage")
+  () => import("./views/TermsOfServicePage")
 );
-const SecurityPage = React.lazy(() => import("./pages/SecurityPage"));
+const SecurityPage = React.lazy(() => import("./views/SecurityPage"));
 const AccountManagementPage = React.lazy(
-  () => import("./pages/AccountManagementPage")
+  () => import("./views/AccountManagementPage")
 );
 const ChangePasswordPage = React.lazy(
-  () => import("./pages/ChangePasswordPage")
+  () => import("./views/ChangePasswordPage")
 );
-const ActivityDashboard = React.lazy(() => import("./pages/ActivityDashboard"));
-const PublicFilesPage = React.lazy(() => import("./pages/PublicFilesPage"));
-const MarketplacePage = React.lazy(() => import("./pages/MarketplacePage"));
-const ProfilePage = React.lazy(() => import("./pages/ProfilePage"));
-const ManagerDashboard = React.lazy(() => import("./pages/ManagerDashboard"));
-const SupportPage = React.lazy(() => import("./pages/SupportPage"));
-const FAQPage = React.lazy(() => import("./pages/FAQPage"));
-const ContactPage = React.lazy(() => import("./pages/ContactPage"));
-const TermsPrivacy = React.lazy(() => import("./pages/TermsPrivacy"));
-const PricingPage = React.lazy(() => import("./pages/PricingPage"));
-const SuccessFreePage = React.lazy(() => import("./pages/SuccessFreePage"));
+const ActivityDashboard = React.lazy(() => import("./views/ActivityDashboard"));
+const PublicFilesPage = React.lazy(() => import("./views/PublicFilesPage"));
+const MarketplacePage = React.lazy(() => import("./views/MarketplacePage"));
+const ProfilePage = React.lazy(() => import("./views/ProfilePage"));
+const ManagerDashboard = React.lazy(() => import("./views/ManagerDashboard"));
+const SupportPage = React.lazy(() => import("./views/SupportPage"));
+const FAQPage = React.lazy(() => import("./views/FAQPage"));
+const ContactPage = React.lazy(() => import("./views/ContactPage"));
+const TermsPrivacy = React.lazy(() => import("./views/TermsPrivacy"));
+const PricingPage = React.lazy(() => import("./views/PricingPage"));
+const SuccessFreePage = React.lazy(() => import("./views/SuccessFreePage"));
 const SuccessPremiumPage = React.lazy(
-  () => import("./pages/SuccessPremiumPage")
+  () => import("./views/SuccessPremiumPage")
 );
 const SuccessPartnerPage = React.lazy(
-  () => import("./pages/SuccessPartnerPage")
+  () => import("./views/SuccessPartnerPage")
 );
 const EnhancedInstructionPage = React.lazy(
-  () => import("./pages/EnhancedInstructionPage")
+  () => import("./views/EnhancedInstructionPage")
 );
-const UploadPage = React.lazy(() => import("./pages/UploadPage"));
+const UploadPage = React.lazy(() => import("./views/UploadPage"));
 const NotificationDemo = React.lazy(
   () => import("./components/demo/NotificationDemo")
 );
 
 // Workflow Marketplace pages
 const WorkflowMarketplacePage = React.lazy(
-  () => import("./pages/WorkflowMarketplacePage")
+  () => import("./views/WorkflowMarketplacePage")
 );
 const WorkflowCheckoutPage = React.lazy(
-  () => import("./pages/WorkflowCheckoutPage")
+  () => import("./views/WorkflowCheckoutPage")
 );
 const WorkflowManagementPage = React.lazy(
-  () => import("./pages/WorkflowManagementPage")
+  () => import("./views/WorkflowManagementPage")
 );
-const ShowcasePage = React.lazy(() => import("./pages/ShowcasePage"));
-// const PaymentVerificationPage = React.lazy(() => import("./pages/admin/PaymentVerificationPage"));
+const ShowcasePage = React.lazy(() => import("./views/ShowcasePage"));
+const PaymentVerificationPage = React.lazy(() => import("./views/admin/PaymentVerificationPage"));
 
 // CMS & Payment Management pages
-const AdminCMSPage = React.lazy(() => import("./pages/AdminCMSPage"));
+const AdminCMSPage = React.lazy(() => import("./views/AdminCMSPage"));
 const PaymentMethodsManagementPage = React.lazy(
-  () => import("./pages/PaymentMethodsManagementPage")
+  () => import("./views/PaymentMethodsManagementPage")
 );
 
 // Account Upgrade page
-const AccountUpgradePage = React.lazy(() => import("./pages/AccountUpgradePage"));
+const AccountUpgradePage = React.lazy(() => import("./views/AccountUpgradePage"));
 
 // Admin Dashboard & Subscription Management
-const AdminDashboardPage = React.lazy(() => import("./pages/AdminDashboardPage"));
-const AdminSubscriptionManagementPage = React.lazy(() => import("./pages/AdminSubscriptionManagementPage"));
-const AdminSetupPage = React.lazy(() => import("./pages/AdminSetupPage"));
-const AdminUsersPage = React.lazy(() => import("./pages/AdminUsersPage"));
+const AdminDashboardPage = React.lazy(() => import("./views/AdminDashboardPage"));
+const AdminSubscriptionManagementPage = React.lazy(() => import("./views/AdminSubscriptionManagementPage"));
+const AdminSetupPage = React.lazy(() => import("./views/AdminSetupPage"));
+const AdminUsersPage = React.lazy(() => import("./views/AdminUsersPage"));
 
 function App() {
   // Debug configuration in development
@@ -178,8 +177,8 @@ function App() {
                         v7_relativeSplatPath: true,
                       }}
                     >
-                      <div className="App min-h-screen flex flex-col bg-black">
-                        {/* Simple black background - Galaxy removed due to performance issues */}
+                      <div className="App min-h-screen flex flex-col bg-background">
+                        {/* Theme trắng + xanh, ít hiệu ứng để giảm lag */}
                         <ModernSidebarV2 />
                         <SkipToContent />
                         <ScrollToTop />
@@ -404,7 +403,14 @@ function App() {
                             path="/*"
                             element={
                               <HeaderLayout>
-                                <main className="flex-1">
+                                <main className="flex-1 min-h-0">
+                                  <Suspense
+                                    fallback={
+                                      <div className="flex items-center justify-center py-24 text-muted-foreground">
+                                        <span className="animate-pulse">Đang tải...</span>
+                                      </div>
+                                    }
+                                  >
                                   <Routes>
                                     <Route
                                       path="/goi-dich-vu"
@@ -686,7 +692,6 @@ function App() {
                                         </AdminRoute>
                                       }
                                     />
-                                    {/* Temporarily disabled - build error
                                     <Route
                                       path="/admin/thanh-toan"
                                       element={
@@ -696,7 +701,7 @@ function App() {
                                           </PageTransition>
                                         </AdminRoute>
                                       }
-                                    /> */}
+                                    />
                                     <Route
                                       path="/tai-len"
                                       element={
@@ -724,6 +729,7 @@ function App() {
                                       }
                                     />
                                   </Routes>
+                                  </Suspense>
                                 </main>
                                 <Footer />
                                 <ClientWrapper />

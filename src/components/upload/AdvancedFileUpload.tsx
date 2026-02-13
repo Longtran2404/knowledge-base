@@ -10,7 +10,7 @@ import {
   Upload,
   File,
   Video,
-  Image,
+  Image as ImageIcon,
   FileText,
   AlertTriangle,
   Shield,
@@ -110,7 +110,7 @@ export default function AdvancedFileUpload() {
       case "video":
         return <Video className="h-8 w-8 text-purple-500" />;
       case "image":
-        return <Image className="h-8 w-8 text-green-500" />;
+        return <ImageIcon className="h-8 w-8 text-green-500" />;
       case "document":
         return <FileText className="h-8 w-8 text-blue-500" />;
       default:
@@ -445,7 +445,7 @@ export default function AdvancedFileUpload() {
                   Video
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-500">
-                  <Image className="h-4 w-4 text-green-400" />
+                  <ImageIcon className="h-4 w-4 text-green-400" />
                   Hình ảnh
                 </div>
               </div>

@@ -1,72 +1,31 @@
 /**
- * Unified Theme Configuration
- * Light mode liquid glass theme for Knowledge Base
+ * Theme Configuration - tham chiếu design system từ CSS (src/index.css)
+ * Màu sắc: dùng biến :root (--primary, --muted, ...). Không định nghĩa trùng palette ở đây.
  */
 
 export const theme = {
-  // Colors
+  // Chỉ semantic tokens (dùng khi cần giá trị trong JS). Màu gốc nằm trong index.css
   colors: {
-    primary: {
-      50: '#eff6ff',
-      100: '#dbeafe',
-      200: '#bfdbfe',
-      300: '#93c5fd',
-      400: '#60a5fa',
-      500: '#3b82f6',
-      600: '#2563eb',
-      700: '#1d4ed8',
-      800: '#1e40af',
-      900: '#1e3a8a',
-    },
-    secondary: {
-      50: '#f5f3ff',
-      100: '#ede9fe',
-      200: '#ddd6fe',
-      300: '#c4b5fd',
-      400: '#a78bfa',
-      500: '#8b5cf6',
-      600: '#7c3aed',
-      700: '#6d28d9',
-      800: '#5b21b6',
-      900: '#4c1d95',
-    },
-    gray: {
-      50: '#f9fafb',
-      100: '#f3f4f6',
-      200: '#e5e7eb',
-      300: '#d1d5db',
-      400: '#9ca3af',
-      500: '#6b7280',
-      600: '#4b5563',
-      700: '#374151',
-      800: '#1f2937',
-      900: '#111827',
-    },
-    success: '#10b981',
-    warning: '#f59e0b',
-    error: '#ef4444',
-    info: '#3b82f6',
+    primary: 'hsl(var(--primary))',
+    success: 'hsl(var(--success))',
+    warning: 'hsl(var(--warning))',
+    error: 'hsl(var(--destructive))',
+    info: 'hsl(var(--info))',
   },
 
-  // Liquid Glass Effects
+  // Glass effects - dùng border/background từ CSS vars khi áp inline style
   glass: {
     light: {
-      background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.90) 100%)',
       backdropFilter: 'blur(24px)',
-      border: '1px solid rgba(229, 231, 235, 0.4)',
-      shadow: '0 8px 32px 0 rgba(31, 38, 135, 0.1)',
+      shadow: 'var(--shadow-soft)',
     },
     medium: {
-      background: 'linear-gradient(135deg, rgba(255,255,255,0.90) 0%, rgba(248,250,252,0.85) 100%)',
       backdropFilter: 'blur(20px)',
-      border: '1px solid rgba(229, 231, 235, 0.3)',
-      shadow: '0 8px 24px 0 rgba(31, 38, 135, 0.08)',
+      shadow: 'var(--shadow-medium)',
     },
     card: {
-      background: 'linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.95) 100%)',
       backdropFilter: 'blur(16px)',
-      border: '1px solid rgba(229, 231, 235, 0.5)',
-      shadow: '0 4px 16px 0 rgba(31, 38, 135, 0.06)',
+      shadow: 'var(--shadow-soft)',
     },
   },
 

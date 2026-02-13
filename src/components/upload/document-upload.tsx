@@ -27,7 +27,7 @@ import { Checkbox } from "../ui/checkbox";
 import {
   Upload,
   FileText,
-  Image,
+  Image as ImageIcon,
   Video,
   Music,
   Archive,
@@ -167,7 +167,7 @@ export function DocumentUpload() {
   const getFileIcon = (file: File | null) => {
     if (!file) return <FileText className="w-8 h-8" />;
 
-    if (file.type.startsWith("image/")) return <Image className="w-8 h-8" />;
+    if (file.type.startsWith("image/")) return <ImageIcon className="w-8 h-8" />;
     if (file.type.startsWith("video/")) return <Video className="w-8 h-8" />;
     if (file.type.startsWith("audio/")) return <Music className="w-8 h-8" />;
     if (file.type.includes("zip") || file.type.includes("rar"))

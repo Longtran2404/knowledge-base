@@ -311,6 +311,7 @@ export default function LoginEnhancement() {
                     src={userProfile.avatar_url}
                     alt={userProfile.full_name || userProfile.email}
                     className="w-10 h-10 rounded-full object-cover"
+                    onError={(e) => { e.currentTarget.src = '/images/placeholder.svg'; }}
                   />
                 ) : (
                   <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">

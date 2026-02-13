@@ -47,14 +47,14 @@ export const ModernLoading: React.FC<ModernLoadingProps> = ({
             className="relative"
           >
             {/* Glowing background */}
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 blur-3xl"></div>
+            <div className="absolute inset-0 bg-primary/20 blur-3xl"></div>
 
             {/* Card */}
-            <div className="relative bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-xl rounded-3xl p-8 border border-white/10 shadow-2xl">
+            <div className="relative bg-card/95 backdrop-blur-xl rounded-3xl p-8 border border-border shadow-strong">
               <div className="flex flex-col items-center space-y-6">
                 {/* Animated Icon */}
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 blur-xl opacity-50 animate-pulse"></div>
+                  <div className="absolute inset-0 bg-primary blur-xl opacity-50 animate-pulse"></div>
                   <motion.div
                     animate={{
                       y: icon === "loader" ? 0 : [0, -10, 0],
@@ -64,7 +64,7 @@ export const ModernLoading: React.FC<ModernLoadingProps> = ({
                       repeat: Infinity,
                       ease: "easeInOut",
                     }}
-                    className="relative bg-gradient-to-br from-blue-500 to-purple-600 p-6 rounded-2xl"
+                    className="relative gradient-bg-primary p-6 rounded-2xl"
                   >
                     {getIcon()}
                   </motion.div>
@@ -72,16 +72,16 @@ export const ModernLoading: React.FC<ModernLoadingProps> = ({
 
                 {/* Loading Text */}
                 <div className="text-center space-y-2">
-                  <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                  <h3 className="text-2xl font-bold gradient-text">
                     {message}
                   </h3>
-                  <p className="text-gray-400 text-sm">{submessage}</p>
+                  <p className="text-muted-foreground text-sm">{submessage}</p>
                 </div>
 
                 {/* Animated Progress Bar */}
-                <div className="w-64 h-1.5 bg-gray-700/50 rounded-full overflow-hidden">
+                <div className="w-64 h-1.5 bg-muted rounded-full overflow-hidden">
                   <motion.div
-                    className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"
+                    className="h-full bg-primary"
                     animate={{
                       x: ["-100%", "100%"],
                     }}
@@ -98,7 +98,7 @@ export const ModernLoading: React.FC<ModernLoadingProps> = ({
                   {[0, 1, 2].map((i) => (
                     <motion.div
                       key={i}
-                      className="w-2 h-2 bg-blue-500 rounded-full"
+                      className="w-2 h-2 bg-primary rounded-full"
                       animate={{
                         scale: [1, 1.5, 1],
                         opacity: [0.5, 1, 0.5],

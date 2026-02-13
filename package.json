@@ -85,7 +85,7 @@
     "react-i18next": "^13.5.0",
     "react-redux": "^9.2.0",
     "react-router-dom": "^6.26.1",
-    "react-scripts": "^5.0.1",
+    "next": "^15.0.0",
     "recharts": "^2.14.0",
     "sepay-pg-node": "^1.0.0",
     "simple-peer": "^9.11.1",
@@ -103,7 +103,7 @@
   "devDependencies": {
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
-    "@craco/craco": "^7.1.0",
+    "eslint-config-next": "^15.0.0",
     "@locator/babel-jsx": "^0.4.4",
     "@locator/runtime": "^0.4.4",
     "@playwright/test": "^1.49.0",
@@ -120,19 +120,19 @@
     "tailwindcss": "^3.4.1"
   },
   "scripts": {
-    "start": "craco start",
-    "build": "craco build",
-    "build:analyze": "cross-env ANALYZE=true npm run build",
+    "dev": "next dev",
+    "start": "next start",
+    "build": "next build",
+    "build:analyze": "ANALYZE=true next build",
     "test": "vitest",
     "test:watch": "vitest --watch",
     "test:coverage": "vitest --coverage",
-    "test:unit": "craco test --watchAll=false",
+    "test:unit": "vitest run",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test --debug",
     "test:load": "k6 run tests/load/scenarios.js",
     "test:all": "npm run test:coverage && npm run test:e2e",
-    "eject": "react-scripts eject",
     "lint": "eslint src --ext .ts,.tsx --fix",
     "lint:check": "eslint src --ext .ts,.tsx",
     "type-check": "tsc --noEmit",
@@ -141,8 +141,6 @@
     "deploy": "powershell -ExecutionPolicy Bypass -File scripts/deploy.ps1",
     "deploy:unix": "bash scripts/deploy.sh",
     "deploy:production": "vercel --prod",
-    "prebuild": "npm run type-check && npm run lint:check",
-    "postbuild": "echo Build completed successfully!",
     "setup:db": "node scripts/setup-database.js",
     "test:db": "node scripts/test-database-connection.js",
     "storybook": "storybook dev -p 6006",
@@ -153,8 +151,7 @@
   },
   "eslintConfig": {
     "extends": [
-      "react-app",
-      "react-app/jest"
+      "next/core-web-vitals"
     ],
     "rules": {
       "@typescript-eslint/no-unused-vars": "off",

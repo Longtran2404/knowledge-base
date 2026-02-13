@@ -127,6 +127,7 @@ export default function MarketplaceTabs({ className }: MarketplaceTabsProps) {
               src={product.thumbnail}
               alt={product.name}
               className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              onError={(e) => { e.currentTarget.src = '/images/placeholder.svg'; }}
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">

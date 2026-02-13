@@ -41,13 +41,13 @@ export function ScrollToTop({
     <button
       onClick={scrollToTop}
       className={cn(
-        "fixed bottom-32 right-8 z-40 p-3 bg-white border border-gray-200 rounded-full shadow-medium hover:shadow-strong transition-all duration-300 transform hover:scale-110 active:scale-95",
-        "hover:bg-blue-50 hover:border-blue-300 group",
+        "fixed bottom-32 right-8 z-40 p-3 bg-card border border-border rounded-full shadow-medium hover:shadow-strong transition-all duration-300 transform hover:scale-110 active:scale-95",
+        "hover:bg-primary/5 hover:border-primary/30 group",
         className
       )}
       aria-label="Cuộn lên đầu trang"
     >
-      <ChevronUp className="h-5 w-5 text-gray-600 group-hover:text-blue-600 transition-colors" />
+      <ChevronUp className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
     </button>
   );
 }
@@ -90,13 +90,13 @@ export function ScrollToTopWithProgress({
       <div className="relative w-12 h-12 mb-2">
         <svg className="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
           <path
-            className="text-gray-200"
+            className="text-muted"
             strokeWidth="3"
             fill="none"
             d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
           />
           <path
-            className="text-blue-600 transition-all duration-300"
+            className="text-primary transition-all duration-300"
             strokeWidth="3"
             fill="none"
             strokeDasharray={`${scrollProgress}, 100`}
@@ -104,7 +104,7 @@ export function ScrollToTopWithProgress({
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-xs font-semibold text-gray-600">
+          <span className="text-xs font-semibold text-muted-foreground">
             {Math.round(scrollProgress)}%
           </span>
         </div>
@@ -113,10 +113,10 @@ export function ScrollToTopWithProgress({
       {/* Scroll to top button */}
       <button
         onClick={scrollToTop}
-        className="w-12 h-12 bg-white border border-gray-200 rounded-full shadow-medium hover:shadow-strong transition-all duration-300 transform hover:scale-110 active:scale-95 hover:bg-blue-50 hover:border-blue-300 group flex items-center justify-center"
+        className="w-12 h-12 bg-card border border-border rounded-full shadow-medium hover:shadow-strong transition-all duration-300 transform hover:scale-110 active:scale-95 hover:bg-primary/5 hover:border-primary/30 group flex items-center justify-center"
         aria-label="Cuộn lên đầu trang"
       >
-        <ChevronUp className="h-5 w-5 text-gray-600 group-hover:text-blue-600 transition-colors" />
+        <ChevronUp className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
       </button>
     </div>
   );
@@ -157,7 +157,7 @@ export function FloatingScrollToTop({
     >
       <button
         onClick={scrollToTop}
-        className="w-14 h-14 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full shadow-strong hover:shadow-glow transition-all duration-300 transform hover:scale-110 active:scale-95 flex items-center justify-center group"
+        className="w-14 h-14 gradient-bg-primary text-primary-foreground rounded-full shadow-strong hover:shadow-glow transition-all duration-300 transform hover:scale-110 active:scale-95 flex items-center justify-center group"
         aria-label="Cuộn lên đầu trang"
       >
         <ChevronUp className="h-6 w-6 group-hover:animate-bounce" />

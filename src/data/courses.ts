@@ -22,7 +22,7 @@ function convertNLCCourseToLegacyCourse(nlcCourse: NLCCourse): Course {
     thumbnail:
       nlcCourse.thumbnail_url ||
       nlcCourse.course_image_url ||
-      "/images/courses/default.jpg",
+      "/images/placeholder.svg",
     price: nlcCourse.course_price,
     isHot: nlcCourse.is_featured,
     createdAt: nlcCourse.created_at,
@@ -41,7 +41,7 @@ const fallbackCoursesData: Course[] = [
     tags: ["React", "JavaScript", "Frontend"],
     ratingAvg: 4.8,
     ratingCount: 121,
-    thumbnail: "/images/courses/react-basic.jpg",
+    thumbnail: "/images/placeholder.svg",
     price: 299000,
     isHot: true,
     createdAt: "2024-12-01T00:00:00.000Z",
@@ -56,7 +56,7 @@ const fallbackCoursesData: Course[] = [
     tags: ["Node.js", "Express", "API", "Backend"],
     ratingAvg: 4.6,
     ratingCount: 86,
-    thumbnail: "/images/courses/nodejs-backend.jpg",
+    thumbnail: "/images/placeholder.svg",
     price: 399000,
     createdAt: "2024-11-15T00:00:00.000Z",
   },
@@ -70,7 +70,7 @@ const fallbackCoursesData: Course[] = [
     tags: ["Full-stack", "React", "Node.js", "MongoDB"],
     ratingAvg: 4.9,
     ratingCount: 203,
-    thumbnail: "/images/courses/fullstack-js.jpg",
+    thumbnail: "/images/placeholder.svg",
     price: 599000,
     isHot: true,
     createdAt: "2024-10-20T00:00:00.000Z",

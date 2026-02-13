@@ -37,34 +37,34 @@ class ConfigService {
 
   constructor() {
     this.config = {
-      // Supabase
+      // Supabase (Next.js: NEXT_PUBLIC_*; next.config maps REACT_APP_* -> NEXT_PUBLIC_*)
       supabaseUrl:
-        process.env.REACT_APP_SUPABASE_URL || "https://demo.supabase.co",
-      supabaseAnonKey: process.env.REACT_APP_SUPABASE_ANON_KEY || "demo-key",
+        process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.REACT_APP_SUPABASE_URL || "https://demo.supabase.co",
+      supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.REACT_APP_SUPABASE_ANON_KEY || "demo-key",
 
       // Stripe
-      stripePublishableKey: process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY || "",
+      stripePublishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY || "",
       stripeSecretKey: process.env.REACT_APP_STRIPE_SECRET_KEY || "",
 
       // API
-      apiUrl: process.env.REACT_APP_API_URL || "http://localhost:3001",
-      appUrl: process.env.REACT_APP_APP_URL || "http://localhost:3000",
+      apiUrl: process.env.NEXT_PUBLIC_API_URL || process.env.REACT_APP_API_URL || "http://localhost:3001",
+      appUrl: process.env.NEXT_PUBLIC_APP_URL || process.env.REACT_APP_APP_URL || "http://localhost:3000",
 
       // Email
-      emailjsServiceId: process.env.REACT_APP_EMAILJS_SERVICE_ID || "",
-      emailjsTemplateId: process.env.REACT_APP_EMAILJS_TEMPLATE_ID || "",
-      emailjsPublicKey: process.env.REACT_APP_EMAILJS_PUBLIC_KEY || "",
+      emailjsServiceId: process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || process.env.REACT_APP_EMAILJS_SERVICE_ID || "",
+      emailjsTemplateId: process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || process.env.REACT_APP_EMAILJS_TEMPLATE_ID || "",
+      emailjsPublicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || process.env.REACT_APP_EMAILJS_PUBLIC_KEY || "",
 
       // App Info
-      appName: process.env.REACT_APP_APP_NAME || "Knowledge Base",
-      appVersion: process.env.REACT_APP_APP_VERSION || "1.0.0",
-      environment: process.env.REACT_APP_ENVIRONMENT || "development",
+      appName: process.env.NEXT_PUBLIC_APP_NAME || process.env.REACT_APP_APP_NAME || "Knowledge Base",
+      appVersion: process.env.NEXT_PUBLIC_APP_VERSION || process.env.REACT_APP_APP_VERSION || "1.0.0",
+      environment: process.env.NEXT_PUBLIC_ENVIRONMENT || process.env.REACT_APP_ENVIRONMENT || "development",
 
       // Feature Flags
-      enableAnalytics: process.env.REACT_APP_ENABLE_ANALYTICS === "true",
-      enableDebug: process.env.REACT_APP_ENABLE_DEBUG === "true",
+      enableAnalytics: (process.env.NEXT_PUBLIC_ENABLE_ANALYTICS ?? process.env.REACT_APP_ENABLE_ANALYTICS) === "true",
+      enableDebug: (process.env.NEXT_PUBLIC_ENABLE_DEBUG ?? process.env.REACT_APP_ENABLE_DEBUG) === "true",
       enablePaymentMonitoring:
-        process.env.REACT_APP_ENABLE_PAYMENT_MONITORING !== "false",
+        (process.env.NEXT_PUBLIC_ENABLE_PAYMENT_MONITORING ?? process.env.REACT_APP_ENABLE_PAYMENT_MONITORING) !== "false",
     };
 
     this.validateConfig();

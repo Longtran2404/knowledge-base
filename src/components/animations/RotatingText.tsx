@@ -24,7 +24,7 @@ export function RotatingText({ words, interval = 2000, className = '' }: Rotatin
   }, [words.length, interval]);
 
   return (
-    <div className={`relative inline-block ${className}`}>
+    <span className={`relative inline-block ${className}`}>
       <AnimatePresence mode="wait">
         <motion.span
           key={index}
@@ -35,12 +35,12 @@ export function RotatingText({ words, interval = 2000, className = '' }: Rotatin
             duration: 0.5,
             ease: 'easeInOut',
           }}
-          className="inline-block bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent"
+          className="inline-block gradient-text"
         >
           {words[index]}
         </motion.span>
       </AnimatePresence>
-    </div>
+    </span>
   );
 }
 
@@ -57,7 +57,7 @@ export function RotatingTextFlip({ words, interval = 2000, className = '' }: Rot
   }, [words.length, interval]);
 
   return (
-    <div className={`relative inline-block perspective-1000 ${className}`}>
+    <span className={`relative inline-block perspective-1000 ${className}`}>
       <AnimatePresence mode="wait">
         <motion.span
           key={index}
@@ -69,11 +69,11 @@ export function RotatingTextFlip({ words, interval = 2000, className = '' }: Rot
             ease: 'easeInOut',
           }}
           style={{ transformStyle: 'preserve-3d' }}
-          className="inline-block bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent"
+          className="inline-block gradient-text"
         >
           {words[index]}
         </motion.span>
       </AnimatePresence>
-    </div>
+    </span>
   );
 }

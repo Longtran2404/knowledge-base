@@ -101,6 +101,7 @@ export default function CourseGrid({ className }: CourseGridProps) {
               src={course.thumbnail}
               alt={course.title}
               className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              onError={(e) => { e.currentTarget.src = '/images/placeholder.svg'; }}
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">

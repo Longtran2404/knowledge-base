@@ -52,6 +52,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                 src={avatar}
                 alt={name}
                 className="w-16 h-16 rounded-full object-cover border-2 border-blue-500/30"
+                onError={(e) => { e.currentTarget.src = '/images/placeholder.svg'; }}
               />
             ) : (
               <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
@@ -99,6 +100,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
               src={avatar}
               alt={name}
               className="w-24 h-24 rounded-2xl object-cover border-4 border-black/50 shadow-xl"
+              onError={(e) => { e.currentTarget.src = '/images/placeholder.svg'; }}
             />
           ) : (
             <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-4xl font-bold border-4 border-black/50 shadow-xl">

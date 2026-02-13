@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Upload, File, Video, Image, BookOpen, Edit, Trash, Download, Eye } from "lucide-react";
+import { Upload, File, Video, Image as ImageIcon, BookOpen, Edit, Trash, Download, Eye } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -63,7 +63,7 @@ export default function FileManager() {
   // Get file icon based on type
   const getFileIcon = (type: string, category: string) => {
     if (category === "course") return <Video className="w-5 h-5 text-blue-500" />;
-    if (type.startsWith("image/")) return <Image className="w-5 h-5 text-green-500" />;
+    if (type.startsWith("image/")) return <ImageIcon className="w-5 h-5 text-green-500" />;
     if (type.startsWith("video/")) return <Video className="w-5 h-5 text-purple-500" />;
     if (type === "application/pdf") return <File className="w-5 h-5 text-red-500" />;
     return <File className="w-5 h-5 text-gray-500" />;
@@ -295,7 +295,7 @@ export default function FileManager() {
                     className="cursor-pointer flex flex-col items-center gap-2"
                   >
                     {category === "document" && <File className="w-8 h-8 text-blue-500" />}
-                    {category === "image" && <Image className="w-8 h-8 text-green-500" />}
+                    {category === "image" && <ImageIcon className="w-8 h-8 text-green-500" />}
                     {category === "blog" && <BookOpen className="w-8 h-8 text-purple-500" />}
                     {category === "course" && <Video className="w-8 h-8 text-red-500" />}
                     {category === "public" && <Upload className="w-8 h-8 text-gray-500" />}

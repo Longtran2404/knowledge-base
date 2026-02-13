@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
@@ -447,10 +447,10 @@ export function OrderConfirmation({
                 <Separator />
 
                 <Button className="w-full" asChild>
-                  <a href="/marketplace">
+                  <Link to="/marketplace">
                     Tiếp tục mua sắm
                     <ArrowRight className="h-4 w-4 ml-2" />
-                  </a>
+                  </Link>
                 </Button>
               </CardContent>
             </Card>

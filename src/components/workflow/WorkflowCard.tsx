@@ -53,6 +53,7 @@ export const WorkflowCard: React.FC<WorkflowCardProps> = ({
             src={workflow.workflow_thumbnail || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500'}
             alt={workflow.workflow_name}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+            onError={(e) => { e.currentTarget.src = '/images/placeholder.svg'; }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
 

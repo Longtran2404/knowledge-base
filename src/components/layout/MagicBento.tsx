@@ -72,6 +72,7 @@ function BentoCard({ title, description, icon, image, className = '' }: BentoIte
             src={image}
             alt={title}
             className="w-full h-full object-cover"
+            onError={(e) => { e.currentTarget.src = '/images/placeholder.svg'; }}
           />
         </div>
       )}

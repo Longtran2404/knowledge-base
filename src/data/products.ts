@@ -18,7 +18,7 @@ export const productsData: Product[] = [
     isNew: false,
     ratingAvg: 4.7,
     ratingCount: 45,
-    thumbnail: "/images/products/cad-cleaner.jpg",
+    thumbnail: "/images/placeholder.svg",
     createdAt: "2025-07-20T00:00:00.000Z",
   },
   {
@@ -38,7 +38,7 @@ export const productsData: Product[] = [
     isNew: true,
     ratingAvg: 4.6,
     ratingCount: 32,
-    thumbnail: "/images/products/bim-ebook.jpg",
+    thumbnail: "/images/placeholder.svg",
     createdAt: "2025-07-15T00:00:00.000Z",
   },
   {
@@ -58,7 +58,7 @@ export const productsData: Product[] = [
     isNew: true,
     ratingAvg: 4.8,
     ratingCount: 67,
-    thumbnail: "/images/products/revit-suite.jpg",
+    thumbnail: "/images/placeholder.svg",
     createdAt: "2025-07-10T00:00:00.000Z",
   },
   {
@@ -78,7 +78,7 @@ export const productsData: Product[] = [
     isNew: false,
     ratingAvg: 4.5,
     ratingCount: 28,
-    thumbnail: "/images/products/bim-starter.jpg",
+    thumbnail: "/images/placeholder.svg",
     createdAt: "2025-07-05T00:00:00.000Z",
   },
 ];

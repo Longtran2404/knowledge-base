@@ -117,6 +117,7 @@ export function Course3DCard({
             src={image}
             alt={title}
             className="w-full h-full object-cover"
+            onError={(e) => { e.currentTarget.src = '/images/placeholder.svg'; }}
           />
           <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-black/60 backdrop-blur-sm text-xs font-medium text-white">
             {level}

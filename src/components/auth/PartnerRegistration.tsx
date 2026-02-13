@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Building2,
@@ -506,16 +507,16 @@ export const PartnerRegistration: React.FC<PartnerRegistrationProps> = ({
                   className="text-sm leading-relaxed"
                 >
                   Tôi đồng ý với{" "}
-                  <a href="/terms" className="text-blue-600 hover:underline">
+                  <Link to="/terms" className="text-primary hover:underline">
                     Điều khoản dịch vụ
-                  </a>{" "}
+                  </Link>{" "}
                   và{" "}
-                  <a
-                    href="/partner-policy"
-                    className="text-blue-600 hover:underline"
+                  <Link
+                    to="/partner-policy"
+                    className="text-primary hover:underline"
                   >
                     Chính sách đối tác
-                  </a>{" "}
+                  </Link>{" "}
                   của Knowledge Base *
                 </Label>
               </div>
@@ -538,9 +539,9 @@ export const PartnerRegistration: React.FC<PartnerRegistrationProps> = ({
                   className="text-sm leading-relaxed"
                 >
                   Tôi đồng ý cho Knowledge Base xử lý dữ liệu cá nhân theo{" "}
-                  <a href="/privacy" className="text-blue-600 hover:underline">
+                  <Link to="/privacy" className="text-primary hover:underline">
                     Chính sách bảo mật
-                  </a>{" "}
+                  </Link>{" "}
                   *
                 </Label>
               </div>

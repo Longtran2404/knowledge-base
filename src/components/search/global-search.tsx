@@ -37,6 +37,10 @@ interface SearchResult {
   image?: string;
 }
 
+interface SearchResultsResponse {
+  results?: SearchResult[];
+}
+
 interface GlobalSearchProps {
   placeholder?: string;
   className?: string;
@@ -111,35 +115,18 @@ export function GlobalSearch({
 
       if (e.key === 'ArrowDown') {
         e.preventDefault();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        setSelectedIndex(prev => 
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          prev < ((searchResults as any)?.results?.length || 0) - 1 ? prev + 1 : prev
+        const res = searchResults as SearchResultsResponse | undefined;
+        setSelectedIndex(prev =>
+          prev < (res?.results?.length ?? 0) - 1 ? prev + 1 : prev
         );
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
         setSelectedIndex(prev => prev > 0 ? prev - 1 : 0);
       } else if (e.key === 'Enter') {
         e.preventDefault();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        if ((searchResults as any)?.results?.[selectedIndex]) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          handleResultClick((searchResults as any).results[selectedIndex]);
-        }
+        const res = searchResults as SearchResultsResponse | undefined;
+        const item = res?.results?.[selectedIndex];
+        if (item) handleResultClick(item);
       } else if (e.key === 'Escape') {
         setIsOpen(false);
         inputRef.current?.blur();
@@ -260,16 +247,14 @@ export function GlobalSearch({
                     </div>
                   )}
                   
-                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                  {(searchResults as any)?.results?.length === 0 && !isLoading && (
+                  {(searchResults as SearchResultsResponse)?.results?.length === 0 && !isLoading && (
                     <div className="text-center py-8">
                       <Search className="h-8 w-8 text-gray-300 mx-auto mb-2" />
                       <p className="text-sm text-gray-500">Không tìm thấy kết quả nào</p>
                     </div>
                   )}
                   
-                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                  {(searchResults as any)?.results?.map((result: any, index: number) => (
+                  {(searchResults as SearchResultsResponse)?.results?.map((result, index) => (
                     <div
                       key={result.id}
                       className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
@@ -383,11 +368,9 @@ export function GlobalSearch({
                   </div>
                 </CommandEmpty>
                 
-                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                {(searchResults as any)?.results?.length > 0 && (
+                {(searchResults as SearchResultsResponse)?.results?.length > 0 && (
                   <CommandGroup heading="Kết quả tìm kiếm">
-                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                    {(searchResults as any).results.map((result: any) => (
+                    {((searchResults as SearchResultsResponse)?.results ?? []).map((result) => (
                       <CommandItem
                         key={result.id}
                         value={result.id}

@@ -66,6 +66,7 @@ export function CartItem({
               src={item.image_url}
               alt={item.name}
               className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
+              onError={(e) => { e.currentTarget.src = '/images/placeholder.svg'; }}
             />
           ) : (
             <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
@@ -140,6 +141,7 @@ export function CartItem({
               src={item.image_url}
               alt={item.name}
               className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+              onError={(e) => { e.currentTarget.src = '/images/placeholder.svg'; }}
             />
           ) : (
             <div className="w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">

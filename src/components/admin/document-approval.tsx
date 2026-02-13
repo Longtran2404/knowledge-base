@@ -27,7 +27,7 @@ import {
   X,
   Clock,
   FileText,
-  Image,
+  Image as ImageIcon,
   Video,
   Music,
   Archive,
@@ -169,7 +169,7 @@ export function DocumentApproval() {
   };
 
   const getFileIcon = (fileType: string) => {
-    if (fileType.startsWith("image/")) return <Image className="w-5 h-5" />;
+    if (fileType.startsWith("image/")) return <ImageIcon className="w-5 h-5" />;
     if (fileType.startsWith("video/")) return <Video className="w-5 h-5" />;
     if (fileType.startsWith("audio/")) return <Music className="w-5 h-5" />;
     if (fileType.includes("zip") || fileType.includes("rar"))

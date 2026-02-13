@@ -137,6 +137,7 @@ export function CanvasLaserFlow({ className = '' }: { className?: string }) {
     const colors = ['#3b82f6', '#8b5cf6', '#ec4899', '#06b6d4', '#10b981'];
 
     function createLaser() {
+      if (!canvas) return;
       const side = Math.floor(Math.random() * 4);
       let x, y, vx, vy;
 
@@ -181,6 +182,7 @@ export function CanvasLaserFlow({ className = '' }: { className?: string }) {
     }
 
     function animate() {
+      if (!ctx || !canvas) return;
       ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 

@@ -43,27 +43,32 @@ module.exports = {
         },
       };
 
-      // Add ESLint plugin and optimize plugins
+      // Add plugins (ESLint chỉ chạy lúc build để dev start nhanh hơn)
+      const isDev = webpackConfig.mode === 'development';
       webpackConfig.plugins = [
         ...webpackConfig.plugins,
         new webpack.ProvidePlugin({
           process: 'process/browser',
           Buffer: ['buffer', 'Buffer'],
         }),
-        new ESLintPlugin({
-          extensions: ['js', 'jsx', 'ts', 'tsx'],
-          cache: true,
-          cacheLocation: 'node_modules/.cache/eslint-webpack-plugin',
-          failOnError: false,
-          failOnWarning: false,
-        }),
+        ...(isDev ? [] : [
+          new ESLintPlugin({
+            extensions: ['js', 'jsx', 'ts', 'tsx'],
+            cache: true,
+            cacheLocation: 'node_modules/.cache/eslint-webpack-plugin',
+            failOnError: false,
+            failOnWarning: false,
+          }),
+        ]),
       ];
 
-      // Development optimizations
+      // Development: tắt bớt tối ưu để khởi động nhanh hơn
       if (webpackConfig.mode === 'development') {
         webpackConfig.optimization.removeAvailableModules = false;
         webpackConfig.optimization.removeEmptyChunks = false;
         webpackConfig.optimization.splitChunks = false;
+        // eval nhanh hơn cheap-module-source-map cho lần build đầu
+        webpackConfig.devtool = 'eval';
       }
 
       return webpackConfig;

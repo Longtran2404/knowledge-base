@@ -19,11 +19,11 @@ const sizeClasses = {
 };
 
 const variantClasses = {
-  default: "bg-blue-600",
-  success: "bg-green-600",
-  warning: "bg-yellow-600",
-  error: "bg-red-600",
-  info: "bg-blue-500",
+  default: "bg-primary",
+  success: "bg-success",
+  warning: "bg-warning",
+  error: "bg-destructive",
+  info: "bg-info",
 };
 
 export function Progress({
@@ -42,10 +42,10 @@ export function Progress({
     <div className={cn("w-full", className)}>
       {showLabel && (
         <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium text-gray-700">
+          <span className="text-sm font-medium text-foreground">
             {label || "Tiến độ"}
           </span>
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-muted-foreground">
             {Math.round(percentage)}%
           </span>
         </div>
@@ -53,7 +53,7 @@ export function Progress({
 
       <div
         className={cn(
-          "w-full bg-gray-200 rounded-full overflow-hidden",
+          "w-full bg-muted rounded-full overflow-hidden",
           sizeClasses[size]
         )}
       >
@@ -124,7 +124,7 @@ export function CircularProgress({
           stroke="currentColor"
           strokeWidth={strokeWidth}
           fill="none"
-          className="text-gray-200"
+          className="text-muted"
         />
         {/* Progress circle */}
         <circle
@@ -147,10 +147,10 @@ export function CircularProgress({
 
       {showLabel && (
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-2xl font-bold text-gray-700">
+          <span className="text-2xl font-bold text-foreground">
             {Math.round(percentage)}%
           </span>
-          {label && <span className="text-xs text-gray-500 mt-1">{label}</span>}
+          {label && <span className="text-xs text-muted-foreground mt-1">{label}</span>}
         </div>
       )}
     </div>
@@ -183,9 +183,9 @@ export function StepProgress({
               <div
                 className={cn(
                   "flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium transition-all duration-300",
-                  isCompleted && "bg-green-600 text-white",
-                  isCurrent && "bg-blue-600 text-white ring-4 ring-blue-200",
-                  isUpcoming && "bg-gray-200 text-gray-500"
+                  isCompleted && "bg-success text-success-foreground",
+                  isCurrent && "bg-primary text-primary-foreground ring-4 ring-primary/20",
+                  isUpcoming && "bg-muted text-muted-foreground"
                 )}
               >
                 {isCompleted ? (
@@ -210,9 +210,9 @@ export function StepProgress({
                 <p
                   className={cn(
                     "text-sm font-medium transition-colors duration-300",
-                    isCompleted && "text-green-600",
-                    isCurrent && "text-blue-600",
-                    isUpcoming && "text-gray-500"
+                    isCompleted && "text-success",
+                    isCurrent && "text-primary",
+                    isUpcoming && "text-muted-foreground"
                   )}
                 >
                   {step}
@@ -225,7 +225,7 @@ export function StepProgress({
                   <div
                     className={cn(
                       "h-0.5 transition-colors duration-300",
-                      isCompleted ? "bg-green-600" : "bg-gray-200"
+                      isCompleted ? "bg-success" : "bg-muted"
                     )}
                   />
                 </div>
@@ -272,9 +272,9 @@ export function LoadingProgress({
               animated={!progress}
             />
           </div>
-          <p className="text-lg font-medium text-gray-700 mb-2">{label}</p>
+          <p className="text-lg font-medium text-foreground mb-2">{label}</p>
           {progress !== undefined && (
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               {Math.round(progress)}% hoàn thành
             </p>
           )}

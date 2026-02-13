@@ -2,40 +2,43 @@
  * Shared constants and configuration
  */
 
-// Badge colors for different levels
+/** Ảnh thay thế khi ảnh gốc lỗi hoặc không load được */
+export const PLACEHOLDER_IMAGE = '/images/placeholder.svg';
+
+// Badge colors - dùng semantic tokens đồng bộ theme (primary/success/warning/destructive/muted)
 export const LEVEL_BADGE_COLORS = {
-  beginner: "bg-green-100 text-green-800",
-  intermediate: "bg-yellow-100 text-yellow-800",
-  advanced: "bg-red-100 text-red-800",
-  default: "bg-gray-100 text-gray-800"
+  beginner: "bg-success/10 text-success",
+  intermediate: "bg-warning/10 text-warning",
+  advanced: "bg-destructive/10 text-destructive",
+  default: "bg-muted text-muted-foreground"
 } as const;
 
 // Badge colors for access levels
 export const ACCESS_BADGE_COLORS = {
-  free: "bg-green-100 text-green-800",
-  premium: "bg-blue-100 text-blue-800",
-  pro: "bg-purple-100 text-purple-800",
-  default: "bg-gray-100 text-gray-800"
+  free: "bg-success/10 text-success",
+  premium: "bg-primary/10 text-primary",
+  pro: "bg-violet-100 text-violet-800",
+  default: "bg-muted text-muted-foreground"
 } as const;
 
-// Category colors for blog posts
+// Category colors for blog posts - đồng bộ với palette (primary, success, warning, accent)
 export const CATEGORY_COLORS = {
-  "Công nghệ": "bg-blue-100 text-blue-800",
-  "BIM": "bg-purple-100 text-purple-800",
-  "Nghề nghiệp": "bg-green-100 text-green-800",
-  "Tin tức": "bg-orange-100 text-orange-800",
-  "Hướng dẫn": "bg-indigo-100 text-indigo-800",
+  "Công nghệ": "bg-primary/10 text-primary",
+  "BIM": "bg-violet-100 text-violet-800",
+  "Nghề nghiệp": "bg-success/10 text-success",
+  "Tin tức": "bg-warning/10 text-warning",
+  "Hướng dẫn": "bg-info/10 text-info",
   "Xu hướng": "bg-pink-100 text-pink-800",
-  default: "bg-gray-100 text-gray-800"
+  default: "bg-muted text-muted-foreground"
 } as const;
 
 // Status colors
 export const STATUS_COLORS = {
-  active: "bg-green-100 text-green-800",
-  inactive: "bg-gray-100 text-gray-800",
-  pending: "bg-yellow-100 text-yellow-800",
-  rejected: "bg-red-100 text-red-800",
-  approved: "bg-green-100 text-green-800"
+  active: "bg-success/10 text-success",
+  inactive: "bg-muted text-muted-foreground",
+  pending: "bg-warning/10 text-warning",
+  rejected: "bg-destructive/10 text-destructive",
+  approved: "bg-success/10 text-success"
 } as const;
 
 // User roles
