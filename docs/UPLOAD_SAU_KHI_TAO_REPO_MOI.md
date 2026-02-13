@@ -10,7 +10,7 @@
 
 ## Bước 2: Đẩy code lên GitHub
 
-Trong terminal, tại thư mục project (namlongcenter):
+Trong terminal, tại thư mục project (knowledge-base):
 
 ```bash
 # Trỏ remote tới repo mới (thay YOUR_USERNAME bằng username GitHub của bạn, ví dụ Longtran2404)

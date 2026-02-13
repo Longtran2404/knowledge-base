@@ -8,9 +8,9 @@ Sau khi đổi tên, URL mới sẽ dạng:
 
 ## 1. Đổi tên repository trên GitHub
 
-1. Mở repo hiện tại: **https://github.com/Longtran2404/nam-long-center**
+1. Mở repo hiện tại: **https://github.com/Longtran2404/knowledge-base**
 2. Vào **Settings** (tab phía trên).
-3. Ở phần **General** → **Repository name**, đổi `nam-long-center` thành **`knowledge-base`**.
+3. Ở phần **General** → **Repository name**, đặt tên **`knowledge-base`** (hoặc tên bạn chọn).
 4. Bấm **Rename**. GitHub sẽ chuyển hướng sang URL mới và giữ redirect từ URL cũ.
 
 **Cập nhật remote trên máy (sau khi đổi tên):**
@@ -23,7 +23,7 @@ git fetch origin
 
 ## 2. Đổi tên project trên Vercel
 
-1. Đăng nhập [vercel.com](https://vercel.com) → chọn **project** (đang tên cũ, ví dụ `nam-long-center`).
+1. Đăng nhập [vercel.com](https://vercel.com) → chọn **project** (ví dụ `knowledge-base`).
 2. Vào **Settings** → **General**.
 3. Ở **Project Name**, đổi thành **`knowledge-base`** (hoặc tên bạn muốn).
 4. Bấm **Save**. URL production sẽ thành `https://knowledge-base-<random>.vercel.app` (hoặc domain custom nếu bạn đã gắn).
