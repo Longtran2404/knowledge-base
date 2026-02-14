@@ -36,8 +36,8 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="py-12 md:py-16">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:gap-10">
-            <div className="lg:col-span-1">
-              <div className="flex items-center gap-3 mb-6">
+            <div className="lg:col-span-1 text-left">
+              <div className="flex items-start gap-3 mb-6">
                 <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
                   <span className="text-primary-foreground font-bold text-xl">KB</span>
                 </div>
@@ -50,28 +50,28 @@ const Footer = () => {
                 Nền tảng giáo dục và thương mại hàng đầu cho ngành xây dựng Việt Nam.
               </p>
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm">
+                <div className="flex items-start gap-2 text-sm">
                   <MapPin className="w-4 h-4 text-primary shrink-0" />
                   <span className="text-muted-foreground">123 Đường ABC, Quận 1, TP.HCM</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
+                <div className="flex items-start gap-2 text-sm">
                   <Phone className="w-4 h-4 text-primary shrink-0" />
                   <span className="text-muted-foreground">+84 123 456 789</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
+                <div className="flex items-start gap-2 text-sm">
                   <Mail className="w-4 h-4 text-primary shrink-0" />
                   <span className="text-muted-foreground">info@knowledgebase.com</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
+                <div className="flex items-start gap-2 text-sm">
                   <Clock className="w-4 h-4 text-primary shrink-0" />
                   <span className="text-muted-foreground">T2-T6: 8:00 - 17:30</span>
                 </div>
               </div>
             </div>
 
-            <div>
+            <div className="text-left">
               <h4 className="text-sm font-semibold text-foreground mb-4">Liên kết nhanh</h4>
-              <ul className="space-y-2">
+              <ul className="space-y-2 list-none pl-0 m-0">
                 {quickLinks.map((link, i) => (
                   <li key={i}>
                     <Link to={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
@@ -82,9 +82,9 @@ const Footer = () => {
               </ul>
             </div>
 
-            <div>
+            <div className="text-left">
               <h4 className="text-sm font-semibold text-foreground mb-4">Dịch vụ</h4>
-              <ul className="space-y-2">
+              <ul className="space-y-2 list-none pl-0 m-0">
                 {services.map((service, i) => (
                   <li key={i}>
                     <Link to={service.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
@@ -95,10 +95,10 @@ const Footer = () => {
               </ul>
             </div>
 
-            <div>
+            <div className="text-left">
               <h4 className="text-sm font-semibold text-foreground mb-4">Hỗ trợ & Cập nhật</h4>
               <p className="text-sm text-muted-foreground mb-3">Đăng ký nhận tin tức và ưu đãi</p>
-              <div className="flex gap-2 mb-6">
+              <div className="flex gap-2 mb-6 justify-start">
                 <Input
                   type="email"
                   placeholder="Email của bạn"
@@ -108,7 +108,7 @@ const Footer = () => {
                   <Send className="w-4 h-4" />
                 </Button>
               </div>
-              <ul className="space-y-2 mb-6">
+              <ul className="space-y-2 mb-6 list-none pl-0 m-0">
                 {support.map((item, i) => (
                   <li key={i}>
                     <Link to={item.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
@@ -117,7 +117,7 @@ const Footer = () => {
                   </li>
                 ))}
               </ul>
-              <div className="flex gap-2">
+              <div className="flex gap-2 justify-start">
                 {socialLinks.map((social, i) => {
                   const IconComponent = social.icon;
                   return (

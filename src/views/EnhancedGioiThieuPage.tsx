@@ -254,7 +254,7 @@ export default function EnhancedGioiThieuPage() {
                     { name: 'Coteccons', icon: <LogoSVGs.Coteccons />, link: 'https://coteccons.vn' },
                     { name: 'Vinaconex', icon: <LogoSVGs.Vinaconex />, link: 'https://vinaconex.com.vn' },
                     { name: 'Hưng Thịnh', icon: <LogoSVGs.HungThinh />, link: 'https://hungthinhcorp.com.vn' },
-                    { name: 'Novaland', icon: <LogoSVGs.Novaland />, link: 'https://novaland.com.vn' },
+                    { name: 'Novaland', url: '/images/logos/novaland.svg', icon: <LogoSVGs.Novaland />, link: 'https://novaland.com.vn' },
                     { name: 'FPT', url: '/images/logos/fpt.svg', icon: <LogoSVGs.FPT />, link: 'https://fpt.com.vn' },
                     { name: 'VNPT', icon: <LogoSVGs.VNPT />, link: 'https://vnpt.vn' },
                     { name: 'Hòa Bình', icon: <LogoSVGs.HoaBinh />, link: 'https://hoabinhcorp.com.vn' },

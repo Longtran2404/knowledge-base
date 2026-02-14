@@ -73,7 +73,8 @@ export function LogoLoop({
       <div className="absolute inset-y-0 right-0 w-24 md:w-32 bg-gradient-to-l from-white via-white/95 to-transparent dark:from-[hsl(var(--background))] dark:via-[hsl(var(--background)/0.95)] z-10 pointer-events-none" />
 
       <motion.div
-        className="flex gap-10 md:gap-14 items-center justify-center"
+        className="flex gap-10 md:gap-14 items-center shrink-0 w-max"
+        style={{ willChange: 'transform' }}
         animate={{
           x: direction === 'left' ? ['0%', '-50%'] : ['-50%', '0%'],
         }}
