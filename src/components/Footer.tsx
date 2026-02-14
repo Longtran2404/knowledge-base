@@ -36,20 +36,20 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="py-12 md:py-16">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:gap-10">
-            <div className="lg:col-span-1 text-left">
-              <div className="flex items-start gap-3 mb-6">
-                <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
+            <div className="lg:col-span-1 flex flex-col items-start text-left w-full">
+              <div className="flex items-start gap-3 mb-6 w-full">
+                <div className="w-12 h-12 shrink-0 bg-primary rounded-xl flex items-center justify-center">
                   <span className="text-primary-foreground font-bold text-xl">KB</span>
                 </div>
-                <div>
+                <div className="min-w-0">
                   <h3 className="text-lg font-bold text-foreground">Knowledge Base</h3>
                   <p className="text-sm text-muted-foreground">Xây dựng tương lai</p>
                 </div>
               </div>
-              <p className="text-muted-foreground text-sm mb-6 leading-relaxed">
+              <p className="text-muted-foreground text-sm mb-6 leading-relaxed text-left w-full max-w-full">
                 Nền tảng giáo dục và thương mại hàng đầu cho ngành xây dựng Việt Nam.
               </p>
-              <div className="space-y-2">
+              <div className="space-y-2 w-full">
                 <div className="flex items-start gap-2 text-sm">
                   <MapPin className="w-4 h-4 text-primary shrink-0" />
                   <span className="text-muted-foreground">123 Đường ABC, Quận 1, TP.HCM</span>
