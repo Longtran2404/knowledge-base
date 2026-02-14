@@ -82,9 +82,15 @@ class AuthPersistenceService {
         }
       }
 
-      if (!stored) return null;
+      if (!stored || stored.trim() === '') return null;
 
-      const authData: StoredAuthData = JSON.parse(stored);
+      let authData: StoredAuthData;
+      try {
+        authData = JSON.parse(stored);
+      } catch {
+        await this.clearAllAuthData();
+        return null;
+      }
 
       // Check if session is still valid
       if (!this.isSessionValid(authData)) {
@@ -106,8 +112,13 @@ class AuthPersistenceService {
   updateLastActivity(): void {
     try {
       const stored = localStorage.getItem(this.STORAGE_KEY);
-      if (stored) {
-        const authData: StoredAuthData = JSON.parse(stored);
+      if (stored && stored.trim() !== '') {
+        let authData: StoredAuthData;
+        try {
+          authData = JSON.parse(stored);
+        } catch {
+          return;
+        }
         authData.lastActivity = Date.now();
         localStorage.setItem(this.STORAGE_KEY, JSON.stringify(authData));
         sessionStorage.setItem(this.STORAGE_KEY, JSON.stringify(authData));
@@ -444,7 +455,13 @@ class AuthPersistenceService {
   getLastUserData(): { email?: string; fullName?: string } | null {
     try {
       const userData = localStorage.getItem(this.USER_DATA_KEY);
-      return userData ? JSON.parse(userData) : null;
+      if (!userData || userData.trim() === '') return null;
+      try {
+        return JSON.parse(userData);
+      } catch {
+        localStorage.removeItem(this.USER_DATA_KEY);
+        return null;
+      }
     } catch {
       return null;
     }

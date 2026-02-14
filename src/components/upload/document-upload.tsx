@@ -234,9 +234,14 @@ export function DocumentUpload() {
       };
 
       // Save to localStorage (in real app, this would be API call)
-      const existingDocs = JSON.parse(
-        localStorage.getItem("nlc_uploaded_documents") || "[]"
-      );
+      const raw = localStorage.getItem("nlc_uploaded_documents");
+      let existingDocs: unknown[];
+      try {
+        existingDocs = (raw && raw.trim() ? JSON.parse(raw) : []) as unknown[];
+        if (!Array.isArray(existingDocs)) existingDocs = [];
+      } catch {
+        existingDocs = [];
+      }
       existingDocs.push(finalData);
       localStorage.setItem(
         "nlc_uploaded_documents",

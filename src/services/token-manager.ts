@@ -113,7 +113,12 @@ export class TokenManager {
    */
   static getUserData(): any | null {
     const userData = localStorage.getItem(this.USER_DATA_KEY);
-    return userData ? JSON.parse(userData) : null;
+    if (!userData || userData.trim() === '') return null;
+    try {
+      return JSON.parse(userData);
+    } catch {
+      return null;
+    }
   }
 
   /**

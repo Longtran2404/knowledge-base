@@ -1,5 +1,8 @@
-import React from "react";
+/**
+ * Trang Tài nguyên - Thiết kế mới, đồng bộ design system
+ */
 
+import React, { useState, useMemo } from "react";
 import {
   FileText,
   Video,
@@ -8,11 +11,12 @@ import {
   Download,
   Eye,
   Calendar,
-  Users,
   Star,
   Search,
-  Filter,
+  Upload,
+  ArrowRight,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import {
@@ -31,424 +35,448 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { resourcesData } from "../data/resources";
-
+import { Resource } from "../types/resource";
+import { SEO } from "../components/SEO";
+import { Counter } from "../components/ui/counter";
 import { AppProviders } from "../lib/providers/app-providers";
 
-const categories = [
-  { id: "all", label: "Tất cả", count: resourcesData.length, icon: FileText },
+const categories: { id: string; label: string; icon: typeof FileText; filter: (r: Resource) => boolean }[] = [
+  { id: "all", label: "Tất cả", icon: FileText, filter: () => true },
   {
     id: "documents",
     label: "Tài liệu",
-    count: resourcesData.filter((r) => r.type === "pdf" || r.type === "doc")
-      .length,
     icon: FileText,
+    filter: (r: Resource) => r.type === "pdf" || r.type === "doc",
   },
   {
     id: "videos",
     label: "Video",
-    count: resourcesData.filter((r) => r.type === "guide").length,
     icon: Video,
+    filter: (r: Resource) => r.type === "guide",
   },
   {
     id: "standards",
     label: "Tiêu chuẩn",
-    count: resourcesData.filter(
-      (r) => r.field === "BIM" || r.field === "Quality Management"
-    ).length,
     icon: BookOpen,
+    filter: (r: Resource) =>
+      r.field === "BIM" ||
+      r.tags.some((t) => t.toLowerCase().includes("standard")) ||
+      r.tags.some((t) => t.toLowerCase().includes("tcvn")),
   },
   {
     id: "tools",
     label: "Công cụ",
-    count: resourcesData.filter((r) => r.type === "project").length,
     icon: Calculator,
+    filter: (r: Resource) => r.type === "project",
   },
 ];
 
-export default function ResourcesPage() {
+const stats = [
+  { label: "Tài liệu", value: 1000, suffix: "+", icon: FileText },
+  { label: "Video", value: 500, suffix: "+", icon: Video },
+  { label: "Tiêu chuẩn", value: 200, suffix: "+", icon: BookOpen },
+  { label: "Công cụ", value: 50, suffix: "+", icon: Calculator },
+];
+
+function getTypeLabel(resource: Resource): string {
+  if (resource.type === "pdf" || resource.type === "doc") return "Tài liệu";
+  if (resource.type === "guide") return "Video";
+  if (resource.type === "project") return "Công cụ";
+  if (
+    resource.tags.some((t) => t.toLowerCase().includes("standard")) ||
+    resource.field === "BIM"
+  )
+    return "Tiêu chuẩn";
+  return "Tài liệu";
+}
+
+export default function TaiNguyenPage() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
+
+  const filteredResources = useMemo(() => {
+    const cat = categories.find((c) => c.id === activeCategory);
+    let list = resourcesData.filter((r) => (cat ? cat.filter(r) : true));
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      list = list.filter(
+        (r) =>
+          r.title.toLowerCase().includes(q) ||
+          r.description.toLowerCase().includes(q) ||
+          r.field.toLowerCase().includes(q) ||
+          r.tags.some((t) => t.toLowerCase().includes(q))
+      );
+    }
+
+    if (sortBy === "newest") {
+      list = [...list].sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+    } else if (sortBy === "popular") {
+      list = [...list].sort((a, b) => (b.year || 0) - (a.year || 0));
+    } else if (sortBy === "title") {
+      list = [...list].sort((a, b) => a.title.localeCompare(b.title));
+    }
+    return list;
+  }, [searchQuery, activeCategory, sortBy]);
+
+  const featuredResources = useMemo(
+    () => resourcesData.slice(0, 2),
+    []
+  );
+
   return (
     <AppProviders>
-      <div className="min-h-screen bg-black">
-        {/* Hero Section */}
-        <section className="relative bg-gradient-to-br from-purple-900 via-violet-800 to-indigo-900 py-20">
-          <div className="absolute inset-0 bg-grid-white/10 bg-grid-16 [mask-image:radial-gradient(ellipse_at_center,white,transparent)]" />
-          <div className="relative z-10 container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div className="max-w-4xl mx-auto space-y-8">
-              <div className="space-y-4">
-                <Badge
-                  variant="outline"
-                  className="border-purple-400/50 text-purple-200 bg-purple-950/50 backdrop-blur-sm"
-                >
-                  <FileText className="h-4 w-4 mr-2" />
-                  Thư viện tài nguyên
-                </Badge>
-                <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight">
-                  Tài nguyên Miễn phí
-                  <br />
-                  <span className="bg-gradient-to-r from-purple-200 to-violet-200 bg-clip-text text-transparent">
-                    cho Kỹ sư Xây dựng
-                  </span>
-                </h1>
-                <p className="text-xl text-purple-100 max-w-2xl mx-auto">
-                  Thư viện tài liệu, video hướng dẫn, tiêu chuẩn xây dựng và
-                  công cụ tính toán giúp bạn nâng cao kiến thức và kỹ năng.
-                </p>
+      <SEO
+        title="Tài nguyên"
+        description="Thư viện tài liệu, video hướng dẫn, tiêu chuẩn xây dựng và công cụ tính toán cho kỹ sư xây dựng"
+        url="/tai-nguyen"
+      />
+
+      <div className="min-h-screen bg-background text-foreground">
+        {/* Hero */}
+        <section className="relative min-h-[60vh] flex items-center overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/5 pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,hsl(var(--primary)/0.12),transparent)] pointer-events-none" />
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-16 md:py-24">
+            <div className="max-w-4xl mx-auto text-center">
+              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-semibold mb-8">
+                <FileText className="h-4 w-4" />
+                Thư viện tài nguyên
               </div>
 
-              {/* Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-8">
-                {[
-                  { label: "Tài liệu", value: "1000+", icon: FileText },
-                  { label: "Video", value: "500+", icon: Video },
-                  { label: "Tiêu chuẩn", value: "200+", icon: BookOpen },
-                  { label: "Công cụ", value: "50+", icon: Calculator },
-                ].map((stat, index) => {
-                  const IconComponent = stat.icon;
-                  return (
-                    <div key={index} className="text-center">
-                      <div className="flex items-center justify-center w-12 h-12 bg-white/10 rounded-full mx-auto mb-2">
-                        <IconComponent className="h-6 w-6 text-purple-200" />
-                      </div>
-                      <div className="text-2xl font-bold text-white">
-                        {stat.value}
-                      </div>
-                      <div className="text-sm text-purple-200">
-                        {stat.label}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 tracking-tight">
+                <span className="gradient-text">Tài nguyên miễn phí</span>
+                <br />
+                <span className="text-foreground">cho Kỹ sư Xây dựng</span>
+              </h1>
+
+              <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+                Tài liệu, video hướng dẫn, tiêu chuẩn và công cụ tính toán giúp
+                bạn nâng cao kiến thức và kỹ năng chuyên môn.
+              </p>
             </div>
           </div>
         </section>
 
-        {/* Main Content */}
-        <section className="py-16">
-          <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Search and Filter */}
-            <div className="mb-12 space-y-6">
-              <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-                <div className="flex-1 max-w-md">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Tìm kiếm tài nguyên..."
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-                <div className="flex gap-3">
-                  <Select defaultValue="all">
-                    <SelectTrigger className="w-40">
-                      <SelectValue placeholder="Danh mục" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.id}>
-                          {category.label} ({category.count})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Select defaultValue="popular">
-                    <SelectTrigger className="w-40">
-                      <SelectValue placeholder="Sắp xếp" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="popular">Phổ biến nhất</SelectItem>
-                      <SelectItem value="newest">Mới nhất</SelectItem>
-                      <SelectItem value="downloads">Tải nhiều nhất</SelectItem>
-                      <SelectItem value="rating">Đánh giá cao nhất</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+        {/* Stats */}
+        <section className="py-10 md:py-14 relative -mt-8">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+              {stats.map((stat, index) => {
+                const Icon = stat.icon;
+                return (
+                  <Card
+                    key={index}
+                    className="border border-border/60 bg-card/95 shadow-soft hover:shadow-medium hover:border-primary/30 hover:-translate-y-1 transition-all duration-300 overflow-hidden group"
+                  >
+                    <CardContent className="p-5 md:p-6 text-center">
+                      <div className="inline-flex p-2.5 rounded-xl bg-primary/10 text-primary mb-3 group-hover:bg-primary/20 transition-colors">
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      <div className="text-xl md:text-2xl font-bold text-primary mb-0.5">
+                        <Counter
+                          value={stat.value}
+                          suffix={stat.suffix}
+                          decimals={0}
+                        />
+                      </div>
+                      <div className="text-sm font-medium text-muted-foreground">
+                        {stat.label}
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* Search & Filter */}
+        <section className="py-12 md:py-16 bg-gradient-to-b from-muted/30 to-transparent">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between mb-8">
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Tìm kiếm tài nguyên..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-11 h-11 rounded-xl border-border/60"
+                />
               </div>
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-full md:w-44 h-11 rounded-xl">
+                  <SelectValue placeholder="Sắp xếp" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="newest">Mới nhất</SelectItem>
+                  <SelectItem value="popular">Phổ biến</SelectItem>
+                  <SelectItem value="title">Theo tên</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
-            {/* Resource Categories Tabs */}
-            <Tabs defaultValue="all" className="mb-12">
-              <TabsList className="grid w-full grid-cols-5">
-                {categories.map((category) => {
-                  const IconComponent = category.icon;
-                  return (
-                    <TabsTrigger
-                      key={category.id}
-                      value={category.id}
-                      className="text-sm"
+            {/* Category pills */}
+            <div className="flex flex-wrap gap-2 mb-10">
+              {categories.map((cat) => {
+                const Icon = cat.icon;
+                const count =
+                  cat.id === "all"
+                    ? resourcesData.length
+                    : resourcesData.filter(cat.filter).length;
+                const isActive = activeCategory === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => setActiveCategory(cat.id)}
+                    className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                      isActive
+                        ? "bg-primary text-primary-foreground shadow-soft"
+                        : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground border border-transparent hover:border-border/60"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {cat.label}
+                    <Badge
+                      variant={isActive ? "secondary" : "outline"}
+                      className={`ml-0.5 text-xs ${
+                        isActive
+                          ? "bg-primary-foreground/20 text-primary-foreground"
+                          : ""
+                      }`}
                     >
-                      <IconComponent className="h-4 w-4 mr-2" />
-                      {category.label}
-                      <Badge variant="secondary" className="ml-2 text-xs">
-                        {category.count}
-                      </Badge>
-                    </TabsTrigger>
-                  );
-                })}
-              </TabsList>
+                      {count}
+                    </Badge>
+                  </button>
+                );
+              })}
+            </div>
 
-              {categories.map((category) => (
-                <TabsContent
-                  key={category.id}
-                  value={category.id}
-                  className="mt-8"
+            {/* Resource grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredResources.map((resource) => (
+                <Card
+                  key={resource.id}
+                  className="group border border-border/60 bg-card shadow-soft hover:shadow-medium hover:border-primary/30 hover:-translate-y-1 transition-all duration-300 overflow-hidden"
                 >
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {resourcesData
-                      .filter(
-                        (resource) =>
-                          category.id === "all" ||
-                          resource.field === category.id
-                      )
-                      .map((resource) => (
-                        <Card
-                          key={resource.id}
-                          className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white/5 backdrop-blur-sm border-white/10 text-white"
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <Badge
+                        variant="outline"
+                        className="text-xs border-primary/30 text-primary shrink-0"
+                      >
+                        {getTypeLabel(resource)}
+                      </Badge>
+                      {resource.accessLevel === "free" && (
+                        <Badge
+                          variant="secondary"
+                          className="text-xs bg-green-500/15 text-green-700 dark:text-green-400 border-green-500/30 shrink-0"
                         >
-                          <CardHeader className="pb-4">
-                            <div className="flex items-start justify-between">
-                              <Badge variant="outline" className="text-xs border-purple-400/30 text-purple-400">
-                                {resource.type === "pdf" ||
-                                resource.type === "doc"
-                                  ? "Tài liệu"
-                                  : resource.type === "guide"
-                                  ? "Video"
-                                  : resource.field === "BIM"
-                                  ? "Tiêu chuẩn"
-                                  : "Công cụ"}
-                              </Badge>
-                              {resource.accessLevel === "free" && (
-                                <Badge variant="secondary" className="text-xs bg-green-500/20 text-green-400 border-green-400/30">
-                                  Miễn phí
-                                </Badge>
-                              )}
-                            </div>
-                            <CardTitle className="text-lg text-white group-hover:text-purple-400 transition-colors line-clamp-2">
-                              {resource.title}
-                            </CardTitle>
-                            <CardDescription className="line-clamp-2 text-gray-400">
-                              {resource.field} - {resource.type}
-                            </CardDescription>
-                          </CardHeader>
-
-                          <CardContent className="pb-4">
-                            <div className="space-y-3">
-                              {/* Resource Stats */}
-                              <div className="flex items-center justify-between text-sm text-muted-foreground">
-                                <div className="flex items-center gap-1">
-                                  <Download className="h-4 w-4" />
-                                  <span>1K+ lượt tải</span>
-                                </div>
-                                <div className="flex items-center gap-1">
-                                  <Eye className="h-4 w-4" />
-                                  <span>500+ lượt xem</span>
-                                </div>
-                              </div>
-
-                              {/* Rating */}
-                              <div className="flex items-center gap-2">
-                                <div className="flex items-center gap-1">
-                                  {[...Array(5)].map((_, i) => (
-                                    <Star
-                                      key={i}
-                                      className={`h-4 w-4 ${
-                                        i < Math.floor(4.5)
-                                          ? "text-yellow-400 fill-current"
-                                          : "text-gray-300"
-                                      }`}
-                                    />
-                                  ))}
-                                </div>
-                                <span className="text-sm text-muted-foreground">
-                                  4.5 (100+ đánh giá)
-                                </span>
-                              </div>
-
-                              {/* Tags */}
-                              {resource.tags && (
-                                <div className="space-y-2">
-                                  <div className="text-sm font-medium text-muted-foreground">
-                                    Tags:
-                                  </div>
-                                  <div className="flex flex-wrap gap-1">
-                                    {resource.tags
-                                      .slice(0, 3)
-                                      .map((tag, index) => (
-                                        <Badge
-                                          key={index}
-                                          variant="secondary"
-                                          className="text-xs"
-                                        >
-                                          {tag}
-                                        </Badge>
-                                      ))}
-                                    {resource.tags.length > 3 && (
-                                      <Badge
-                                        variant="secondary"
-                                        className="text-xs"
-                                      >
-                                        +{resource.tags.length - 3}
-                                      </Badge>
-                                    )}
-                                  </div>
-                                </div>
-                              )}
-
-                              {/* File Info */}
-                              <div className="flex items-center justify-between text-sm text-muted-foreground">
-                                <div className="flex items-center gap-1">
-                                  <Calendar className="h-4 w-4" />
-                                  <span>
-                                    {new Date(
-                                      resource.createdAt
-                                    ).toLocaleDateString("vi-VN")}
-                                  </span>
-                                </div>
-                                {resource.type === "pdf" && <span>2.5 MB</span>}
-                              </div>
-                            </div>
-                          </CardContent>
-
-                          <CardFooter className="pt-0">
-                            <div className="w-full space-y-3">
-                              <div className="flex gap-2">
-                                <Button className="flex-1" size="lg">
-                                  {resource.type === "guide"
-                                    ? "Xem video"
-                                    : "Tải xuống"}
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  size="lg"
-                                  className="px-3"
-                                >
-                                  <Eye className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </div>
-                          </CardFooter>
-                        </Card>
-                      ))}
-                  </div>
-                </TabsContent>
-              ))}
-            </Tabs>
-
-            {/* Featured Resources */}
-            <div className="mb-16">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold mb-4">Tài nguyên Nổi bật</h2>
-                <p className="text-lg text-muted-foreground">
-                  Những tài liệu và công cụ được đánh giá cao nhất
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Featured Document */}
-                <Card className="bg-gradient-to-r from-purple-500/20 to-violet-500/20 border-purple-400/30 backdrop-blur-sm">
-                  <CardHeader>
-                    <Badge
-                      variant="outline"
-                      className="w-fit border-purple-400/50 text-purple-300"
-                    >
-                      <FileText className="h-4 w-4 mr-2" />
-                      Tài liệu nổi bật
-                    </Badge>
-                    <CardTitle className="text-2xl text-white">
-                      Hướng dẫn BIM cho Dự án Xây dựng
-                    </CardTitle>
-                    <CardDescription className="text-purple-200">
-                      Tài liệu toàn diện về quy trình BIM từ thiết kế đến thi
-                      công
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="pb-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-purple-300">Độ dày:</span>
-                        <span className="font-semibold text-white">150 trang</span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-purple-300">Định dạng:</span>
-                        <span className="font-semibold text-white">PDF + Word</span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-purple-300">Cập nhật:</span>
-                        <span className="font-semibold text-white">Tháng 12/2024</span>
-                      </div>
+                          Miễn phí
+                        </Badge>
+                      )}
                     </div>
-                  </CardContent>
-                  <CardFooter>
-                    <Button className="w-full bg-purple-600 hover:bg-purple-700">
-                      Tải miễn phí
-                    </Button>
-                  </CardFooter>
-                </Card>
-
-                {/* Featured Video Series */}
-                <Card className="bg-gradient-to-r from-violet-500/20 to-indigo-500/20 border-violet-400/30 backdrop-blur-sm">
-                  <CardHeader>
-                    <Badge
-                      variant="outline"
-                      className="w-fit border-violet-400/50 text-violet-300"
-                    >
-                      <Video className="h-4 w-4 mr-2" />
-                      Video series
-                    </Badge>
-                    <CardTitle className="text-2xl text-white">
-                      Khóa học AutoCAD từ Cơ bản đến Nâng cao
+                    <CardTitle className="text-lg text-foreground group-hover:text-primary transition-colors line-clamp-2 mt-2">
+                      {resource.title}
                     </CardTitle>
-                    <CardDescription className="text-violet-200">
-                      Series video 20 bài giảng với hơn 10 giờ nội dung chất
-                      lượng
+                    <CardDescription className="line-clamp-2 text-muted-foreground">
+                      {resource.field} · {resource.type.toUpperCase()}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="pb-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-violet-300">Số bài:</span>
-                        <span className="font-semibold text-white">20 bài</span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-violet-300">Thời lượng:</span>
-                        <span className="font-semibold text-white">10+ giờ</span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-violet-300">Đánh giá:</span>
-                        <span className="font-semibold text-white">
-                          4.9★ (500+ đánh giá)
+
+                  <CardContent className="pb-4 space-y-4">
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <div className="flex items-center gap-4">
+                        <span className="flex items-center gap-1">
+                          <Download className="h-3.5 w-3.5" />
+                          Tải xuống
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Eye className="h-3.5 w-3.5" />
+                          Xem
                         </span>
                       </div>
                     </div>
+
+                    <div className="flex items-center gap-2">
+                      <div className="flex gap-0.5">
+                        {[1, 2, 3, 4, 5].map((i) => (
+                          <Star
+                            key={i}
+                            className={`h-4 w-4 ${
+                              i <= 4
+                                ? "text-amber-500 fill-amber-500"
+                                : "text-muted-foreground/40"
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-sm text-muted-foreground">
+                        4.5 ({resource.year})
+                      </span>
+                    </div>
+
+                    {resource.tags && resource.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {resource.tags.slice(0, 3).map((tag, i) => (
+                          <Badge
+                            key={i}
+                            variant="secondary"
+                            className="text-xs font-normal"
+                          >
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Calendar className="h-3.5 w-3.5 mr-1.5" />
+                      {new Date(resource.createdAt).toLocaleDateString("vi-VN")}
+                    </div>
                   </CardContent>
-                  <CardFooter>
-                    <Button className="w-full bg-violet-600 hover:bg-violet-700">
-                      Xem series
+
+                  <CardFooter className="pt-0 flex gap-2">
+                    <Button
+                      size="sm"
+                      className="flex-1 rounded-lg gap-2"
+                    >
+                      {resource.type === "guide" ? (
+                        <>
+                          <Video className="h-4 w-4" />
+                          Xem video
+                        </>
+                      ) : (
+                        <>
+                          <Download className="h-4 w-4" />
+                          Tải xuống
+                        </>
+                      )}
+                    </Button>
+                    <Button variant="outline" size="sm" className="rounded-lg px-3">
+                      <Eye className="h-4 w-4" />
                     </Button>
                   </CardFooter>
                 </Card>
+              ))}
+            </div>
+
+            {filteredResources.length === 0 && (
+              <div className="text-center py-16 text-muted-foreground">
+                <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p className="text-lg font-medium">Không tìm thấy tài nguyên</p>
+                <p className="text-sm mt-1">
+                  Thử đổi từ khóa tìm kiếm hoặc danh mục khác
+                </p>
+                <Button
+                  variant="outline"
+                  className="mt-4"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setActiveCategory("all");
+                  }}
+                >
+                  Xóa bộ lọc
+                </Button>
+              </div>
+            )}
+
+            {/* Featured Resources */}
+            <div className="mt-20">
+              <div className="text-center mb-12">
+                <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+                  Nổi bật
+                </span>
+                <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+                  Tài nguyên được quan tâm
+                </h2>
+                <p className="text-muted-foreground">
+                  Tài liệu và công cụ được đánh giá cao nhất
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {featuredResources.map((resource, idx) => (
+                  <Card
+                    key={resource.id}
+                    className={`overflow-hidden border border-border/60 shadow-soft hover:shadow-medium hover:border-primary/30 transition-all duration-300 group ${
+                      idx === 0
+                        ? "bg-gradient-to-br from-primary/8 to-primary/5"
+                        : "bg-gradient-to-br from-accent/50 to-transparent"
+                    }`}
+                  >
+                    <CardContent className="p-6 md:p-8">
+                      <div className="flex flex-col md:flex-row md:items-center gap-6">
+                        <div className="flex-shrink-0 w-14 h-14 rounded-xl bg-primary/15 flex items-center justify-center text-primary group-hover:bg-primary/25 transition-colors">
+                          {resource.type === "guide" ? (
+                            <Video className="h-7 w-7" />
+                          ) : (
+                            <FileText className="h-7 w-7" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <Badge
+                            variant="outline"
+                            className="mb-2 border-primary/40 text-primary"
+                          >
+                            {getTypeLabel(resource)}
+                          </Badge>
+                          <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors mb-1">
+                            {resource.title}
+                          </h3>
+                          <p className="text-muted-foreground line-clamp-2 mb-4">
+                            {resource.description}
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            <span className="text-sm text-muted-foreground">
+                              {resource.field}
+                            </span>
+                            <span className="text-sm text-muted-foreground">·</span>
+                            <span className="text-sm text-muted-foreground">
+                              {resource.year}
+                            </span>
+                          </div>
+                        </div>
+                        <Button
+                          className="shrink-0 rounded-xl gap-2"
+                          size="lg"
+                          asChild
+                        >
+                          <Link to="/tai-nguyen" className="gap-2">
+                            {resource.type === "guide" ? "Xem" : "Tải"}
+                            <ArrowRight className="h-4 w-4" />
+                          </Link>
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             </div>
 
-            {/* CTA Section */}
-            <div className="text-center py-16">
-              <div className="max-w-2xl mx-auto space-y-6">
-                <h2 className="text-3xl font-bold">Đóng góp tài nguyên?</h2>
-                <p className="text-lg text-muted-foreground">
-                  Chia sẻ kiến thức và kinh nghiệm của bạn với cộng đồng kỹ sư
-                  xây dựng
+            {/* CTA */}
+            <div className="mt-20 text-center py-16 rounded-2xl border border-border/60 bg-gradient-to-b from-muted/40 to-muted/20">
+              <div className="max-w-2xl mx-auto px-4 space-y-6">
+                <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+                  Đóng góp tài nguyên?
+                </h2>
+                <p className="text-muted-foreground">
+                  Chia sẻ kiến thức và kinh nghiệm với cộng đồng kỹ sư xây dựng
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button
-                    size="lg"
-                    className="bg-purple-600 hover:bg-purple-700"
-                  >
-                    Đăng tải tài nguyên
+                  <Button size="lg" className="rounded-xl gap-2" asChild>
+                    <Link to="/contact">
+                      <Upload className="h-5 w-5" />
+                      Đăng tải tài nguyên
+                    </Link>
                   </Button>
-                  <Button variant="outline" size="lg">
-                    Liên hệ hợp tác
+                  <Button variant="outline" size="lg" className="rounded-xl" asChild>
+                    <Link to="/contact">Liên hệ hợp tác</Link>
                   </Button>
                 </div>
               </div>

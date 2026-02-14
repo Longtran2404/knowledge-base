@@ -109,13 +109,13 @@ export default function HomePage() {
               </Link>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
               {heroStats.map((stat, i) => {
                 const Icon = stat.icon;
                 return (
                   <div
                     key={i}
-                    className="p-5 rounded-xl bg-card border border-border shadow-sm text-center"
+                    className="p-5 rounded-xl card-elevated text-center"
                   >
                     <div className="flex justify-center mb-2 text-primary">
                       <Icon className="h-6 w-6" />
@@ -154,7 +154,7 @@ export default function HomePage() {
               return (
                 <div
                   key={i}
-                  className="p-6 rounded-xl bg-card border border-border shadow-sm hover:shadow-md transition-shadow"
+                  className="p-6 rounded-xl card-elevated"
                 >
                   <div className="flex items-start gap-4">
                     <div className="p-3 rounded-lg bg-primary/10 text-primary shrink-0">
@@ -197,7 +197,7 @@ export default function HomePage() {
               return (
                 <div
                   key={i}
-                  className="p-6 rounded-xl bg-card border border-border shadow-sm text-center"
+                  className="p-6 rounded-xl card-elevated text-center"
                 >
                   <div className="flex justify-center mb-3 text-primary">
                     <Icon className="h-8 w-8" />
@@ -214,7 +214,7 @@ export default function HomePage() {
       {/* CTA */}
       <section className="py-14 md:py-20 bg-primary/5 border-t border-border">
         <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center p-8 md:p-12 rounded-2xl bg-card border border-border shadow-sm">
+          <div className="max-w-3xl mx-auto text-center p-8 md:p-12 rounded-2xl card-elevated">
             <div className="inline-flex p-4 rounded-xl bg-primary/10 text-primary mb-6">
               <Rocket className="h-10 w-10" />
             </div>

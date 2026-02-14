@@ -5,77 +5,20 @@
 
 import { createClient } from "@supabase/supabase-js";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { createSafeStorage } from "./safe-storage";
 
-// Environment variables với validation
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+// Next.js inlines NEXT_PUBLIC_* at build; next.config maps REACT_APP_* → NEXT_PUBLIC_*
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.REACT_APP_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.REACT_APP_SUPABASE_ANON_KEY;
 
-// Validate required environment variables
 if (!supabaseUrl || !supabaseAnonKey) {
-  const errorMessage = `
-    ❌ SUPABASE CONFIGURATION ERROR ❌
-
-    Missing required environment variables:
-    ${!supabaseUrl ? '- REACT_APP_SUPABASE_URL' : ''}
-    ${!supabaseAnonKey ? '- REACT_APP_SUPABASE_ANON_KEY' : ''}
-
-    📝 To fix this:
-    1. Create a .env file in the project root
-    2. Add your Supabase credentials:
-       REACT_APP_SUPABASE_URL=https://your-project.supabase.co
-       REACT_APP_SUPABASE_ANON_KEY=your-anon-key
-    3. Restart the development server
-
-    📚 See SUPABASE_CONNECTION_FIX.md for detailed instructions
-
-    ⚠️  Running in OFFLINE MODE - Supabase features disabled
-  `;
-
-  console.warn(errorMessage);
-
-  // In production, throw error. In development, show helpful message
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('Supabase configuration is required');
-  }
+  console.warn(
+    '[Supabase] Missing REACT_APP_SUPABASE_URL / REACT_APP_SUPABASE_ANON_KEY. On Vercel: Settings → Environment Variables.'
+  );
+  // Không throw: app vẫn load; cấu hình env trên Vercel rồi redeploy để bật Supabase.
 }
 
-// Check if Supabase URL is reachable (only in development)
-if (process.env.NODE_ENV === 'development' && supabaseUrl && supabaseUrl !== 'https://placeholder.supabase.co') {
-  const projectRef = supabaseUrl.match(/https:\/\/(.+?)\.supabase\.co/)?.[1];
-  if (projectRef) {
-    console.log(`🔍 Checking Supabase connection to project: ${projectRef}...`);
-
-    // Test connection in background (non-blocking)
-    fetch(`${supabaseUrl}/auth/v1/health`, {
-      method: 'GET',
-      signal: AbortSignal.timeout(5000),
-    })
-      .then(res => {
-        if (res.ok) {
-          console.log('✅ Supabase connection successful!');
-        } else {
-          console.warn(`⚠️  Supabase responded with status: ${res.status}`);
-        }
-      })
-      .catch(err => {
-        console.error('❌ Cannot connect to Supabase:', err.message);
-        console.error(`
-⚠️  SUPABASE CONNECTION FAILED
-
-Possible reasons:
-1. Project is still being provisioned (wait 5-10 minutes if just created)
-2. Project URL is incorrect - check https://supabase.com/dashboard
-3. Project has been paused - resume it from dashboard
-4. Network/firewall blocking connection
-5. DNS has not propagated yet (for new projects)
-
-Current URL: ${supabaseUrl}
-
-💡 Verify your project exists at: https://supabase.com/dashboard/projects
-        `);
-      });
-  }
-}
+// Bỏ health check để tránh timeout/console spam - app hoạt động bình thường khi gọi API
 
 // Create Supabase client với configuration tối ưu cho persistence
 export const supabase: SupabaseClient<Database> = createClient(
@@ -86,11 +29,10 @@ export const supabase: SupabaseClient<Database> = createClient(
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: true,
-      flowType: "pkce", // Enhanced security với PKCE flow
-      storage: typeof window !== "undefined" ? window.localStorage : undefined,
-      // Tăng thời gian refresh token để session tồn tại lâu hơn
+      flowType: "pkce",
+      storage: typeof window !== "undefined" ? createSafeStorage() : undefined,
       storageKey: 'sb-nlc-auth-token',
-      debug: process.env.NODE_ENV === 'development', // Enable debug in dev
+      debug: process.env.NODE_ENV === 'development',
     },
     realtime: {
       params: {

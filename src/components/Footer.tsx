@@ -32,14 +32,14 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-muted/40 border-t border-border text-foreground">
+    <footer className="bg-slate-50/80 dark:bg-slate-900/50 border-t border-border text-foreground">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="py-12 md:py-16">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:gap-10">
             <div className="lg:col-span-1">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
-                  <span className="text-primary-foreground font-bold text-xl">NL</span>
+                  <span className="text-primary-foreground font-bold text-xl">KB</span>
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-foreground">Knowledge Base</h3>

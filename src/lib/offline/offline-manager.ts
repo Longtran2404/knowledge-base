@@ -360,8 +360,13 @@ export class OfflineManager {
   private loadFromStorage(): void {
     try {
       const stored = localStorage.getItem("offline_actions");
-      if (stored) {
-        this.actions = JSON.parse(stored);
+      if (stored && stored.trim() !== '') {
+        try {
+          this.actions = JSON.parse(stored);
+        } catch {
+          localStorage.removeItem("offline_actions");
+          this.actions = [];
+        }
       }
     } catch (error) {
       console.error("Failed to load offline actions:", error);

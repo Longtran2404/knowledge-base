@@ -230,9 +230,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const loadCartFromStorage = () => {
       try {
         const savedCart = localStorage.getItem("cart");
-        if (savedCart) {
-          const cartData = JSON.parse(savedCart);
-          dispatch({ type: "SET_ITEMS", payload: cartData });
+        if (savedCart && savedCart.trim() !== '') {
+          try {
+            const cartData = JSON.parse(savedCart);
+            dispatch({ type: "SET_ITEMS", payload: Array.isArray(cartData) ? cartData : [] });
+          } catch {
+            localStorage.removeItem("cart");
+          }
         }
       } catch (error) {
         console.error("Error loading cart from storage:", error);

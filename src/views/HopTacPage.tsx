@@ -182,8 +182,8 @@ export default function CollaborationPage() {
       </section>
 
         {/* Pricing Plans */}
-        <section className="py-16 md:py-20">
-          <div className="container mx-auto px-4">
+        <section className="py-16 md:py-20 overflow-visible">
+          <div className="container mx-auto px-4 overflow-visible">
             <div className="text-center mb-12">
               <Badge variant="secondary" className="mb-4 bg-primary/10 text-primary border-primary/20">
                 <Crown className="h-4 w-4 mr-2" />
@@ -195,26 +195,26 @@ export default function CollaborationPage() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto pt-6 overflow-visible">
               {pricingPlans.map((plan) => (
                 <Card
                   key={plan.id}
-                  className={`relative border-2 transition-all hover:shadow-lg ${
+                  className={`relative border-2 transition-all hover:shadow-lg overflow-visible ${
                     plan.popular
                       ? "border-primary shadow-lg scale-[1.02]"
                       : "border-border bg-card hover:border-primary/50"
                   }`}
                 >
                   {plan.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <Badge className="bg-primary text-primary-foreground">
-                        <Star className="h-3 w-3 mr-1 fill-current" />
-                        Phổ biến nhất
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10 whitespace-nowrap">
+                      <Badge className="flex items-center justify-center gap-1.5 bg-primary text-primary-foreground px-4 py-1.5 shadow-md">
+                        <Star className="h-3 w-3 fill-current shrink-0" />
+                        <span>Phổ biến nhất</span>
                       </Badge>
                     </div>
                   )}
 
-                  <CardHeader className="text-center pb-6">
+                  <CardHeader className={`text-center pb-6 ${plan.popular ? "pt-8" : ""}`}>
                     <div className={`flex justify-center mb-4 p-3 rounded-full ${plan.popular ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"}`}>
                       {plan.icon}
                     </div>

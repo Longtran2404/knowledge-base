@@ -126,8 +126,8 @@ class ConfigService {
         "Missing required environment variables:",
         missing.map((item) => item.key)
       );
-
-      if (this.isProduction()) {
+      // Không throw trên production để app không crash trên Vercel khi thiếu env.
+      if (!this.isProduction()) {
         throw new Error(
           `Missing required environment variables: ${missing
             .map((item) => item.key)

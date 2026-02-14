@@ -91,11 +91,11 @@
     --gradient-secondary: linear-gradient(135deg, hsl(214 32% 94%) 0%, hsl(217 32% 90%) 100%);
     --gradient-accent: linear-gradient(135deg, hsl(217 91% 55%) 0%, hsl(262 83% 58%) 100%);
 
-    /* Shadow */
-    --shadow-soft: 0 1px 3px 0 rgba(0, 0, 0, 0.06);
-    --shadow-medium: 0 4px 6px -1px rgba(0, 0, 0, 0.06);
-    --shadow-strong: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
-    --shadow-glow: 0 0 0 3px hsl(217 91% 55% / 0.15);
+    /* Shadow - mềm hơn, thân thiện người dùng */
+    --shadow-soft: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+    --shadow-medium: 0 2px 8px -2px rgba(0, 0, 0, 0.06), 0 4px 12px -4px rgba(0, 0, 0, 0.04);
+    --shadow-strong: 0 4px 16px -4px rgba(0, 0, 0, 0.08), 0 8px 24px -8px rgba(0, 0, 0, 0.06);
+    --shadow-glow: 0 0 0 3px hsl(217 91% 55% / 0.12);
   }
 
   /* Dark mode (nếu bật) - giữ đồng bộ */
@@ -134,6 +134,8 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   
   /* Typography improvements */
@@ -377,21 +379,35 @@
     border: 1px solid hsl(var(--border));
   }
   
-  /* Professional spacing */
+  /* Professional spacing - user-friendly */
   .container-custom {
     @apply container mx-auto px-4 sm:px-6 lg:px-8;
   }
   
   .section-padding {
-    @apply py-16 lg:py-24;
+    @apply py-12 md:py-16 lg:py-20;
   }
   
   .section-padding-sm {
-    @apply py-8 lg:py-12;
+    @apply py-8 md:py-10;
   }
   
   .section-padding-lg {
-    @apply py-20 lg:py-32;
+    @apply py-16 md:py-24 lg:py-28;
+  }
+
+  /* Card nâng cao - thân thiện */
+  .card-elevated {
+    @apply bg-card rounded-xl border border-border shadow-[var(--shadow-medium)] hover:shadow-[var(--shadow-strong)] transition-shadow duration-200;
+  }
+
+  /* Tiêu đề section */
+  .section-title {
+    @apply text-2xl md:text-3xl font-bold text-foreground tracking-tight;
+  }
+
+  .section-desc {
+    @apply text-muted-foreground text-base md:text-lg max-w-2xl;
   }
   
   /* Enhanced transitions */

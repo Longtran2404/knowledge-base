@@ -3,10 +3,12 @@
  * Tránh duplicate queries và conflicts
  */
 
-import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect, useRef, ReactNode } from "react";
 import { supabase, NLCUserFile, Course, Product } from "../lib/supabase-config";
 import { useAuth } from "./UnifiedAuthContext";
 import { toast } from "sonner";
+
+const TIMEOUT_TOAST_COOLDOWN_MS = 5000; // Chỉ hiển thị 1 toast timeout mỗi 5s (tránh trùng)
 
 interface GlobalDataState {
   // Files (Upload page)
@@ -66,6 +68,14 @@ const LOADING_DELAY_MS = 100; // Chỉ bật skeleton sau 100ms để first pain
 
 export function GlobalDataProvider({ children }: { children: ReactNode }) {
   const { userProfile } = useAuth();
+  const lastTimeoutToastRef = useRef<number>(0);
+
+  const showTimeoutToast = useCallback((message: string) => {
+    const now = Date.now();
+    if (now - lastTimeoutToastRef.current < TIMEOUT_TOAST_COOLDOWN_MS) return;
+    lastTimeoutToastRef.current = now;
+    toast.error(message);
+  }, []);
 
   const [state, setState] = useState<GlobalDataState>({
     userFiles: [],
@@ -124,10 +134,10 @@ export function GlobalDataProvider({ children }: { children: ReactNode }) {
     } catch (err) {
       const isTimeout = err instanceof Error && err.message === "Timeout";
       console.error("Error loading user files:", err);
-      if (isTimeout) toast.error("Tải danh sách file quá lâu. Vui lòng thử lại.");
+      if (isTimeout) showTimeoutToast("Tải danh sách file quá lâu. Vui lòng thử lại.");
       setState(prev => ({ ...prev, filesLoading: false }));
     }
-  }, [userProfile?.id, state.lastSync.files, isCacheValid]);
+  }, [userProfile?.id, state.lastSync.files, isCacheValid, showTimeoutToast]);
 
   // Refresh courses (delayed loading + retry khi timeout)
   const refreshCourses = useCallback(async () => {
@@ -175,14 +185,14 @@ export function GlobalDataProvider({ children }: { children: ReactNode }) {
         } catch {
           /* retry failed */
         }
-        toast.error("Tải khóa học quá lâu. Vui lòng thử lại.");
+        showTimeoutToast("Tải dữ liệu quá lâu. Vui lòng thử lại.");
       } else {
         console.error("Error loading courses:", err);
       }
       clearTimeout(loadingTimer);
       setState(prev => ({ ...prev, coursesLoading: false }));
     }
-  }, [state.lastSync.courses, isCacheValid]);
+  }, [state.lastSync.courses, isCacheValid, showTimeoutToast]);
 
   // Refresh products (delayed loading + retry khi timeout)
   const refreshProducts = useCallback(async () => {
@@ -230,14 +240,14 @@ export function GlobalDataProvider({ children }: { children: ReactNode }) {
         } catch {
           /* retry failed */
         }
-        toast.error("Tải sản phẩm quá lâu. Vui lòng thử lại.");
+        showTimeoutToast("Tải dữ liệu quá lâu. Vui lòng thử lại.");
       } else {
         console.error("Error loading products:", err);
       }
       clearTimeout(loadingTimer);
       setState(prev => ({ ...prev, productsLoading: false }));
     }
-  }, [state.lastSync.products, isCacheValid]);
+  }, [state.lastSync.products, isCacheValid, showTimeoutToast]);
 
   // Refresh public files
   const refreshPublicFiles = useCallback(async () => {
@@ -272,10 +282,10 @@ export function GlobalDataProvider({ children }: { children: ReactNode }) {
     } catch (err) {
       const isTimeout = err instanceof Error && err.message === "Timeout";
       console.error("Error loading public files:", err);
-      if (isTimeout) toast.error("Tải tài nguyên công khai quá lâu. Vui lòng thử lại.");
+      if (isTimeout) showTimeoutToast("Tải dữ liệu quá lâu. Vui lòng thử lại.");
       setState(prev => ({ ...prev, publicFilesLoading: false }));
     }
-  }, [state.lastSync.publicFiles, isCacheValid]);
+  }, [state.lastSync.publicFiles, isCacheValid, showTimeoutToast]);
 
   // Refresh all data
   const refreshAll = useCallback(async () => {
@@ -369,10 +379,13 @@ export function GlobalDataProvider({ children }: { children: ReactNode }) {
     }
   }, [userProfile?.id, refreshUserFiles]);
 
-  // Prefetch courses + products ngay khi app load để trang Sản phẩm/Marketplace mở nhanh
+  // Prefetch courses + products sau khi mount (defer để không block first paint)
   useEffect(() => {
-    refreshCourses();
-    refreshProducts();
+    const t = setTimeout(() => {
+      refreshCourses();
+      refreshProducts();
+    }, 100);
+    return () => clearTimeout(t);
   // eslint-disable-next-line react-hooks/exhaustive-deps -- chỉ chạy 1 lần khi mount
   }, []);
 

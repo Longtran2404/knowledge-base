@@ -82,11 +82,23 @@ export default function ManagerDashboard() {
     try {
       // Load documents data
       const documentsData = localStorage.getItem("nlc_uploaded_documents");
-      const documents = documentsData ? JSON.parse(documentsData) : [];
+      let documents: unknown[] = [];
+      try {
+        documents = (documentsData && documentsData.trim() ? JSON.parse(documentsData) : []) as unknown[];
+        if (!Array.isArray(documents)) documents = [];
+      } catch {
+        documents = [];
+      }
 
       // Load users data
       const usersData = localStorage.getItem("kb_users_data");
-      const users = usersData ? JSON.parse(usersData) : [];
+      let users: unknown[] = [];
+      try {
+        users = (usersData && usersData.trim() ? JSON.parse(usersData) : []) as unknown[];
+        if (!Array.isArray(users)) users = [];
+      } catch {
+        users = [];
+      }
 
       // Calculate stats
       const pendingApprovals = documents.filter(
@@ -101,24 +113,21 @@ export default function ManagerDashboard() {
 
       // Calculate revenue (mock data for demonstration)
       const totalRevenue = documents
-        .filter((doc: any) => doc.status === "approved" && doc.price > 0)
-        .reduce(
-          (sum: number, doc: any) => sum + doc.price * (doc.downloads || 0),
-          0
-        );
+        .filter((d: unknown) => (d as { status?: string; price?: number })?.status === "approved" && ((d as { price?: number })?.price ?? 0) > 0)
+        .reduce((sum: number, d: unknown) => sum + ((d as { price?: number })?.price ?? 0) * ((d as { downloads?: number })?.downloads ?? 0), 0) as number;
 
       // Monthly uploads (last 30 days)
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
       const monthlyUploads = documents.filter(
-        (doc: any) => new Date(doc.uploadedAt) > thirtyDaysAgo
+        (d: unknown) => new Date((d as { uploadedAt?: string })?.uploadedAt ?? 0) > thirtyDaysAgo
       ).length;
 
       // Total downloads (mock data)
       const downloadCount = documents.reduce(
-        (sum: number, doc: any) => sum + (doc.downloads || 0),
+        (sum: number, d: unknown) => sum + ((d as { downloads?: number })?.downloads ?? 0),
         0
-      );
+      ) as number;
 
       setStats({
         totalDocuments: documents.length,

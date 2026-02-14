@@ -218,7 +218,7 @@ export function ModernSidebarV2() {
           id="sidebar-toggle-button"
           type="button"
           onClick={() => setIsOpen(true)}
-          className="fixed top-4 left-4 z-50 p-3 rounded-xl bg-primary text-primary-foreground shadow-md hover:opacity-95 transition-opacity"
+          className="fixed top-4 left-4 z-50 p-3 rounded-xl bg-primary text-primary-foreground shadow-medium hover:shadow-strong transition-shadow"
           aria-label="Mở menu"
         >
           <Menu className="h-6 w-6" />
@@ -249,14 +249,14 @@ export function ModernSidebarV2() {
             animate={{ x: 0 }}
             exit={{ x: -320 }}
             transition={{ duration: 0.2 }}
-            className="fixed left-0 top-0 h-screen w-80 bg-card border-r border-border z-50 flex flex-col shadow-xl overflow-hidden"
+            className="fixed left-0 top-0 h-screen w-80 bg-card border-r border-border z-50 flex flex-col shadow-strong overflow-hidden"
           >
             <div className="flex flex-col h-full">
               <div className="p-4 border-b border-border">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center font-bold text-primary-foreground text-xl">
-                      NL
+                      KB
                     </div>
                     <div>
                       <h2 className="font-bold text-foreground">Knowledge Base</h2>

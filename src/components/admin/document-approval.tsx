@@ -88,8 +88,12 @@ export function DocumentApproval() {
   const loadDocuments = () => {
     try {
       const storedDocs = localStorage.getItem("nlc_uploaded_documents");
-      if (storedDocs) {
-        setDocuments(JSON.parse(storedDocs));
+      if (storedDocs && storedDocs.trim() !== '') {
+        try {
+          setDocuments(JSON.parse(storedDocs));
+        } catch {
+          localStorage.removeItem("nlc_uploaded_documents");
+        }
       }
     } catch (error) {
       console.error("Error loading documents:", error);

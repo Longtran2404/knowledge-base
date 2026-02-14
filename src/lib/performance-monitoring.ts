@@ -102,7 +102,8 @@ function handleMetric(metric: Metric) {
 
   // Store in localStorage for debugging
   if (process.env.NODE_ENV === 'development') {
-    const stored = JSON.parse(localStorage.getItem('webVitals') || '[]');
+    const raw = localStorage.getItem('webVitals');
+    const stored = (raw && raw.trim() ? (() => { try { return JSON.parse(raw); } catch { return []; } })() : []) as PerformanceData[];
     stored.push(data);
     localStorage.setItem('webVitals', JSON.stringify(stored.slice(-10))); // Keep last 10
   }
@@ -138,7 +139,8 @@ export function getPerformanceSummary(): {
     poor: number;
   };
 } {
-  const stored = JSON.parse(localStorage.getItem('webVitals') || '[]') as PerformanceData[];
+  const raw = localStorage.getItem('webVitals');
+  const stored = (raw && raw.trim() ? (() => { try { return JSON.parse(raw); } catch { return []; } })() : []) as PerformanceData[];
 
   const summary = stored.reduce(
     (acc, metric) => {

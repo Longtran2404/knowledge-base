@@ -46,8 +46,12 @@ class AuthService {
   private loadUserFromStorage(): void {
     try {
       const stored = localStorage.getItem("kb_user");
-      if (stored) {
-        this.user = JSON.parse(stored);
+      if (stored && stored.trim() !== '') {
+        try {
+          this.user = JSON.parse(stored);
+        } catch {
+          localStorage.removeItem("kb_user");
+        }
         this.notifyListeners();
       }
     } catch (error) {
@@ -268,7 +272,7 @@ class AuthService {
   private getStoredUsersData(): StoredUserData[] {
     try {
       const stored = localStorage.getItem("kb_users_data");
-      return stored ? JSON.parse(stored) : [];
+      return stored && stored.trim() ? (() => { try { return JSON.parse(stored); } catch { return []; } })() : [];
     } catch (error) {
       console.error("Error loading users data:", error);
       return [];
@@ -292,7 +296,7 @@ class AuthService {
   private getStoredUsers(): User[] {
     try {
       const stored = localStorage.getItem("kb_users");
-      return stored ? JSON.parse(stored) : [];
+      return stored && stored.trim() ? (() => { try { return JSON.parse(stored); } catch { return []; } })() : [];
     } catch (error) {
       console.error("Error loading users:", error);
       return [];

@@ -77,11 +77,12 @@ export function GlobalSearch({
   // Load recent searches from localStorage
   useEffect(() => {
     const saved = localStorage.getItem('kb-recent-searches');
-    if (saved) {
+    if (saved && saved.trim() !== '') {
       try {
-        setRecentSearches(JSON.parse(saved));
-      } catch (error) {
-        console.error('Error loading recent searches:', error);
+        const parsed = JSON.parse(saved);
+        setRecentSearches(Array.isArray(parsed) ? parsed : []);
+      } catch {
+        localStorage.removeItem('kb-recent-searches');
       }
     }
   }, []);

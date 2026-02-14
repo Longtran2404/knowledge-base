@@ -20,8 +20,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="vi">
-      <body>
-        <div id="root">{children}</div>
+      <body style={{ margin: 0, backgroundColor: '#f1f5f9' }}>
+        <div id="root" style={{ minHeight: '100vh' }}>{children}</div>
       </body>
     </html>
   );

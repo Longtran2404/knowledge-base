@@ -304,11 +304,11 @@ export function UnifiedAuthProvider({
         logger.info("Initializing auth state...");
         setIsLoading(true);
         
-        // Check current session with 2s timeout
+        // Check current session với timeout 1.5s - tránh treo khi Supabase chậm/placeholder
         const { data: { session }, error } = await Promise.race([
           supabase.auth.getSession(),
           new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('Session timeout')), 2000)
+            setTimeout(() => reject(new Error('Session timeout')), 1500)
           )
         ]) as any;
         

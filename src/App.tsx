@@ -6,7 +6,8 @@ import { NotificationProvider } from "./components/ui/notification";
 import { EnhancedToastProvider } from "./components/ui/enhanced-toast";
 import { NotificationProvider as EnhancedNotificationProvider } from "./contexts/NotificationContext";
 import { ClientWrapper } from "./components/client-wrapper";
-import LocatorSetup from "./components/locator-setup";
+// LocatorSetup tạm tắt - @locator/runtime không tương thích solid-js với Next.js 15
+// import LocatorSetup from "./components/locator-setup";
 import { ModernSidebarV2 } from "./components/navigation/ModernSidebarV2";
 import HeaderLayout from "./components/layout/HeaderLayout";
 import PageTransition from "./components/layout/PageTransition";
@@ -738,7 +739,7 @@ function App() {
                           />
                         </Routes>
 
-                        <LocatorSetup />
+                        {/* <LocatorSetup /> - tạm tắt */}
                         <Toaster
                           position="top-center"
                           toastOptions={{
