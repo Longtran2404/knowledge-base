@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { Counter } from '../components/ui/counter';
 import { RotatingText } from '../components/animations/RotatingText';
-import { LogoLoopMulti, LogoSVGs } from '../components/animations/LogoLoop';
+import { LogoLoop, LogoSVGs } from '../components/animations/LogoLoop';
 import { BentoHero } from '../components/layout/MagicBento';
 import { SEO } from '../components/SEO';
 import { Button } from '../components/ui/button';
@@ -227,44 +227,34 @@ export default function EnhancedGioiThieuPage() {
               </p>
             </div>
           </div>
-          <div className="overflow-hidden px-4 md:px-8 max-w-6xl mx-auto flex flex-col items-center">
-            <LogoLoopMulti
-              rows={[
-                {
-                  logos: [
-                    { name: 'Autodesk', url: '/images/logos/autodesk.svg', icon: <LogoSVGs.Autodesk />, link: 'https://www.autodesk.com' },
-                    { name: 'Microsoft', url: '/images/logos/microsoft.svg', icon: <LogoSVGs.Microsoft />, link: 'https://www.microsoft.com' },
-                    { name: 'Google', url: '/images/logos/google.svg', icon: <LogoSVGs.Google />, link: 'https://www.google.com' },
-                    { name: 'AWS', url: '/images/logos/amazonaws.svg', icon: <LogoSVGs.AWS />, link: 'https://aws.amazon.com' },
-                    { name: 'Oracle', url: '/images/logos/oracle.svg', icon: <LogoSVGs.Oracle />, link: 'https://www.oracle.com' },
-                    { name: 'SAP', url: '/images/logos/sap.svg', icon: <LogoSVGs.SAP />, link: 'https://www.sap.com' },
-                    { name: 'IBM', url: '/images/logos/ibm.svg', icon: <LogoSVGs.IBM />, link: 'https://www.ibm.com' },
-                    { name: 'Adobe', url: '/images/logos/adobe.svg', icon: <LogoSVGs.Adobe />, link: 'https://www.adobe.com' },
-                    { name: 'Siemens', url: '/images/logos/siemens.svg', icon: <LogoSVGs.Siemens />, link: 'https://www.siemens.com' },
-                    { name: 'Bosch', url: '/images/logos/bosch.svg', icon: <LogoSVGs.Bosch />, link: 'https://www.bosch.com' },
-                    { name: 'Schneider', url: '/images/logos/schneiderelectric.svg', icon: <LogoSVGs.Schneider />, link: 'https://www.se.com' },
-                  ],
-                  speed: 40,
-                  direction: 'left',
-                },
-                {
-                  logos: [
-                    { name: 'Vingroup', url: '/images/logos/vingroup.svg', icon: <LogoSVGs.Vingroup />, link: 'https://www.vingroup.net' },
-                    { name: 'Hòa Phát', icon: <LogoSVGs.HoaPhat />, link: 'https://hoaphat.com.vn' },
-                    { name: 'Coteccons', icon: <LogoSVGs.Coteccons />, link: 'https://coteccons.vn' },
-                    { name: 'Vinaconex', icon: <LogoSVGs.Vinaconex />, link: 'https://vinaconex.com.vn' },
-                    { name: 'Hưng Thịnh', icon: <LogoSVGs.HungThinh />, link: 'https://hungthinhcorp.com.vn' },
-                    { name: 'Novaland', url: '/images/logos/novaland.svg', icon: <LogoSVGs.Novaland />, link: 'https://novaland.com.vn' },
-                    { name: 'FPT', url: '/images/logos/fpt.svg', icon: <LogoSVGs.FPT />, link: 'https://fpt.com.vn' },
-                    { name: 'VNPT', icon: <LogoSVGs.VNPT />, link: 'https://vnpt.vn' },
-                    { name: 'Hòa Bình', icon: <LogoSVGs.HoaBinh />, link: 'https://hoabinhcorp.com.vn' },
-                    { name: 'Ricons', icon: <LogoSVGs.Ricons />, link: 'https://ricons.vn' },
-                    { name: 'Pomina', icon: <LogoSVGs.Pomina />, link: 'https://pomina.vn' },
-                  ],
-                  speed: 45,
-                  direction: 'right',
-                },
+          <div className="overflow-hidden px-4 md:px-8 max-w-6xl mx-auto">
+            <LogoLoop
+              logos={[
+                { name: 'Autodesk', url: '/images/logos/autodesk.svg', icon: <LogoSVGs.Autodesk />, link: 'https://www.autodesk.com' },
+                { name: 'Microsoft', url: '/images/logos/microsoft.svg', icon: <LogoSVGs.Microsoft />, link: 'https://www.microsoft.com' },
+                { name: 'Google', url: '/images/logos/google.svg', icon: <LogoSVGs.Google />, link: 'https://www.google.com' },
+                { name: 'AWS', url: '/images/logos/amazonaws.svg', icon: <LogoSVGs.AWS />, link: 'https://aws.amazon.com' },
+                { name: 'Oracle', url: '/images/logos/oracle.svg', icon: <LogoSVGs.Oracle />, link: 'https://www.oracle.com' },
+                { name: 'SAP', url: '/images/logos/sap.svg', icon: <LogoSVGs.SAP />, link: 'https://www.sap.com' },
+                { name: 'IBM', url: '/images/logos/ibm.svg', icon: <LogoSVGs.IBM />, link: 'https://www.ibm.com' },
+                { name: 'Adobe', url: '/images/logos/adobe.svg', icon: <LogoSVGs.Adobe />, link: 'https://www.adobe.com' },
+                { name: 'Siemens', url: '/images/logos/siemens.svg', icon: <LogoSVGs.Siemens />, link: 'https://www.siemens.com' },
+                { name: 'Bosch', url: '/images/logos/bosch.svg', icon: <LogoSVGs.Bosch />, link: 'https://www.bosch.com' },
+                { name: 'Schneider', url: '/images/logos/schneiderelectric.svg', icon: <LogoSVGs.Schneider />, link: 'https://www.se.com' },
+                { name: 'Vingroup', url: '/images/logos/vingroup.svg', icon: <LogoSVGs.Vingroup />, link: 'https://www.vingroup.net' },
+                { name: 'Hòa Phát', icon: <LogoSVGs.HoaPhat />, link: 'https://hoaphat.com.vn' },
+                { name: 'Coteccons', icon: <LogoSVGs.Coteccons />, link: 'https://coteccons.vn' },
+                { name: 'Vinaconex', icon: <LogoSVGs.Vinaconex />, link: 'https://vinaconex.com.vn' },
+                { name: 'Hưng Thịnh', icon: <LogoSVGs.HungThinh />, link: 'https://hungthinhcorp.com.vn' },
+                { name: 'Novaland', url: '/images/logos/novaland.svg', icon: <LogoSVGs.Novaland />, link: 'https://novaland.com.vn' },
+                { name: 'FPT', url: '/images/logos/fpt.svg', icon: <LogoSVGs.FPT />, link: 'https://fpt.com.vn' },
+                { name: 'VNPT', icon: <LogoSVGs.VNPT />, link: 'https://vnpt.vn' },
+                { name: 'Hòa Bình', icon: <LogoSVGs.HoaBinh />, link: 'https://hoabinhcorp.com.vn' },
+                { name: 'Ricons', icon: <LogoSVGs.Ricons />, link: 'https://ricons.vn' },
+                { name: 'Pomina', icon: <LogoSVGs.Pomina />, link: 'https://pomina.vn' },
               ]}
+              speed={45}
+              direction="left"
             />
           </div>
         </section>

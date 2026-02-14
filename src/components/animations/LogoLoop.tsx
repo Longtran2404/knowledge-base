@@ -1,9 +1,11 @@
 /**
  * Logo Loop - Carousel đối tác & thương hiệu
- * CSS animation mượt không giật, chữ không bị cắt
+ * Dùng react-fast-marquee (Aceternity Logo Clouds, 349K+ weekly downloads)
+ * Mượt, pause on hover, gradient edges
  */
 
 import React from 'react';
+import Marquee from 'react-fast-marquee';
 
 interface Logo {
   name: string;
@@ -25,11 +27,8 @@ export function LogoLoop({
   direction = 'left',
   className = ''
 }: LogoLoopProps) {
-  // Duplicate 2x để loop seamless: khi scroll -50% = hết bản 1, bản 2 giống hệt → reset không giật
-  const duplicatedLogos = [...logos, ...logos];
-
   const LogoContent = ({ logo }: { logo: Logo }) => (
-    <div className="flex-shrink-0 flex items-center justify-center min-h-[4rem] min-w-[7rem] md:min-h-[5rem] md:min-w-[9rem] h-16 w-32 md:h-20 md:w-40 px-5 py-3 rounded-xl bg-white/80 dark:bg-background/60 border border-border/50 hover:border-primary/40 hover:shadow-soft transition-all duration-300 cursor-pointer overflow-visible">
+    <div className="flex-shrink-0 flex items-center justify-center min-h-[4rem] min-w-[7rem] md:min-h-[5rem] md:min-w-[9rem] h-16 w-32 md:h-20 md:w-40 px-5 py-3 rounded-xl bg-white dark:bg-card/90 border border-border/50 shadow-sm hover:border-primary/50 hover:shadow-md hover:scale-[1.02] transition-all duration-300 cursor-pointer overflow-visible mx-4 md:mx-6">
       {logo.url ? (
         <img
           src={logo.url}
@@ -67,23 +66,21 @@ export function LogoLoop({
     return <div key={`${logo.name}-${index}`} className="flex-shrink-0">{content}</div>;
   };
 
-  const animationName = direction === 'left' ? 'marquee-left' : 'marquee-right';
-
   return (
-    <div className={`relative w-full overflow-hidden rounded-2xl border border-border/60 bg-white/90 dark:bg-card/90 shadow-soft py-6 ${className}`}>
-      <div className="absolute inset-y-0 left-0 w-24 md:w-32 bg-gradient-to-r from-white via-white/95 to-transparent dark:from-[hsl(var(--background))] dark:via-[hsl(var(--background)/0.95)] z-10 pointer-events-none" />
-      <div className="absolute inset-y-0 right-0 w-24 md:w-32 bg-gradient-to-l from-white via-white/95 to-transparent dark:from-[hsl(var(--background))] dark:via-[hsl(var(--background)/0.95)] z-10 pointer-events-none" />
-
-      <div
-        className="flex gap-8 md:gap-12 items-center shrink-0 w-max will-change-transform"
-        style={{
-          animation: `${animationName} ${speed}s linear infinite`,
-        }}
+    <div className={`relative w-full overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-b from-white to-slate-50/80 dark:from-card dark:to-card/80 shadow-medium py-8 ${className}`}>
+      <Marquee
+        speed={speed}
+        direction={direction === 'left' ? 'left' : 'right'}
+        pauseOnHover
+        gradient
+        gradientColor="white"
+        gradientWidth={80}
+        className="min-h-[5rem] flex items-center"
       >
-        {duplicatedLogos.map((logo, index) => (
+        {logos.map((logo, index) => (
           <LogoCard key={`${logo.name}-${index}`} logo={logo} index={index} />
         ))}
-      </div>
+      </Marquee>
     </div>
   );
 }
