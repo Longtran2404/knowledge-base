@@ -46,7 +46,7 @@ export function useNotifications() {
       if (Notification.permission === "granted") {
         new Notification(event.new.title, {
           body: event.new.message,
-          icon: "/favicon.ico",
+          icon: "/images/weblogo/knowledge-logo-01.svg",
           tag: event.new.id,
         });
       }

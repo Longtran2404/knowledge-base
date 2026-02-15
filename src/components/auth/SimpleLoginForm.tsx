@@ -1,18 +1,37 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { z } from 'zod';
 import { supabase } from '../../lib/supabase-client';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+
+const emailSchema = z.string().email('Email không hợp lệ');
+const passwordSchema = z.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự');
 
 export default function SimpleLoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<'login' | 'signup'>('login');
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({});
+
+    const emailResult = emailSchema.safeParse(email);
+    const passwordResult = passwordSchema.safeParse(password);
+
+    const newErrors: { email?: string; password?: string } = {};
+    if (!emailResult.success) newErrors.email = emailResult.error.errors[0]?.message ?? 'Email không hợp lệ';
+    if (!passwordResult.success) newErrors.password = passwordResult.error.errors[0]?.message ?? 'Mật khẩu phải có ít nhất 6 ký tự';
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -42,9 +61,10 @@ export default function SimpleLoginForm() {
         toast.success('Đăng ký thành công! Vui lòng kiểm tra email để xác nhận.');
         setMode('login');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Auth error:', error);
-      toast.error(error.message || 'Có lỗi xảy ra');
+      const msg = error instanceof Error ? error.message : 'Có lỗi xảy ra';
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -67,34 +87,43 @@ export default function SimpleLoginForm() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} noValidate className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
                 Email
               </label>
               <input
+                id="email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="your-email@example.com"
+                onChange={(e) => { setEmail(e.target.value); setErrors((prev) => ({ ...prev, email: undefined })); }}
+                className={`w-full px-4 py-3 bg-slate-800/50 border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.email ? 'border-red-500' : 'border-slate-700'}`}
+                placeholder="email@example.com"
+                aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? 'email-error' : undefined}
               />
+              {errors.email && (
+                <p id="email-error" className="mt-1 text-sm text-red-400" role="alert">{errors.email}</p>
+              )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-2">
                 Mật khẩu
               </label>
               <input
+                id="password"
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onChange={(e) => { setPassword(e.target.value); setErrors((prev) => ({ ...prev, password: undefined })); }}
+                className={`w-full px-4 py-3 bg-slate-800/50 border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.password ? 'border-red-500' : 'border-slate-700'}`}
                 placeholder="••••••••"
+                aria-invalid={!!errors.password}
+                aria-describedby={errors.password ? 'password-error' : undefined}
               />
+              {errors.password && (
+                <p id="password-error" className="mt-1 text-sm text-red-400" role="alert">{errors.password}</p>
+              )}
             </div>
 
             <button
@@ -116,17 +145,6 @@ export default function SimpleLoginForm() {
                 : 'Đã có tài khoản? Đăng nhập'}
             </button>
           </div>
-
-          {mode === 'signup' && (
-            <div className="mt-4 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-              <p className="text-sm text-blue-300">
-                💡 Sau khi đăng ký, chạy lệnh sau để set làm admin:
-              </p>
-              <code className="block mt-2 p-2 bg-slate-950 rounded text-xs text-green-400">
-                node scripts/set-as-admin.js {email || 'your-email@example.com'}
-              </code>
-            </div>
-          )}
         </div>
       </motion.div>
     </div>

@@ -51,8 +51,9 @@ export default function ResourceLibrary({ className }: ResourceLibraryProps) {
         if (!response.ok) {
           throw new Error("Failed to fetch resources");
         }
-        const data: Resource[] = await response.json();
-        setResources(data);
+        const text = await response.text();
+        const data: Resource[] = (text && text.trim() ? (() => { try { return JSON.parse(text) as Resource[]; } catch { return []; } })() : []);
+        setResources(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error fetching resources:", error);
       } finally {

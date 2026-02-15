@@ -30,10 +30,10 @@ const ProductsPage: React.FC = () => {
   const loading = productsLoading || coursesLoading;
 
   const categories = [
-    { id: 'all', name: 'Tất cả', count: 0 },
-    { id: 'course', name: 'Khóa học', count: 0 },
-    { id: 'ebook', name: 'E-book', count: 0 },
-    { id: 'template', name: 'Template', count: 0 },
+    { id: 'all', name: 'Tất cả', count: products.length + courses.length },
+    { id: 'course', name: 'Khóa học', count: courses.length },
+    { id: 'ebook', name: 'E-book', count: products.filter(p => p.category === 'ebook').length },
+    { id: 'template', name: 'Template', count: products.filter(p => p.category === 'template').length },
   ];
 
   useEffect(() => {
@@ -120,10 +120,12 @@ const ProductsPage: React.FC = () => {
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
+                  type="search"
                   placeholder="Tìm kiếm sản phẩm, khóa học..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 border-border bg-background text-foreground placeholder:text-muted-foreground"
+                  aria-label="Tìm kiếm sản phẩm và khóa học"
                 />
               </div>
               <select
@@ -220,22 +222,32 @@ const ProductsPage: React.FC = () => {
         </section>
 
         {!loading && filteredData().length === 0 && (
-          <div className="text-center py-16">
-            <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
-              <Search className="w-12 h-12 text-muted-foreground" />
+          <div className="text-center py-16 px-4">
+            <div className="w-24 h-24 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-4">
+              {products.length === 0 && courses.length === 0 ? (
+                <BookOpen className="w-12 h-12 text-muted-foreground" />
+              ) : (
+                <Search className="w-12 h-12 text-muted-foreground" />
+              )}
             </div>
             <h3 className="text-xl font-semibold text-foreground mb-2">
-              Không tìm thấy sản phẩm
+              {products.length === 0 && courses.length === 0
+                ? 'Nội dung đang được cập nhật'
+                : 'Không tìm thấy sản phẩm phù hợp'}
             </h3>
-            <p className="text-muted-foreground mb-6">
-              Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc
+            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+              {products.length === 0 && courses.length === 0
+                ? 'Chúng tôi đang chuẩn bị các khóa học và sản phẩm chất lượng. Vui lòng quay lại sau.'
+                : 'Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc để xem thêm kết quả.'}
             </p>
-            <Button
-              variant="outline"
-              onClick={() => { setSearchTerm(''); setSelectedCategory('all'); }}
-            >
-              Xóa bộ lọc
-            </Button>
+            {(searchTerm || selectedCategory !== 'all') && (
+              <Button
+                variant="outline"
+                onClick={() => { setSearchTerm(''); setSelectedCategory('all'); }}
+              >
+                Xóa bộ lọc
+              </Button>
+            )}
           </div>
         )}
       </div>

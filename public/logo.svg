@@ -1,32 +1,16 @@
 <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Gradient Definitions -->
   <defs>
-    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
-      <stop offset="50%" style="stop-color:#9333EA;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#EC4899;stop-opacity:1" />
-    </linearGradient>
-    <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#60A5FA;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#A78BFA;stop-opacity:1" />
+    <linearGradient id="kb-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
     </linearGradient>
   </defs>
-
-  <!-- Background Circle with Gradient -->
-  <circle cx="100" cy="100" r="90" fill="url(#gradient1)" opacity="0.1"/>
-
-  <!-- Main Logo Shape - Abstract Building/Construction -->
-  <path d="M100 40 L140 70 L140 140 L100 160 L60 140 L60 70 Z" fill="url(#gradient1)" opacity="0.8"/>
-
-  <!-- Inner Detail -->
-  <path d="M100 60 L120 75 L120 125 L100 140 L80 125 L80 75 Z" fill="url(#gradient2)"/>
-
-  <!-- Center Accent -->
-  <circle cx="100" cy="100" r="15" fill="white" opacity="0.9"/>
-
-  <!-- Letters NL -->
-  <text x="100" y="110" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="url(#gradient1)" text-anchor="middle">NL</text>
-
-  <!-- Bottom text -->
-  <text x="100" y="180" font-family="Arial, sans-serif" font-size="12" fill="url(#gradient1)" text-anchor="middle" opacity="0.8">CENTER</text>
+  <rect width="200" height="200" rx="32" fill="url(#kb-bg)"/>
+  <!-- Open book (bottom) -->
+  <path d="M50 145 L50 125 Q100 105 150 125 L150 145 Q100 165 50 145Z" fill="white" opacity="0.95"/>
+  <path d="M65 138 L100 118 L135 138 L100 155 Z" fill="white"/>
+  <!-- Upward arrow (from book) -->
+  <path d="M118 128 L128 88 L138 98 L128 78 L118 88 L128 108 Z" fill="white"/>
+  <!-- Four-point star -->
+  <path d="M100 48 L106 64 L122 66 L110 78 L113 94 L100 84 L87 94 L90 78 L78 66 L94 64 Z" fill="white"/>
 </svg>

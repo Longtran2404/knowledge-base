@@ -39,8 +39,9 @@ export default function CourseGrid({ className }: CourseGridProps) {
         if (!response.ok) {
           throw new Error("Failed to fetch courses");
         }
-        const data: Course[] = await response.json();
-        setCourses(data);
+        const text = await response.text();
+        const data: Course[] = (text && text.trim() ? (() => { try { return JSON.parse(text) as Course[]; } catch { return []; } })() : []);
+        setCourses(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error fetching courses:", error);
       } finally {

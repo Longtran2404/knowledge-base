@@ -40,9 +40,9 @@ const InstructionGuide: React.FC<InstructionGuideProps> = ({
   const [doneSet, setDoneSet] = useState<Set<string>>(() => {
     try {
       const raw = localStorage.getItem(storageKey);
-      if (!raw) return new Set<string>();
+      if (!raw || typeof raw !== 'string' || raw.trim() === '') return new Set<string>();
       const arr: string[] = JSON.parse(raw);
-      return new Set(arr);
+      return new Set(Array.isArray(arr) ? arr : []);
     } catch {
       return new Set<string>();
     }

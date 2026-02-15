@@ -320,20 +320,32 @@ export default function MarketplacePage() {
         )}
 
         {!coursesLoading && filteredCourses.length === 0 && (
-          <div className="text-center py-16">
-            <BookOpen className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-xl font-semibold text-foreground mb-2">Không tìm thấy khóa học nào</h3>
-            <p className="text-muted-foreground mb-6">Hãy thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setSearchTerm("");
-                setSelectedCategory("all");
-                setSelectedLevel("all");
-              }}
-            >
-              Xóa bộ lọc
-            </Button>
+          <div className="text-center py-16 px-4">
+            <div className="w-24 h-24 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-4">
+              <BookOpen className="w-12 h-12 text-muted-foreground" />
+            </div>
+            <h3 className="text-xl font-semibold text-foreground mb-2">
+              {courses.length === 0
+                ? 'Nội dung đang được cập nhật'
+                : 'Không tìm thấy khóa học phù hợp'}
+            </h3>
+            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+              {courses.length === 0
+                ? 'Chúng tôi đang chuẩn bị các khóa học chất lượng. Vui lòng quay lại sau.'
+                : 'Hãy thử thay đổi bộ lọc hoặc từ khóa tìm kiếm để xem thêm kết quả.'}
+            </p>
+            {(searchTerm || selectedCategory !== 'all' || selectedLevel !== 'all') && (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setSearchTerm("");
+                  setSelectedCategory("all");
+                  setSelectedLevel("all");
+                }}
+              >
+                Xóa bộ lọc
+              </Button>
+            )}
           </div>
         )}
       </div>

@@ -360,12 +360,19 @@ export default function AccountManagementPage() {
 
     try {
       const verificationData = localStorage.getItem("phone_verification");
-      if (!verificationData) {
+      if (!verificationData || verificationData.trim() === '') {
         toast.error("Phiên xác thực đã hết hạn. Vui lòng yêu cầu mã mới");
         return;
       }
 
-      const data = JSON.parse(verificationData);
+      let data: { code?: string; timestamp?: number; attempts?: number };
+      try {
+        data = JSON.parse(verificationData);
+      } catch {
+        localStorage.removeItem("phone_verification");
+        toast.error("Phiên xác thực không hợp lệ. Vui lòng yêu cầu mã mới");
+        return;
+      }
 
       // Check if verification expired (5 minutes)
       if (Date.now() - data.timestamp > 5 * 60 * 1000) {

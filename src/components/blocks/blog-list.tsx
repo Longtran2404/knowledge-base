@@ -32,8 +32,9 @@ export default function BlogList({ className, showTitle = true, limit }: BlogLis
         if (!response.ok) {
           throw new Error("Failed to fetch posts");
         }
-        const data: Post[] = await response.json();
-        setPosts(data);
+        const text = await response.text();
+        const data: Post[] = (text && text.trim() ? (() => { try { return JSON.parse(text) as Post[]; } catch { return []; } })() : []);
+        setPosts(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error fetching posts:", error);
       } finally {

@@ -45,7 +45,7 @@ function LoadingFallback() {
   );
 }
 
-// Dynamic import App - Next.js tự resolve default export
+// Dynamic import App (ssr: false) - cùng với overrides trong package.json giúp tránh duplicate React / TypeError "a[d] is not a function"
 const App = dynamic(() => import('../../App'), {
   ssr: false,
   loading: () => <LoadingFallback />,

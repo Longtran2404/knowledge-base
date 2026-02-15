@@ -31,11 +31,15 @@ export function createSafeStorage(): Storage {
     getItem(k: string): string | null {
       try {
         const raw = localStorage.getItem(k);
-        if (!raw || raw.trim() === '') return null;
+        if (raw == null || typeof raw !== 'string' || raw.trim() === '') return null;
         JSON.parse(raw);
         return raw;
       } catch {
-        localStorage.removeItem(k);
+        try {
+          localStorage.removeItem(k);
+        } catch {
+          /* ignore */
+        }
         return null;
       }
     },

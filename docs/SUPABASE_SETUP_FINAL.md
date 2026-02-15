@@ -195,6 +195,15 @@ npm start
 4. Có thể upload file ✅
 ```
 
+### 4. Set Admin (Chỉ dành cho dev)
+
+**Lưu ý:** Hướng dẫn này chỉ dùng trong môi trường phát triển, không hiển thị trên UI.
+
+```bash
+# Sau khi đăng ký tài khoản mới, chạy lệnh để set làm admin:
+node scripts/set-as-admin.js your-email@example.com
+```
+
 ---
 
 ## 🐛 TROUBLESHOOTING

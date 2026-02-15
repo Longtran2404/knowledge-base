@@ -187,7 +187,17 @@ export function GlobalDataProvider({ children }: { children: ReactNode }) {
         }
         showTimeoutToast("Tải dữ liệu quá lâu. Vui lòng thử lại.");
       } else {
-        console.error("Error loading courses:", err);
+        const e = err as { message?: string; code?: string; details?: string; error?: { message?: string } };
+        const msg = err instanceof Error ? err.message : (e?.message ?? e?.error?.message);
+        const msgStr = typeof msg === "string" ? msg : "";
+        const isTableMissing = /schema cache|Could not find the table|relation.*does not exist/i.test(msgStr);
+        if (isTableMissing) {
+          setState(prev => ({ ...prev, courses: [], coursesLoading: false }));
+          clearTimeout(loadingTimer);
+          return;
+        }
+        console.error("Error loading courses:", msg ?? e?.code ?? e?.details ?? (typeof err === "object" ? JSON.stringify(err) : String(err)));
+        showTimeoutToast("Không thể tải danh sách khóa học. Vui lòng thử lại sau.");
       }
       clearTimeout(loadingTimer);
       setState(prev => ({ ...prev, coursesLoading: false }));
@@ -242,7 +252,17 @@ export function GlobalDataProvider({ children }: { children: ReactNode }) {
         }
         showTimeoutToast("Tải dữ liệu quá lâu. Vui lòng thử lại.");
       } else {
-        console.error("Error loading products:", err);
+        const e = err as { message?: string; code?: string; details?: string; hint?: string; error?: { message?: string } };
+        const msg = err instanceof Error ? err.message : (e?.message ?? e?.error?.message);
+        const msgStr = typeof msg === "string" ? msg : "";
+        const isTableMissing = /schema cache|Could not find the table|relation.*does not exist/i.test(msgStr);
+        if (isTableMissing) {
+          setState(prev => ({ ...prev, products: [], productsLoading: false }));
+          clearTimeout(loadingTimer);
+          return;
+        }
+        console.error("Error loading products:", msg ?? (e?.code ?? e?.details ?? (typeof err === "object" ? JSON.stringify(err) : String(err))));
+        showTimeoutToast("Không thể tải danh sách sản phẩm. Vui lòng thử lại sau.");
       }
       clearTimeout(loadingTimer);
       setState(prev => ({ ...prev, productsLoading: false }));

@@ -9,7 +9,7 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/next.svg",
+      "src": "/images/weblogo/knowledge-logo-01.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"

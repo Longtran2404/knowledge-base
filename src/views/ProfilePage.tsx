@@ -177,7 +177,7 @@ export default function ProfilePage() {
   const loadExtendedProfile = () => {
     try {
       const storedProfile = localStorage.getItem(`nlc_extended_profile_${user?.id}`);
-      if (storedProfile) {
+      if (storedProfile && storedProfile.trim() !== '') {
         const parsed = JSON.parse(storedProfile);
         const merged = { ...profileData, ...parsed, ...user };
         setProfileData(merged);

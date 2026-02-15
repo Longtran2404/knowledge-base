@@ -70,7 +70,7 @@ const mainNavItems: NavItem[] = [
   },
   {
     id: 'upload',
-    label: 'Upload',
+    label: 'Tải lên tài liệu',
     icon: <Upload className="h-5 w-5" />,
     path: ROUTES.TAI_LEN,
     gradient: 'from-primary/90 to-primary',
@@ -84,7 +84,7 @@ const mainNavItems: NavItem[] = [
   },
   {
     id: 'marketplace',
-    label: 'Marketplace',
+    label: 'Chợ mua bán',
     icon: <ShoppingBag className="h-5 w-5" />,
     path: ROUTES.CHO_MUA_BAN,
     badge: 0,
@@ -152,7 +152,15 @@ export function ModernSidebarV2() {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isDesktop, setIsDesktop] = useState(false);
+  const [pendingPath, setPendingPath] = useState<string | null>(null);
   const location = useLocation();
+
+  // Clear pending when location matches
+  useEffect(() => {
+    if (pendingPath && location.pathname === pendingPath) {
+      setPendingPath(null);
+    }
+  }, [location.pathname, pendingPath]);
   const navigate = useNavigate();
   const { isAuthenticated, userProfile } = useAuth();
 
@@ -255,9 +263,11 @@ export function ModernSidebarV2() {
               <div className="p-4 border-b border-border">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center font-bold text-primary-foreground text-xl">
-                      KB
-                    </div>
+                    <img
+                      src="/images/weblogo/knowledge-logo-01.svg"
+                      alt="Knowledge Base"
+                      className="w-12 h-12 rounded-xl object-contain shrink-0"
+                    />
                     <div>
                       <h2 className="font-bold text-foreground">Knowledge Base</h2>
                       <p className="text-xs text-muted-foreground">Xây dựng tương lai</p>
@@ -286,9 +296,18 @@ export function ModernSidebarV2() {
 
               <div className="flex-1 overflow-y-auto py-3 px-2 space-y-1">
                 {filteredItems.map((item) => {
-                  const isActive = location.pathname === item.path;
+                  const isActive = location.pathname === item.path || pendingPath === item.path;
                   return (
-                    <Link key={item.id} to={item.path} onClick={handleNavClick}>
+                    <Link
+                      key={item.id}
+                      to={item.path}
+                      onClick={() => {
+                        setPendingPath(item.path);
+                        handleNavClick();
+                      }}
+                      className={isActive ? 'block' : ''}
+                      aria-current={isActive ? 'page' : undefined}
+                    >
                       <div
                         className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
                           isActive

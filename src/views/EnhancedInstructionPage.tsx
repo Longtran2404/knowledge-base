@@ -370,9 +370,9 @@ const EnhancedInstructionPage: React.FC = () => {
   const getCompletedSteps = () => {
     try {
       const raw = localStorage.getItem("nlc_enhanced_guide_items_done");
-      if (!raw) return 0;
+      if (!raw || typeof raw !== 'string' || raw.trim() === '') return 0;
       const arr: string[] = JSON.parse(raw);
-      return arr.length;
+      return Array.isArray(arr) ? arr.length : 0;
     } catch {
       return 0;
     }

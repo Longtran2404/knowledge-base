@@ -211,19 +211,27 @@ export default function WorkflowMarketplacePage() {
             <div className="animate-spin rounded-full h-12 w-12 border-2 border-primary border-t-transparent" />
           </div>
         ) : workflows.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-lg text-muted-foreground mb-4">Không tìm thấy workflow nào</p>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setSearchTerm('');
-                setSelectedCategory('all');
-                setPriceFilter('all');
-                setDifficultyFilter('all');
-              }}
-            >
-              Xóa bộ lọc
-            </Button>
+          <div className="text-center py-20 px-4">
+            <div className="w-24 h-24 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-4">
+              <Zap className="w-12 h-12 text-muted-foreground" />
+            </div>
+            <h3 className="text-xl font-semibold text-foreground mb-2">Nội dung đang được cập nhật</h3>
+            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+              Chúng tôi đang chuẩn bị các n8n workflows hữu ích. Vui lòng quay lại sau.
+            </p>
+            {(searchTerm || selectedCategory !== 'all' || priceFilter !== 'all' || difficultyFilter !== 'all') && (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setSearchTerm('');
+                  setSelectedCategory('all');
+                  setPriceFilter('all');
+                  setDifficultyFilter('all');
+                }}
+              >
+                Xóa bộ lọc
+              </Button>
+            )}
           </div>
         ) : (
           <div

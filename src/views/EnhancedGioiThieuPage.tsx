@@ -18,7 +18,8 @@ import {
 } from 'lucide-react';
 import { Counter } from '../components/ui/counter';
 import { RotatingText } from '../components/animations/RotatingText';
-import { LogoLoop, LogoSVGs } from '../components/animations/LogoLoop';
+import { PartnersSection } from '../components/sections/PartnersSection';
+import { LogoSVGs } from '../components/animations/LogoLoop';
 import { BentoHero } from '../components/layout/MagicBento';
 import { SEO } from '../components/SEO';
 import { Button } from '../components/ui/button';
@@ -57,6 +58,44 @@ const values = [
   },
 ];
 
+const PARTNER_LOGO_LIST = [
+  { name: 'Autodesk', url: '/images/logos/autodesk.svg', icon: <LogoSVGs.Autodesk />, link: 'https://www.autodesk.com' },
+  { name: 'Bentley', url: '/images/logos/bentley.svg', icon: <LogoSVGs.Bentley />, link: 'https://www.bentley.com' },
+  { name: 'Trimble', url: '/images/logos/trimble.svg', icon: <LogoSVGs.Trimble />, link: 'https://www.trimble.com' },
+  { name: 'Graphisoft', url: '/images/logos/graphisoft.svg', icon: <LogoSVGs.Graphisoft />, link: 'https://graphisoft.com' },
+  { name: 'Microsoft', url: '/images/logos/microsoft.svg', icon: <LogoSVGs.Microsoft />, link: 'https://www.microsoft.com' },
+  { name: 'Google', url: '/images/logos/google.svg', icon: <LogoSVGs.Google />, link: 'https://www.google.com' },
+  { name: 'AWS', url: '/images/logos/amazonaws.svg', icon: <LogoSVGs.AWS />, link: 'https://aws.amazon.com' },
+  { name: 'Oracle', url: '/images/logos/oracle.svg', icon: <LogoSVGs.Oracle />, link: 'https://www.oracle.com' },
+  { name: 'SAP', url: '/images/logos/sap.svg', icon: <LogoSVGs.SAP />, link: 'https://www.sap.com' },
+  { name: 'IBM', url: '/images/logos/ibm.svg', icon: <LogoSVGs.IBM />, link: 'https://www.ibm.com' },
+  { name: 'Adobe', url: '/images/logos/adobe.svg', icon: <LogoSVGs.Adobe />, link: 'https://www.adobe.com' },
+  { name: 'Siemens', url: '/images/logos/siemens.svg', icon: <LogoSVGs.Siemens />, link: 'https://www.siemens.com' },
+  { name: 'Bosch', url: '/images/logos/bosch.svg', icon: <LogoSVGs.Bosch />, link: 'https://www.bosch.com' },
+  { name: 'Schneider', url: '/images/logos/schneiderelectric.svg', icon: <LogoSVGs.Schneider />, link: 'https://www.se.com' },
+  { name: 'Viettel', url: '/images/logos/viettel.svg', icon: <LogoSVGs.Viettel />, link: 'https://viettel.com.vn' },
+  { name: 'VNPT', icon: <LogoSVGs.VNPT />, link: 'https://vnpt.vn' },
+  { name: 'Mobifone', url: '/images/logos/mobifone.svg', icon: <LogoSVGs.Mobifone />, link: 'https://mobifone.vn' },
+  { name: 'FPT', url: '/images/logos/fpt.svg', icon: <LogoSVGs.FPT />, link: 'https://fpt.com.vn' },
+  { name: 'CMC', url: '/images/logos/cmc.svg', icon: <LogoSVGs.CMC />, link: 'https://cmc.com.vn' },
+  { name: 'Vingroup', url: '/images/logos/vingroup.svg', icon: <LogoSVGs.Vingroup />, link: 'https://www.vingroup.net' },
+  { name: 'Novaland', url: '/images/logos/novaland.svg', icon: <LogoSVGs.Novaland />, link: 'https://novaland.com.vn' },
+  { name: 'CapitaLand', url: '/images/logos/capitaland.svg', icon: <LogoSVGs.CapitaLand />, link: 'https://www.capitaland.com' },
+  { name: 'Ecopark', url: '/images/logos/ecopark.svg', icon: <LogoSVGs.Ecopark />, link: 'https://ecopark.com.vn' },
+  { name: 'Phú Mỹ Hưng', url: '/images/logos/phumyhung.svg', icon: <LogoSVGs.PhuMyHung />, link: 'https://phumyhung.com.vn' },
+  { name: 'Đất Xanh', url: '/images/logos/datxanh.svg', icon: <LogoSVGs.DatXanh />, link: 'https://datxanh.vn' },
+  { name: 'Bitexco', url: '/images/logos/bitexco.svg', icon: <LogoSVGs.Bitexco />, link: 'https://bitexco.com.vn' },
+  { name: 'Hưng Thịnh', icon: <LogoSVGs.HungThinh />, link: 'https://hungthinhcorp.com.vn' },
+  { name: 'Hoàng Quân', url: '/images/logos/hoangquan.svg', icon: <LogoSVGs.HoangQuan />, link: 'https://hoangquan.com.vn' },
+  { name: 'Hòa Phát', icon: <LogoSVGs.HoaPhat />, link: 'https://hoaphat.com.vn' },
+  { name: 'Pomina', icon: <LogoSVGs.Pomina />, link: 'https://pomina.vn' },
+  { name: 'Coteccons', icon: <LogoSVGs.Coteccons />, link: 'https://coteccons.vn' },
+  { name: 'Vinaconex', icon: <LogoSVGs.Vinaconex />, link: 'https://vinaconex.com.vn' },
+  { name: 'Hòa Bình', icon: <LogoSVGs.HoaBinh />, link: 'https://hoabinhcorp.com.vn' },
+  { name: 'Ricons', icon: <LogoSVGs.Ricons />, link: 'https://ricons.vn' },
+  { name: 'EVN', url: '/images/logos/evn.svg', icon: <LogoSVGs.EVN />, link: 'https://evn.com.vn' },
+];
+
 export default function EnhancedGioiThieuPage() {
   return (
     <>
@@ -73,18 +112,26 @@ export default function EnhancedGioiThieuPage() {
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,hsl(var(--primary)/0.15),transparent)] pointer-events-none" />
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-16 md:py-24">
             <div className="max-w-5xl mx-auto text-center">
-              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-semibold mb-10">
+              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-semibold mb-6">
                 <BookOpen className="h-4 w-4" />
                 Nền tảng giáo dục hàng đầu
+              </div>
+
+              <div className="flex justify-center mb-8">
+                <img
+                  src="/images/weblogo/knowledge-logo-01.svg"
+                  alt="Knowledge Base"
+                  className="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 rounded-2xl shadow-lg object-contain"
+                />
               </div>
 
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight leading-[1.1]">
                 <span className="gradient-text">Knowledge Base</span>
               </h1>
 
-              <p className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-3">
-                Nền tảng{' '}
-                <span className="inline-block min-w-[180px] sm:min-w-[240px] text-left">
+              <p className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-3 flex flex-wrap items-center justify-center gap-x-1">
+                <span>Nền tảng</span>
+                <span className="inline-block min-w-[110px] sm:min-w-[140px] text-center">
                   <RotatingText
                     words={rotatingWords}
                     interval={2500}
@@ -212,52 +259,7 @@ export default function EnhancedGioiThieuPage() {
           </div>
         </section>
 
-        {/* Partners & Thương hiệu - thiết kế mới */}
-        <section className="py-16 md:py-24 bg-gradient-to-b from-primary/8 via-background to-muted/20">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-            <div className="text-center">
-              <span className="inline-block px-4 py-2 rounded-full bg-primary/15 text-primary text-sm font-semibold mb-4 border border-primary/25">
-                Đối tác tin cậy
-              </span>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4 gradient-text">
-                Đối tác & Thương hiệu
-              </h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                Hợp tác cùng các công ty hàng đầu Việt Nam và thế giới
-              </p>
-            </div>
-          </div>
-          <div className="overflow-hidden px-4 md:px-8 max-w-6xl mx-auto">
-            <LogoLoop
-              logos={[
-                { name: 'Autodesk', url: '/images/logos/autodesk.svg', icon: <LogoSVGs.Autodesk />, link: 'https://www.autodesk.com' },
-                { name: 'Microsoft', url: '/images/logos/microsoft.svg', icon: <LogoSVGs.Microsoft />, link: 'https://www.microsoft.com' },
-                { name: 'Google', url: '/images/logos/google.svg', icon: <LogoSVGs.Google />, link: 'https://www.google.com' },
-                { name: 'AWS', url: '/images/logos/amazonaws.svg', icon: <LogoSVGs.AWS />, link: 'https://aws.amazon.com' },
-                { name: 'Oracle', url: '/images/logos/oracle.svg', icon: <LogoSVGs.Oracle />, link: 'https://www.oracle.com' },
-                { name: 'SAP', url: '/images/logos/sap.svg', icon: <LogoSVGs.SAP />, link: 'https://www.sap.com' },
-                { name: 'IBM', url: '/images/logos/ibm.svg', icon: <LogoSVGs.IBM />, link: 'https://www.ibm.com' },
-                { name: 'Adobe', url: '/images/logos/adobe.svg', icon: <LogoSVGs.Adobe />, link: 'https://www.adobe.com' },
-                { name: 'Siemens', url: '/images/logos/siemens.svg', icon: <LogoSVGs.Siemens />, link: 'https://www.siemens.com' },
-                { name: 'Bosch', url: '/images/logos/bosch.svg', icon: <LogoSVGs.Bosch />, link: 'https://www.bosch.com' },
-                { name: 'Schneider', url: '/images/logos/schneiderelectric.svg', icon: <LogoSVGs.Schneider />, link: 'https://www.se.com' },
-                { name: 'Vingroup', url: '/images/logos/vingroup.svg', icon: <LogoSVGs.Vingroup />, link: 'https://www.vingroup.net' },
-                { name: 'Hòa Phát', icon: <LogoSVGs.HoaPhat />, link: 'https://hoaphat.com.vn' },
-                { name: 'Coteccons', icon: <LogoSVGs.Coteccons />, link: 'https://coteccons.vn' },
-                { name: 'Vinaconex', icon: <LogoSVGs.Vinaconex />, link: 'https://vinaconex.com.vn' },
-                { name: 'Hưng Thịnh', icon: <LogoSVGs.HungThinh />, link: 'https://hungthinhcorp.com.vn' },
-                { name: 'Novaland', url: '/images/logos/novaland.svg', icon: <LogoSVGs.Novaland />, link: 'https://novaland.com.vn' },
-                { name: 'FPT', url: '/images/logos/fpt.svg', icon: <LogoSVGs.FPT />, link: 'https://fpt.com.vn' },
-                { name: 'VNPT', icon: <LogoSVGs.VNPT />, link: 'https://vnpt.vn' },
-                { name: 'Hòa Bình', icon: <LogoSVGs.HoaBinh />, link: 'https://hoabinhcorp.com.vn' },
-                { name: 'Ricons', icon: <LogoSVGs.Ricons />, link: 'https://ricons.vn' },
-                { name: 'Pomina', icon: <LogoSVGs.Pomina />, link: 'https://pomina.vn' },
-              ]}
-              speed={45}
-              direction="left"
-            />
-          </div>
-        </section>
+        <PartnersSection logos={PARTNER_LOGO_LIST} duration={50} />
 
         {/* CTA */}
         <section className="py-20 md:py-28 relative overflow-hidden">

@@ -4,6 +4,10 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: false },
+  // Giảm lỗi webpack runtime với dynamic imports (React.lazy)
+  experimental: {
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+  },
   // Hỗ trợ biến CRA (REACT_APP_*) trên client: map sang NEXT_PUBLIC_*
   env: {
     NEXT_PUBLIC_SUPABASE_URL: process.env.REACT_APP_SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -21,6 +25,7 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_ENABLE_DEBUG: process.env.REACT_APP_ENABLE_DEBUG ?? process.env.NEXT_PUBLIC_ENABLE_DEBUG,
     NEXT_PUBLIC_ENABLE_PAYMENT_MONITORING: process.env.REACT_APP_ENABLE_PAYMENT_MONITORING ?? process.env.NEXT_PUBLIC_ENABLE_PAYMENT_MONITORING,
   },
+  // Single React: package.json overrides + xóa .next rồi npm run dev giúp tránh duplicate React / TypeError "a[d] is not a function".
 };
 
 export default nextConfig;

@@ -43,6 +43,7 @@ export const ROUTES = {
 
   // Success pages
   GOI_DICH_VU: '/goi-dich-vu',
+  THANH_TOAN_SEPAY: '/thanh-toan-sepay',
   HUONG_DAN: '/huong-dan',
   THANH_CONG_FREE: '/thanh-cong/free',
   THANH_CONG_PREMIUM: '/thanh-cong/premium',

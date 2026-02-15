@@ -51,8 +51,9 @@ export default function CourseGridEnhanced({ showFilters = true }: CourseGridEnh
       try {
         const response = await fetch('/api/courses');
         if (!response.ok) throw new Error('Failed to fetch courses');
-        const data = await response.json();
-        setCourses(data);
+        const text = await response.text();
+        const data = (text && text.trim() ? (() => { try { return JSON.parse(text); } catch { return []; } })() : []);
+        setCourses(Array.isArray(data) ? data : []);
       } catch (error) {
         toast.error('Không thể tải danh sách khóa học');
       } finally {

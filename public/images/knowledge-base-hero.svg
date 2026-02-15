@@ -1,0 +1,17 @@
+<svg width="320" height="320" viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Image1 style: solid blue, white shapes - for hero/decor -->
+  <defs>
+    <linearGradient id="hero-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e40af" />
+      <stop offset="100%" style="stop-color:#1e3a8a" />
+    </linearGradient>
+  </defs>
+  <rect width="320" height="320" rx="48" fill="url(#hero-bg)"/>
+  <!-- Open book / pages -->
+  <path d="M80 220 L80 180 Q160 140 240 180 L240 220 Q160 260 80 220Z" fill="white" opacity="0.95"/>
+  <path d="M100 205 L160 170 L220 205 L160 238 Z" fill="white" opacity="0.9"/>
+  <!-- Upward arrow -->
+  <path d="M185 195 L205 135 L225 155 L205 115 L185 135 L205 175 Z" fill="white"/>
+  <!-- Star -->
+  <path d="M160 85 L168 115 L198 120 L174 142 L180 172 L160 155 L140 172 L146 142 L122 120 L152 115 Z" fill="white"/>
+</svg>

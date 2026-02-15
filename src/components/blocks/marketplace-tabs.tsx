@@ -42,8 +42,9 @@ export default function MarketplaceTabs({ className }: MarketplaceTabsProps) {
         if (!response.ok) {
           throw new Error("Failed to fetch products");
         }
-        const data: Product[] = await response.json();
-        setProducts(data);
+        const text = await response.text();
+        const data: Product[] = (text && text.trim() ? (() => { try { return JSON.parse(text) as Product[]; } catch { return []; } })() : []);
+        setProducts(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error fetching products:", error);
       } finally {

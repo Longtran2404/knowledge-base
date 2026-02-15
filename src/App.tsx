@@ -22,6 +22,8 @@ import { UnifiedAuthProvider } from "./contexts/UnifiedAuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { CartProvider } from "./contexts/CartContext";
 import { GlobalDataProvider } from "./contexts/GlobalDataContext";
+import { ChatProvider } from "./contexts/ChatContext";
+import { ChatWidget } from "./components/chat/ChatWidget";
 import { ProtectedRoute, AdminRoute } from "./components/auth/ProtectedRoute";
 import { config } from "./services/config";
 import { errorHandler } from "./lib/error-handler";
@@ -68,6 +70,7 @@ const FAQPage = React.lazy(() => import("./views/FAQPage"));
 const ContactPage = React.lazy(() => import("./views/ContactPage"));
 const TermsPrivacy = React.lazy(() => import("./views/TermsPrivacy"));
 const PricingPage = React.lazy(() => import("./views/PricingPage"));
+const SePayPaymentPage = React.lazy(() => import("./views/SePayPaymentPage"));
 const SuccessFreePage = React.lazy(() => import("./views/SuccessFreePage"));
 const SuccessPremiumPage = React.lazy(
   () => import("./views/SuccessPremiumPage")
@@ -178,9 +181,11 @@ function App() {
                         v7_relativeSplatPath: true,
                       }}
                     >
-                      <div className="App min-h-screen flex flex-col bg-background">
-                        {/* Theme trắng + xanh, ít hiệu ứng để giảm lag */}
-                        <ModernSidebarV2 />
+                      <ChatProvider>
+                        <div className="App min-h-screen flex flex-col bg-background">
+                          {/* Theme trắng + xanh, ít hiệu ứng để giảm lag */}
+                          <ModernSidebarV2 />
+                          <ChatWidget />
                         <SkipToContent />
                         <ScrollToTop />
                         <ScrollToTopOnMount />
@@ -422,6 +427,16 @@ function App() {
                                       }
                                     />
                                     <Route
+                                      path="/thanh-toan-sepay"
+                                      element={
+                                        <PageTransition>
+                                          <Suspense fallback={<Loading size="lg" variant="spinner" text="Đang tải..." />}>
+                                            <SePayPaymentPage />
+                                          </Suspense>
+                                        </PageTransition>
+                                      }
+                                    />
+                                    <Route
                                       path="/huong-dan"
                                       element={
                                         <PageTransition>
@@ -533,9 +548,11 @@ function App() {
                                     <Route
                                       path="/hop-tac"
                                       element={
-                                        <PageTransition>
-                                          <HopTacPage />
-                                        </PageTransition>
+                                        <ErrorBoundary>
+                                          <PageTransition>
+                                            <HopTacPage />
+                                          </PageTransition>
+                                        </ErrorBoundary>
                                       }
                                     />
                                     <Route
@@ -750,6 +767,7 @@ function App() {
                           }}
                         />
                       </div>
+                      </ChatProvider>
                     </Router>
                   </NotificationProvider>
                 </ToastProvider>
