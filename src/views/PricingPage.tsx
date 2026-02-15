@@ -199,7 +199,9 @@ const PricingPage: React.FC = () => {
                         size="lg"
                         className="w-full"
                         disabled={!!loading}
-                        onClick={() => handlePaidPlan(plan.id)}
+                        onClick={() => {
+                          if (plan.id === 'premium' || plan.id === 'partner') handlePaidPlan(plan.id);
+                        }}
                       >
                         {isLoading ? (
                           <>
