@@ -14,11 +14,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
-  let body: Record<string, unknown>;
+  let body: Record<string, unknown> = {};
   try {
-    body = await request.json();
+    const text = await request.text();
+    if (text && text.trim()) {
+      body = JSON.parse(text) as Record<string, unknown>;
+    }
   } catch {
-    return new NextResponse('Invalid JSON', { status: 400 });
+    // Gửi test có thể gửi body rỗng hoặc format khác - vẫn trả 200 để SePay coi là đã cấu hình
   }
 
   const notificationType = body?.notification_type;
