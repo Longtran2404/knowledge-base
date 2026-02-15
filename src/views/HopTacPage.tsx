@@ -22,78 +22,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../co
 import { Badge } from "../components/ui/badge";
 import { toast } from "sonner";
 import { SEO } from "../components/SEO";
+import { SUBSCRIPTION_PLANS } from "../config/subscription-plans";
 
-
-const pricingPlans = [
-  {
-    id: "free",
-    name: "Miễn phí",
-    price: "0đ",
-    period: "tháng",
-    description: "Gói cơ bản cho người dùng mới",
-    features: [
-      "Tải 10 tài liệu trong 1 tháng",
-      "Xem preview khóa học",
-      "Truy cập tài nguyên cơ bản",
-      "Hỗ trợ cộng đồng",
-      "Không xem được khóa học đầy đủ",
-      "Không tải được sản phẩm"
-    ],
-    limitations: [
-      "Giới hạn 10 tài liệu/tháng",
-      "Không có quyền truy cập đầy đủ"
-    ],
-    buttonText: "Bắt đầu miễn phí",
-    buttonVariant: "outline" as const,
-    popular: false,
-    icon: <Unlock className="h-6 w-6" />
-  },
-  {
-    id: "premium",
-    name: "Hội viên Premium",
-    price: "299.000đ",
-    period: "tháng",
-    description: "Gói cao cấp cho người dùng chuyên nghiệp",
-    features: [
-      "Tải tài liệu không giới hạn",
-      "Xem khóa học miễn phí đầy đủ",
-      "Truy cập tài nguyên thực hành",
-      "Tải sản phẩm và tools",
-      "Hướng dẫn sử dụng chi tiết",
-      "Hỗ trợ ưu tiên 24/7",
-      "Chứng chỉ hoàn thành khóa học",
-      "Cập nhật nội dung mới nhất"
-    ],
-    limitations: [],
-    buttonText: "Đăng ký Premium",
-    buttonVariant: "default" as const,
-    popular: true,
-    icon: <Crown className="h-6 w-6" />
-  },
-  {
-    id: "partner",
-    name: "Đối tác",
-    price: "199.000đ",
-    period: "tháng",
-    description: "Gói đặc biệt cho đối tác và chuyên gia",
-    features: [
-      "Xem khóa học theo chuyên ngành",
-      "Tài liệu chuyên ngành đầy đủ",
-      "Tools và plugins chuyên ngành",
-      "Đăng tải tài liệu của riêng bạn",
-      "Đăng tải sản phẩm của riêng bạn",
-      "Quản lý nội dung cá nhân",
-      "Hỗ trợ kỹ thuật chuyên sâu",
-      "Cơ hội hợp tác kinh doanh",
-      "Chia sẻ doanh thu từ nội dung"
-    ],
-    limitations: [],
-    buttonText: "Trở thành đối tác",
-    buttonVariant: "default" as const,
-    popular: false,
-    icon: <Handshake className="h-6 w-6" />
-  }
-];
+const planIcons: Record<string, React.ReactNode> = {
+  free: <Unlock className="h-6 w-6" />,
+  premium: <Crown className="h-6 w-6" />,
+  partner: <Handshake className="h-6 w-6" />,
+};
 
 const collaborationBenefits = [
   {
@@ -196,7 +131,7 @@ export default function CollaborationPage() {
             </div>
 
             <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto pt-6 overflow-visible">
-              {pricingPlans.map((plan) => (
+              {SUBSCRIPTION_PLANS.map((plan) => (
                 <Card
                   key={plan.id}
                   className={`relative border-2 transition-all hover:shadow-lg overflow-visible ${
@@ -216,12 +151,12 @@ export default function CollaborationPage() {
 
                   <CardHeader className={`text-center pb-6 ${plan.popular ? "pt-8" : ""}`}>
                     <div className={`flex justify-center mb-4 p-3 rounded-full ${plan.popular ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"}`}>
-                      {plan.icon}
+                      {planIcons[plan.id]}
                     </div>
                     <CardTitle className="text-2xl text-foreground">{plan.name}</CardTitle>
                     <CardDescription className="text-muted-foreground">{plan.description}</CardDescription>
                     <div className="mt-4">
-                      <span className="text-4xl font-bold text-foreground">{plan.price}</span>
+                      <span className="text-4xl font-bold text-foreground">{plan.priceDisplay}</span>
                       <span className="text-muted-foreground">/{plan.period}</span>
                     </div>
                   </CardHeader>
@@ -255,7 +190,7 @@ export default function CollaborationPage() {
                       variant={plan.popular ? "default" : "outline"}
                       size="lg"
                       className="w-full"
-                      onClick={() => handleSubscribe(plan.id, plan.name, parseInt(plan.price.replace(/\D/g, "")))}
+                      onClick={() => handleSubscribe(plan.id, plan.name, plan.price)}
                     >
                       {plan.buttonText}
                       <ArrowRight className="h-4 w-4 ml-2" />
