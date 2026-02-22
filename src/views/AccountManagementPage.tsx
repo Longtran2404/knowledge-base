@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/UnifiedAuthContext";
+import { safeParseJson } from "../lib/safe-json";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
@@ -66,6 +67,9 @@ import { supabase } from "../lib/supabase-config";
 import { MembershipService } from "../lib/membership/membership-service";
 import UserManagement from "../components/admin/UserManagement";
 import { formatPrice } from "../config/pricing";
+import { subscriptionPaymentsApi } from "../lib/api/subscription-api";
+import type { SubscriptionPayment } from "../types/subscription";
+import { Link } from "react-router-dom";
 
 export default function AccountManagementPage() {
   const navigate = useNavigate();
@@ -76,6 +80,12 @@ export default function AccountManagementPage() {
     full_name: "",
     phone: "",
     bio: "",
+    birth_date: "",
+    gender: "",
+    address: "",
+    city: "",
+    ward: "",
+    id_card: "",
   });
   const [personalFiles, setPersonalFiles] = useState<FileUploadType[]>([]);
   const [loadingFiles, setLoadingFiles] = useState(false);
@@ -109,6 +119,10 @@ export default function AccountManagementPage() {
   const [membershipPlans, setMembershipPlans] = useState<any[]>([]);
   const [isUpgrading, setIsUpgrading] = useState(false);
 
+  // Gói & Thanh toán: payment history
+  const [paymentHistory, setPaymentHistory] = useState<SubscriptionPayment[]>([]);
+  const [loadingPayments, setLoadingPayments] = useState(false);
+
   const loadPersonalFiles = useCallback(async () => {
     if (!user) return;
 
@@ -129,6 +143,12 @@ export default function AccountManagementPage() {
         full_name: user.full_name || "",
         phone: user.phone || "",
         bio: user.bio || "",
+        birth_date: (user as { birth_date?: string }).birth_date || "",
+        gender: (user as { gender?: string }).gender || "",
+        address: (user as { address?: string }).address || "",
+        city: (user as { city?: string }).city || "",
+        ward: (user as { ward?: string }).ward || "",
+        id_card: (user as { id_card?: string }).id_card || "",
       });
       loadPersonalFiles();
     }
@@ -156,6 +176,12 @@ export default function AccountManagementPage() {
         full_name: user.full_name || "",
         phone: user.phone || "",
         bio: user.bio || "",
+        birth_date: (user as { birth_date?: string }).birth_date || "",
+        gender: (user as { gender?: string }).gender || "",
+        address: (user as { address?: string }).address || "",
+        city: (user as { city?: string }).city || "",
+        ward: (user as { ward?: string }).ward || "",
+        id_card: (user as { id_card?: string }).id_card || "",
       });
     }
     setIsEditing(false);
@@ -184,6 +210,24 @@ export default function AccountManagementPage() {
   useEffect(() => {
     loadMembershipPlans();
   }, [loadMembershipPlans]);
+
+  const loadPaymentHistory = useCallback(async () => {
+    if (!user) return;
+    setLoadingPayments(true);
+    try {
+      const list = await subscriptionPaymentsApi.getPaymentHistory();
+      setPaymentHistory(list);
+    } catch (err) {
+      console.error("Load payment history failed:", err);
+      toast.error("Không tải được lịch sử thanh toán");
+    } finally {
+      setLoadingPayments(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (user) loadPaymentHistory();
+  }, [user, loadPaymentHistory]);
 
   // Password change functions
   const handleRequestPasswordChange = async () => {
@@ -365,10 +409,8 @@ export default function AccountManagementPage() {
         return;
       }
 
-      let data: { code?: string; timestamp?: number; attempts?: number };
-      try {
-        data = JSON.parse(verificationData);
-      } catch {
+      const data = safeParseJson<{ code?: string; timestamp?: number; attempts?: number }>(verificationData, {});
+      if (data.timestamp == null || data.code == null) {
         localStorage.removeItem("phone_verification");
         toast.error("Phiên xác thực không hợp lệ. Vui lòng yêu cầu mã mới");
         return;
@@ -578,7 +620,7 @@ export default function AccountManagementPage() {
 
         <Tabs defaultValue="profile" className="space-y-8">
           <div className="border-b border-gray-200">
-            <TabsList className="grid w-full max-w-4xl mx-auto grid-cols-5 h-12 bg-gray-50/50">
+            <TabsList className="grid w-full max-w-4xl mx-auto grid-cols-3 md:grid-cols-6 h-auto min-h-12 bg-gray-50/50">
               <TabsTrigger
                 value="profile"
                 className="text-xs md:text-sm font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm"
@@ -592,6 +634,13 @@ export default function AccountManagementPage() {
               >
                 <FileText className="h-4 w-4 mr-2" />
                 Tài liệu
+              </TabsTrigger>
+              <TabsTrigger
+                value="subscription"
+                className="text-xs md:text-sm font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm"
+              >
+                <Package className="h-4 w-4 mr-2" />
+                Gói & Thanh toán
               </TabsTrigger>
               <TabsTrigger
                 value="orders"
@@ -670,6 +719,93 @@ export default function AccountManagementPage() {
                                   phone: e.target.value,
                                 }))
                               }
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="birth_date">Ngày sinh</Label>
+                            <Input
+                              id="birth_date"
+                              type="date"
+                              value={editForm.birth_date}
+                              onChange={(e) =>
+                                setEditForm((prev) => ({
+                                  ...prev,
+                                  birth_date: e.target.value,
+                                }))
+                              }
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="gender">Giới tính</Label>
+                            <select
+                              id="gender"
+                              className="w-full h-10 px-3 border border-gray-300 rounded-md bg-white"
+                              value={editForm.gender}
+                              onChange={(e) =>
+                                setEditForm((prev) => ({
+                                  ...prev,
+                                  gender: e.target.value,
+                                }))
+                              }
+                            >
+                              <option value="">Chọn</option>
+                              <option value="nam">Nam</option>
+                              <option value="nu">Nữ</option>
+                              <option value="khac">Khác</option>
+                            </select>
+                          </div>
+                          <div className="space-y-2 md:col-span-2">
+                            <Label htmlFor="address">Địa chỉ</Label>
+                            <Input
+                              id="address"
+                              value={editForm.address}
+                              onChange={(e) =>
+                                setEditForm((prev) => ({
+                                  ...prev,
+                                  address: e.target.value,
+                                }))
+                              }
+                              placeholder="Số nhà, đường, phường/xã..."
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="city">Tỉnh / Thành phố</Label>
+                            <Input
+                              id="city"
+                              value={editForm.city}
+                              onChange={(e) =>
+                                setEditForm((prev) => ({
+                                  ...prev,
+                                  city: e.target.value,
+                                }))
+                              }
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="ward">Phường / Xã</Label>
+                            <Input
+                              id="ward"
+                              value={editForm.ward}
+                              onChange={(e) =>
+                                setEditForm((prev) => ({
+                                  ...prev,
+                                  ward: e.target.value,
+                                }))
+                              }
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="id_card">CMND/CCCD</Label>
+                            <Input
+                              id="id_card"
+                              value={editForm.id_card}
+                              onChange={(e) =>
+                                setEditForm((prev) => ({
+                                  ...prev,
+                                  id_card: e.target.value.replace(/\D/g, "").slice(0, 12),
+                                }))
+                              }
+                              placeholder="Số 9 hoặc 12 chữ số"
                             />
                           </div>
                         </div>
@@ -1126,6 +1262,123 @@ export default function AccountManagementPage() {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          {/* Gói & Thanh toán Tab */}
+          <TabsContent value="subscription" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Package className="h-5 w-5" />
+                  Gói hiện tại
+                </CardTitle>
+                <CardDescription>
+                  Thông tin gói dịch vụ và ngày hết hạn
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-medium text-foreground">
+                    {user?.membership_plan === "premium"
+                      ? "Hội viên Premium"
+                      : user?.membership_plan === "business"
+                        ? "Đối tác"
+                        : "Miễn phí"}
+                  </span>
+                  {user?.membership_expires_at && (
+                    <span className="text-sm text-muted-foreground">
+                      Hết hạn:{" "}
+                      {new Date(user.membership_expires_at).toLocaleDateString("vi-VN", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      })}
+                    </span>
+                  )}
+                  {(user?.membership_plan === "free" || !user?.membership_plan) && (
+                    <span className="text-sm text-muted-foreground">Không giới hạn</span>
+                  )}
+                </div>
+                <Button asChild variant="outline" size="sm">
+                  <Link to="/goi-dich-vu">Nâng cấp / Gia hạn gói</Link>
+                </Button>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <CreditCard className="h-5 w-5" />
+                  Lịch sử thanh toán
+                </CardTitle>
+                <CardDescription>
+                  Các giao dịch thanh toán gói subscription của bạn
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {loadingPayments ? (
+                  <div className="flex items-center justify-center py-8 text-muted-foreground">
+                    <Zap className="h-8 w-8 animate-pulse mr-2" />
+                    Đang tải...
+                  </div>
+                ) : paymentHistory.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <CreditCard className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>Chưa có giao dịch thanh toán nào</p>
+                    <Button asChild variant="outline" className="mt-4">
+                      <Link to="/goi-dich-vu">Đăng ký gói</Link>
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b text-left">
+                          <th className="pb-2 pr-4 font-medium">Ngày</th>
+                          <th className="pb-2 pr-4 font-medium">Gói</th>
+                          <th className="pb-2 pr-4 font-medium">Số tiền</th>
+                          <th className="pb-2 pr-4 font-medium">Trạng thái</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {paymentHistory.map((p) => {
+                          const amount = typeof p.amount === "number" ? p.amount : parseFloat(String(p.amount));
+                          const planName =
+                            (p as any).plan?.display_name ||
+                            (p as any).plan?.plan_name ||
+                            "—";
+                          return (
+                            <tr key={p.id} className="border-b last:border-0">
+                              <td className="py-3 pr-4 text-muted-foreground">
+                                {new Date(p.created_at).toLocaleDateString("vi-VN", {
+                                  day: "2-digit",
+                                  month: "2-digit",
+                                  year: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
+                              </td>
+                              <td className="py-3 pr-4">{planName}</td>
+                              <td className="py-3 pr-4">
+                                {Number.isNaN(amount) ? String(p.amount) : formatPrice(amount, p.currency || "VND")}
+                              </td>
+                              <td className="py-3 pr-4">
+                                {p.payment_status === "completed" ? (
+                                  <span className="text-green-600 dark:text-green-400">Thành công</span>
+                                ) : p.payment_status === "pending" ? (
+                                  <span className="text-amber-600">Đang xử lý</span>
+                                ) : (
+                                  <span className="text-muted-foreground">{p.payment_status}</span>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Orders Tab */}

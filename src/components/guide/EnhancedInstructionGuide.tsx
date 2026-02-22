@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { safeParseJson } from "../../lib/safe-json";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import { Progress } from "../ui/progress";
@@ -84,14 +85,9 @@ const EnhancedInstructionGuide: React.FC<EnhancedInstructionGuideProps> = ({
     new Set(initiallyOpenIds)
   );
   const [doneSet, setDoneSet] = useState<Set<string>>(() => {
-    try {
-      const raw = localStorage.getItem(storageKey);
-      if (!raw || typeof raw !== 'string' || raw.trim() === '') return new Set<string>();
-      const arr: string[] = JSON.parse(raw);
-      return new Set(Array.isArray(arr) ? arr : []);
-    } catch {
-      return new Set<string>();
-    }
+    const raw = localStorage.getItem(storageKey);
+    const arr = safeParseJson<string[]>(raw, []);
+    return new Set(Array.isArray(arr) ? arr : []);
   });
   const [currentStep, setCurrentStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);

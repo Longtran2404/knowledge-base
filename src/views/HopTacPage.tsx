@@ -23,6 +23,7 @@ import { Badge } from "../components/ui/badge";
 import { toast } from "sonner";
 import { SEO } from "../components/SEO";
 import { SUBSCRIPTION_PLANS } from "../config/subscription-plans";
+import { useAuth } from "../contexts/UnifiedAuthContext";
 
 const planIcons: Record<string, React.ReactNode> = {
   free: <Unlock className="h-6 w-6" />,
@@ -63,11 +64,17 @@ const partnerRequirements = [
 
 export default function CollaborationPage() {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   const handleSubscribe = (planId: string, planName: string, price: number) => {
     if (planId === "free") {
       toast.success("Bạn đang sử dụng gói miễn phí!", { description: "Đăng ký để mở khóa thêm tính năng" });
       navigate("/dang-nhap");
+      return;
+    }
+    if (!isAuthenticated) {
+      toast.info("Vui lòng đăng nhập để thanh toán", { description: `Gói ${planName} - ${price.toLocaleString("vi-VN")}đ` });
+      navigate(`/dang-nhap?returnUrl=/goi-dich-vu&plan=${planId}`);
       return;
     }
     toast.success(`Đang chuyển đến thanh toán gói ${planName}`, { description: `Tổng tiền: ${price.toLocaleString("vi-VN")}đ` });

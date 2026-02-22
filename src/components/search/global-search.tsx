@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Search, X, BookOpen, ShoppingBag, FileText, Clock, ArrowRight, Loader2 } from "lucide-react";
 import { useSearch } from "../../lib/hooks/api-hooks";
 import { useAppStore } from "../../lib/stores/app-store";
+import { safeParseJson } from "../../lib/safe-json";
 import { toast } from "sonner";
 
 import { Button } from "../../components/ui/button";
@@ -77,14 +78,8 @@ export function GlobalSearch({
   // Load recent searches from localStorage
   useEffect(() => {
     const saved = localStorage.getItem('kb-recent-searches');
-    if (saved && saved.trim() !== '') {
-      try {
-        const parsed = JSON.parse(saved);
-        setRecentSearches(Array.isArray(parsed) ? parsed : []);
-      } catch {
-        localStorage.removeItem('kb-recent-searches');
-      }
-    }
+    const parsed = safeParseJson<string[]>(saved, []);
+    setRecentSearches(Array.isArray(parsed) ? parsed : []);
   }, []);
 
   const saveRecentSearch = useCallback((searchTerm: string) => {

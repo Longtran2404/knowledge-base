@@ -277,7 +277,7 @@ export default function EnhancedGioiThieuPage() {
                 size="lg"
                 className="rounded-xl px-10 py-6 text-lg font-semibold shadow-medium hover:shadow-strong transition-all hover:-translate-y-0.5"
               >
-                <Link to="/dang-nhap" className="gap-3">
+                <Link to="/dang-nhap?mode=signup" className="gap-3">
                   <Rocket className="h-5 w-5" />
                   Đăng ký miễn phí ngay
                 </Link>

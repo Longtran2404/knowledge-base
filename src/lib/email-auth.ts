@@ -2,6 +2,7 @@
 import { supabase } from "./supabase";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { safeParseJson } from "./safe-json";
 import {
   sendVerificationEmail,
   sendPasswordResetEmail,
@@ -168,7 +169,7 @@ export const registerUser = async (
     }
 
     // Check if user already exists in localStorage
-    const existingUsers = JSON.parse(localStorage.getItem("users") || "[]");
+    const existingUsers = safeParseJson(localStorage.getItem("users"), []);
     const existingUser = existingUsers.find((u: any) => u.email === email);
 
     if (existingUser) {
@@ -207,9 +208,7 @@ export const registerUser = async (
     };
 
     // Save token to localStorage
-    const existingTokens = JSON.parse(
-      localStorage.getItem("verification_tokens") || "[]"
-    );
+    const existingTokens = safeParseJson(localStorage.getItem("verification_tokens"), []);
     existingTokens.push(tokenData);
     localStorage.setItem("verification_tokens", JSON.stringify(existingTokens));
 
@@ -235,9 +234,7 @@ export const registerUser = async (
 export const verifyEmail = async (token: string): Promise<AuthResult> => {
   try {
     // Get tokens from localStorage
-    const tokens = JSON.parse(
-      localStorage.getItem("verification_tokens") || "[]"
-    );
+    const tokens = safeParseJson(localStorage.getItem("verification_tokens"), []);
     const tokenData = tokens.find((t: any) => t.token === token);
 
     if (!tokenData) {
@@ -256,7 +253,7 @@ export const verifyEmail = async (token: string): Promise<AuthResult> => {
     }
 
     // Get users from localStorage
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
+    const users = safeParseJson(localStorage.getItem("users"), []);
     const userIndex = users.findIndex((u: any) => u.email === tokenData.email);
 
     if (userIndex === -1) {
@@ -323,7 +320,7 @@ export const loginUser = async (
     }
 
     // Get users from localStorage
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
+    const users = safeParseJson(localStorage.getItem("users"), []);
     const user = users.find((u: any) => u.email === email);
 
     if (!user) {
@@ -373,7 +370,7 @@ export const loginUser = async (
     };
 
     // Save session to localStorage
-    const sessions = JSON.parse(localStorage.getItem("user_sessions") || "[]");
+    const sessions = safeParseJson(localStorage.getItem("user_sessions"), []);
     sessions.push(sessionResult);
     localStorage.setItem("user_sessions", JSON.stringify(sessions));
 
@@ -429,7 +426,7 @@ export const validateSession = async (
 }> => {
   try {
     // Get sessions from localStorage
-    const sessions = JSON.parse(localStorage.getItem("user_sessions") || "[]");
+    const sessions = safeParseJson(localStorage.getItem("user_sessions"), []);
     const session = sessions.find((s: any) => s.sessionToken === sessionToken);
 
     if (!session) {
@@ -452,7 +449,7 @@ export const validateSession = async (
     }
 
     // Get user data
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
+    const users = safeParseJson(localStorage.getItem("users"), []);
     const user = users.find((u: any) => u.id === session.userId);
 
     if (!user) {
@@ -479,7 +476,7 @@ export const validateSession = async (
 export const logoutUser = async (sessionToken: string): Promise<boolean> => {
   try {
     // Remove session from localStorage
-    const sessions = JSON.parse(localStorage.getItem("user_sessions") || "[]");
+    const sessions = safeParseJson(localStorage.getItem("user_sessions"), []);
     const updatedSessions = sessions.filter((s: any) => s.sessionToken !== sessionToken);
     localStorage.setItem("user_sessions", JSON.stringify(updatedSessions));
 
@@ -505,7 +502,7 @@ export const sendVerificationEmailReal = async (
     }
 
     // Log email to localStorage for tracking
-    const emailLogs = JSON.parse(localStorage.getItem("email_logs") || "[]");
+    const emailLogs = safeParseJson(localStorage.getItem("email_logs"), []);
     emailLogs.push({
       id: Date.now().toString(),
       to_email: email,
@@ -532,7 +529,7 @@ export const resendVerificationEmail = async (
 ): Promise<EmailVerificationResult> => {
   try {
     // Get users from localStorage
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
+    const users = safeParseJson(localStorage.getItem("users"), []);
     const user = users.find((u: any) => u.email === email);
 
     if (!user) {
@@ -558,9 +555,7 @@ export const resendVerificationEmail = async (
     };
 
     // Save token to localStorage
-    const existingTokens = JSON.parse(
-      localStorage.getItem("verification_tokens") || "[]"
-    );
+    const existingTokens = safeParseJson(localStorage.getItem("verification_tokens"), []);
     existingTokens.push(tokenData);
     localStorage.setItem("verification_tokens", JSON.stringify(existingTokens));
 
@@ -594,7 +589,7 @@ export const requestPasswordReset = async (
     }
 
     // Check if user exists
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
+    const users = safeParseJson(localStorage.getItem("users"), []);
     const user = users.find((u: any) => u.email === email);
 
     if (!user) {
@@ -615,9 +610,7 @@ export const requestPasswordReset = async (
     };
 
     // Save token to localStorage
-    const existingTokens = JSON.parse(
-      localStorage.getItem("password_reset_tokens") || "[]"
-    );
+    const existingTokens = safeParseJson(localStorage.getItem("password_reset_tokens"), []);
     existingTokens.push(tokenData);
     localStorage.setItem("password_reset_tokens", JSON.stringify(existingTokens));
 
@@ -627,7 +620,7 @@ export const requestPasswordReset = async (
       await sendPasswordResetEmail(email, user.full_name, resetToken);
       
       // Log email to localStorage for tracking
-      const emailLogs = JSON.parse(localStorage.getItem("email_logs") || "[]");
+      const emailLogs = safeParseJson(localStorage.getItem("email_logs"), []);
       emailLogs.push({
         id: Date.now().toString(),
         to_email: email,
@@ -674,9 +667,7 @@ export const resetPassword = async (
     }
 
     // Get password reset tokens from localStorage
-    const tokens = JSON.parse(
-      localStorage.getItem("password_reset_tokens") || "[]"
-    );
+    const tokens = safeParseJson(localStorage.getItem("password_reset_tokens"), []);
     const tokenData = tokens.find((t: any) => t.token === token && t.type === "password_reset");
 
     if (!tokenData) {
@@ -699,7 +690,7 @@ export const resetPassword = async (
     }
 
     // Get users from localStorage
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
+    const users = safeParseJson(localStorage.getItem("users"), []);
     const userIndex = users.findIndex((u: any) => u.email === tokenData.email);
 
     if (userIndex === -1) {
@@ -740,7 +731,7 @@ export const resetPassword = async (
 // Get user by ID
 export const getUserById = async (userId: string): Promise<User | null> => {
   try {
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
+    const users = safeParseJson(localStorage.getItem("users"), []);
     const user = users.find((u: any) => u.id === userId);
     
     if (!user) {
@@ -762,7 +753,7 @@ export const updateUserProfile = async (
   updates: Partial<User>
 ): Promise<AuthResult> => {
   try {
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
+    const users = safeParseJson(localStorage.getItem("users"), []);
     const userIndex = users.findIndex((u: any) => u.id === userId);
 
     if (userIndex === -1) {

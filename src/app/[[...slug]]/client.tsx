@@ -51,7 +51,7 @@ const App = dynamic(() => import('../../App'), {
   loading: () => <LoadingFallback />,
 });
 
-// Fallback khi App load thất bại
+// Fallback khi App load thất bại (ChunkLoadError, SyntaxError / JSON parse, v.v.)
 function AppLoadError({ onRetry }: { onRetry: () => void }) {
   return (
     <div
@@ -67,10 +67,15 @@ function AppLoadError({ onRetry }: { onRetry: () => void }) {
     >
       <div style={{ textAlign: 'center', maxWidth: 400 }}>
         <h1 style={{ fontSize: 20, color: '#111', marginBottom: 12 }}>Không thể tải ứng dụng</h1>
-        <p style={{ color: '#64748b', marginBottom: 24 }}>Vui lòng thử lại hoặc tải trang.</p>
+        <p style={{ color: '#64748b', marginBottom: 24 }}>
+          Có thể do mạng hoặc server đang xử lý. Vui lòng <strong>tải lại trang (F5)</strong> hoặc bấm Thử lại.
+        </p>
         <button
           type="button"
-          onClick={onRetry}
+          onClick={() => {
+            onRetry();
+            window.location.reload();
+          }}
           style={{
             padding: '10px 20px',
             backgroundColor: '#2563eb',
@@ -80,7 +85,7 @@ function AppLoadError({ onRetry }: { onRetry: () => void }) {
             cursor: 'pointer',
           }}
         >
-          Thử lại
+          Tải lại trang
         </button>
       </div>
     </div>
@@ -91,13 +96,26 @@ export function ClientOnly() {
   const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
-    const handler = (e: ErrorEvent) => {
+    const onError = (e: ErrorEvent) => {
       if (e.message?.includes('Loading chunk') || e.message?.includes('ChunkLoadError')) {
         setLoadError(true);
       }
+      if (e.error instanceof SyntaxError || e.message?.includes('Unexpected end of JSON input')) {
+        setLoadError(true);
+      }
     };
-    window.addEventListener('error', handler);
-    return () => window.removeEventListener('error', handler);
+    const onRejection = (e: PromiseRejectionEvent) => {
+      const err = e?.reason;
+      if (err instanceof SyntaxError || err?.message?.includes?.('Unexpected end of JSON input')) {
+        setLoadError(true);
+      }
+    };
+    window.addEventListener('error', onError);
+    window.addEventListener('unhandledrejection', onRejection);
+    return () => {
+      window.removeEventListener('error', onError);
+      window.removeEventListener('unhandledrejection', onRejection);
+    };
   }, []);
 
   if (loadError) {

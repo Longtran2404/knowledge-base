@@ -3,6 +3,7 @@
  * Handles authentication with enhanced security
  */
 import CryptoJS from "crypto-js";
+import { safeParseJson } from "./safe-json";
 
 export interface User {
   id: string;
@@ -46,12 +47,9 @@ class AuthService {
   private loadUserFromStorage(): void {
     try {
       const stored = localStorage.getItem("kb_user");
-      if (stored && stored.trim() !== '') {
-        try {
-          this.user = JSON.parse(stored);
-        } catch {
-          localStorage.removeItem("kb_user");
-        }
+      const parsed = safeParseJson(stored, null as User | null);
+      if (parsed) {
+        this.user = parsed;
         this.notifyListeners();
       }
     } catch (error) {
@@ -272,7 +270,8 @@ class AuthService {
   private getStoredUsersData(): StoredUserData[] {
     try {
       const stored = localStorage.getItem("kb_users_data");
-      return stored && stored.trim() ? (() => { try { return JSON.parse(stored); } catch { return []; } })() : [];
+      const parsed = safeParseJson<StoredUserData[]>(stored, []);
+      return Array.isArray(parsed) ? parsed : [];
     } catch (error) {
       console.error("Error loading users data:", error);
       return [];
@@ -296,7 +295,8 @@ class AuthService {
   private getStoredUsers(): User[] {
     try {
       const stored = localStorage.getItem("kb_users");
-      return stored && stored.trim() ? (() => { try { return JSON.parse(stored); } catch { return []; } })() : [];
+      const parsed = safeParseJson<User[]>(stored, []);
+      return Array.isArray(parsed) ? parsed : [];
     } catch (error) {
       console.error("Error loading users:", error);
       return [];

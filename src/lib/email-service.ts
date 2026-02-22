@@ -154,6 +154,122 @@ export const sendWelcomeEmail = async (
   }
 };
 
+// ============================================
+// NOTIFICATION EMAIL FUNCTIONS (payment, login, course)
+// ============================================
+
+export const sendPaymentSuccess = async (
+  toEmail: string,
+  toName: string,
+  payload: { plan?: string; amount?: string }
+): Promise<EmailResult> => {
+  try {
+    const templateParams: EmailData = {
+      to_email: toEmail,
+      to_name: toName,
+      plan: payload.plan ?? "",
+      amount: payload.amount ?? "",
+      app_name: "Knowledge Base",
+      support_email: "info@knowledgebase.com",
+    };
+    const response = await emailjs.send(
+      EMAIL_CONFIG.serviceId,
+      EMAIL_TEMPLATES.payment_success.template,
+      templateParams
+    );
+    console.log("Payment success email sent:", response);
+    return { success: true, message: "Email thanh toán thành công đã gửi" };
+  } catch (error: unknown) {
+    const errMsg = error instanceof Error ? error.message : String(error);
+    console.error("Error sending payment success email:", error);
+    return { success: false, message: "Gửi email thất bại", error: errMsg };
+  }
+};
+
+export const sendPaymentFailure = async (
+  toEmail: string,
+  toName: string,
+  payload: { reason?: string }
+): Promise<EmailResult> => {
+  try {
+    const templateParams: EmailData = {
+      to_email: toEmail,
+      to_name: toName,
+      reason: payload.reason ?? "Không xác định",
+      app_name: "Knowledge Base",
+      support_email: "info@knowledgebase.com",
+    };
+    const response = await emailjs.send(
+      EMAIL_CONFIG.serviceId,
+      EMAIL_TEMPLATES.payment_failure.template,
+      templateParams
+    );
+    console.log("Payment failure email sent:", response);
+    return { success: true, message: "Email thông báo thanh toán thất bại đã gửi" };
+  } catch (error: unknown) {
+    const errMsg = error instanceof Error ? error.message : String(error);
+    console.error("Error sending payment failure email:", error);
+    return { success: false, message: "Gửi email thất bại", error: errMsg };
+  }
+};
+
+export const sendLoginNewIp = async (
+  toEmail: string,
+  toName: string,
+  payload: { ip?: string; location?: string }
+): Promise<EmailResult> => {
+  try {
+    const templateParams: EmailData = {
+      to_email: toEmail,
+      to_name: toName,
+      ip: payload.ip ?? "",
+      location: payload.location ?? "",
+      app_name: "Knowledge Base",
+      support_email: "info@knowledgebase.com",
+    };
+    const response = await emailjs.send(
+      EMAIL_CONFIG.serviceId,
+      EMAIL_TEMPLATES.login_new_ip.template,
+      templateParams
+    );
+    console.log("Login new IP email sent:", response);
+    return { success: true, message: "Email cảnh báo đăng nhập mới đã gửi" };
+  } catch (error: unknown) {
+    const errMsg = error instanceof Error ? error.message : String(error);
+    console.error("Error sending login new IP email:", error);
+    return { success: false, message: "Gửi email thất bại", error: errMsg };
+  }
+};
+
+export const sendCourseMaterialReceived = async (
+  toEmail: string,
+  toName: string,
+  payload: { courseName?: string; link?: string; instructions?: string }
+): Promise<EmailResult> => {
+  try {
+    const templateParams: EmailData = {
+      to_email: toEmail,
+      to_name: toName,
+      course_name: payload.courseName ?? "",
+      link: payload.link ?? "",
+      instructions: payload.instructions ?? "",
+      app_name: "Knowledge Base",
+      support_email: "info@knowledgebase.com",
+    };
+    const response = await emailjs.send(
+      EMAIL_CONFIG.serviceId,
+      EMAIL_TEMPLATES.course_material_received.template,
+      templateParams
+    );
+    console.log("Course material email sent:", response);
+    return { success: true, message: "Email tài liệu đã gửi" };
+  } catch (error: unknown) {
+    const errMsg = error instanceof Error ? error.message : String(error);
+    console.error("Error sending course material email:", error);
+    return { success: false, message: "Gửi email thất bại", error: errMsg };
+  }
+};
+
 // Test email configuration
 export const testEmailConfiguration = async (): Promise<EmailResult> => {
   try {

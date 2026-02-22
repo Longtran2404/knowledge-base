@@ -276,7 +276,7 @@ export default function KhoaHocPage() {
             <p className="text-muted-foreground mb-6">
               Tham gia cùng hàng trăm học viên đang học tập và phát triển kỹ năng
             </p>
-            <Link to="/dang-nhap">
+            <Link to="/dang-nhap?mode=signup">
               <Button size="lg" className="gap-2">
                 <Zap className="h-5 w-5" />
                 Đăng ký ngay

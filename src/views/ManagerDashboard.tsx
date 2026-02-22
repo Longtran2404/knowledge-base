@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "../contexts/UnifiedAuthContext";
+import { safeParseJson } from "../lib/safe-json";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import {
@@ -82,23 +83,13 @@ export default function ManagerDashboard() {
     try {
       // Load documents data
       const documentsData = localStorage.getItem("nlc_uploaded_documents");
-      let documents: unknown[] = [];
-      try {
-        documents = (documentsData && documentsData.trim() ? JSON.parse(documentsData) : []) as unknown[];
-        if (!Array.isArray(documents)) documents = [];
-      } catch {
-        documents = [];
-      }
+      const docsParsed = safeParseJson(documentsData, [] as unknown[]);
+      const documents: unknown[] = Array.isArray(docsParsed) ? docsParsed : [];
 
       // Load users data
       const usersData = localStorage.getItem("kb_users_data");
-      let users: unknown[] = [];
-      try {
-        users = (usersData && usersData.trim() ? JSON.parse(usersData) : []) as unknown[];
-        if (!Array.isArray(users)) users = [];
-      } catch {
-        users = [];
-      }
+      const usersParsed = safeParseJson(usersData, [] as unknown[]);
+      const users: unknown[] = Array.isArray(usersParsed) ? usersParsed : [];
 
       // Calculate stats
       const pendingApprovals = documents.filter(

@@ -166,6 +166,15 @@ CREATE TABLE IF NOT EXISTS nlc_accounts (
 );
 ```
 
+### Lỗi đăng ký: "Database error saving new user"
+**Nguyên nhân:** Trigger tạo bản ghi trong `nlc_accounts` khi user mới đăng ký (auth.users) chưa có hoặc schema không khớp.
+
+**Giải pháp:**
+1. Đảm bảo bảng `nlc_accounts` tồn tại và có cột `user_id` (UUID), `email`, `full_name`, v.v.
+2. Chạy migration đầy đủ có **trigger** trên `auth.users`: file `supabase/migrations/FULL_SCHEMA_001_subscription_002.sql` (hàm `create_account_for_new_user`, trigger `on_auth_user_created`).
+3. **Chạy script trigger trong SQL Editor:** mở file `supabase/sql-editor-setup-auth-trigger.sql`, copy toàn bộ → Supabase Dashboard → SQL Editor → New query → Paste → Run.
+4. Chi tiết: xem mục "Lỗi đăng ký: Database error saving new user" và "Bước 4: Chạy script trigger đăng ký" trong [docs/SUPABASE_SETUP_FINAL.md](SUPABASE_SETUP_FINAL.md).
+
 ### Không thấy quyền admin
 **Kiểm tra email:**
 ```sql

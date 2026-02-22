@@ -1,6 +1,6 @@
 {
   "name": "knowledge-base",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
   "homepage": ".",
   "description": "Knowledge Base - AI-Powered EdTech & Workflow Marketplace Platform",
@@ -117,6 +117,7 @@
     "husky": "^9.1.7",
     "jest-environment-jsdom": "^29.7.0",
     "msw": "^2.6.8",
+    "pg": "^8.13.0",
     "postcss": "^8.4.32",
     "sharp": "^0.34.5",
     "tailwindcss": "^3.4.1",
@@ -148,6 +149,7 @@
     "deploy:production": "vercel --prod",
     "generate-favicon": "node scripts/generate-favicon.mjs",
     "setup:db": "node scripts/setup-database.js",
+    "supabase:migrate:002": "node scripts/run-migration-002-supabase.js",
     "test:db": "node scripts/test-database-connection.js",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",

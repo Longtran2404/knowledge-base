@@ -8,21 +8,33 @@ export interface NLCAccount {
   phone?: string;
   bio?: string;
   account_role: "sinh_vien" | "giang_vien" | "quan_ly" | "admin";
-  membership_plan: "free" | "basic" | "premium" | "vip";
   account_status: "active" | "inactive" | "suspended" | "pending_approval";
-  is_paid: boolean;
-  is_verified: boolean;
-  auth_provider: "email" | "google" | "facebook";
+  email_verified?: boolean;
+  company?: string;
+  job_title?: string;
+  birth_date?: string;
+  gender?: string;
+  address?: string;
+  id_card?: string;
+  city?: string;
+  ward?: string;
+  subscription_plan?: string;
+  subscription_expires_at?: string;
+  subscription_status?: string;
+  created_at: string;
+  updated_at: string;
+  membership_plan?: "free" | "basic" | "premium" | "vip";
+  is_paid?: boolean;
+  is_verified?: boolean;
+  auth_provider?: "email" | "google" | "facebook";
   last_login_at?: string;
-  login_count: number;
+  login_count?: number;
   password_changed_at?: string;
   membership_expires_at?: string;
   membership_type?: "free" | "basic" | "premium" | "vip";
   approved_by?: string;
   approved_at?: string;
   rejected_reason?: string;
-  created_at: string;
-  updated_at: string;
 }
 
 export interface NLCCourse {

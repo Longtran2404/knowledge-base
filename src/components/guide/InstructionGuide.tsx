@@ -3,6 +3,7 @@ import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import { Progress } from "../ui/progress";
 import { Link } from "react-router-dom";
+import { safeParseJson } from "../../lib/safe-json";
 
 export interface GuideItem {
   id: string;
@@ -38,14 +39,9 @@ const InstructionGuide: React.FC<InstructionGuideProps> = ({
     new Set(initiallyOpenIds)
   );
   const [doneSet, setDoneSet] = useState<Set<string>>(() => {
-    try {
-      const raw = localStorage.getItem(storageKey);
-      if (!raw || typeof raw !== 'string' || raw.trim() === '') return new Set<string>();
-      const arr: string[] = JSON.parse(raw);
-      return new Set(Array.isArray(arr) ? arr : []);
-    } catch {
-      return new Set<string>();
-    }
+    const raw = localStorage.getItem(storageKey);
+    const arr = safeParseJson<string[]>(raw, []);
+    return new Set(Array.isArray(arr) ? arr : []);
   });
 
   const toggle = (id: string) => {

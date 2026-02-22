@@ -4,6 +4,7 @@
  */
 
 import { getCLS, getFID, getFCP, getLCP, getTTFB, Metric } from 'web-vitals';
+import { safeParseJson } from './safe-json';
 
 // Performance thresholds (Google's recommended values)
 const THRESHOLDS = {
@@ -103,7 +104,7 @@ function handleMetric(metric: Metric) {
   // Store in localStorage for debugging
   if (process.env.NODE_ENV === 'development') {
     const raw = localStorage.getItem('webVitals');
-    const stored = (raw && raw.trim() ? (() => { try { return JSON.parse(raw); } catch { return []; } })() : []) as PerformanceData[];
+    const stored = safeParseJson<PerformanceData[]>(raw, []);
     stored.push(data);
     localStorage.setItem('webVitals', JSON.stringify(stored.slice(-10))); // Keep last 10
   }
@@ -140,7 +141,7 @@ export function getPerformanceSummary(): {
   };
 } {
   const raw = localStorage.getItem('webVitals');
-  const stored = (raw && raw.trim() ? (() => { try { return JSON.parse(raw); } catch { return []; } })() : []) as PerformanceData[];
+  const stored = safeParseJson<PerformanceData[]>(raw, []);
 
   const summary = stored.reduce(
     (acc, metric) => {

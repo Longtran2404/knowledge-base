@@ -19,6 +19,7 @@ import {
 
 import { Course } from "../../types/course";
 import { formatPrice } from "../../lib/shared/formatters";
+import { safeParseJson } from "../../lib/safe-json";
 import { getLevelBadgeColor } from "../../lib/shared/helpers";
 
 interface CourseGridProps {
@@ -40,7 +41,7 @@ export default function CourseGrid({ className }: CourseGridProps) {
           throw new Error("Failed to fetch courses");
         }
         const text = await response.text();
-        const data: Course[] = (text && text.trim() ? (() => { try { return JSON.parse(text) as Course[]; } catch { return []; } })() : []);
+        const data = safeParseJson<Course[]>(text, []);
         setCourses(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error fetching courses:", error);

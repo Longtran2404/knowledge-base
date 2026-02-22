@@ -4,6 +4,7 @@
  */
 
 import React from "react";
+import { safeParseJson } from "../safe-json";
 
 export interface OfflineAction {
   id: string;
@@ -360,14 +361,8 @@ export class OfflineManager {
   private loadFromStorage(): void {
     try {
       const stored = localStorage.getItem("offline_actions");
-      if (stored && stored.trim() !== '') {
-        try {
-          this.actions = JSON.parse(stored);
-        } catch {
-          localStorage.removeItem("offline_actions");
-          this.actions = [];
-        }
-      }
+      const parsed = safeParseJson(stored, [] as unknown[]);
+      this.actions = Array.isArray(parsed) ? parsed : [];
     } catch (error) {
       console.error("Failed to load offline actions:", error);
       this.actions = [];

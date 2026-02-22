@@ -33,6 +33,7 @@ yarn-error.log*
 # env files - TUYỆT ĐỐI không commit (chứa secret: DB, SePay, VNPay, Stripe...)
 .env
 .env.*
+!.env.example
 
 # vercel
 .vercel

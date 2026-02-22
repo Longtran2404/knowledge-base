@@ -18,7 +18,7 @@ import { toast } from "sonner";
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate();
-  const { isLoading } = useAuth();
+  const { isLoading, resetPassword: sendResetEmail } = useAuth();
   const [email, setEmail] = useState("");
   const [emailSent, setEmailSent] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -38,12 +38,21 @@ export default function ForgotPasswordPage() {
 
     setLoading(true);
     try {
-      // Mock password reset functionality
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
-      setEmailSent(true);
-      toast.success("Email đặt lại mật khẩu đã được gửi!");
-    } catch (error: any) {
-      toast.error("Có lỗi xảy ra khi gửi email");
+      const result = await sendResetEmail(email.trim());
+      if (result?.success) {
+        setEmailSent(true);
+        toast.success("Email đặt lại mật khẩu đã được gửi. Kiểm tra hộp thư (và thư mục spam).");
+      } else {
+        const msg = result?.error ?? "Có lỗi xảy ra khi gửi email";
+        if (/rate limit|too many/i.test(String(msg))) {
+          toast.error("Gửi quá nhiều yêu cầu. Vui lòng thử lại sau vài phút.");
+        } else {
+          toast.error(msg);
+        }
+      }
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : "Có lỗi xảy ra khi gửi email";
+      toast.error(msg);
     } finally {
       setLoading(false);
     }

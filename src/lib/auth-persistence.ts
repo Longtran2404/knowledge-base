@@ -4,6 +4,7 @@
  */
 
 import { supabase } from './supabase-config';
+import { safeParseJson } from './safe-json';
 import type { User, Session } from '@supabase/supabase-js';
 
 export interface StoredAuthData {
@@ -84,10 +85,8 @@ class AuthPersistenceService {
 
       if (!stored || stored.trim() === '') return null;
 
-      let authData: StoredAuthData;
-      try {
-        authData = JSON.parse(stored);
-      } catch {
+      const authData = safeParseJson<StoredAuthData | null>(stored, null);
+      if (!authData) {
         await this.clearAllAuthData();
         return null;
       }
@@ -112,13 +111,8 @@ class AuthPersistenceService {
   updateLastActivity(): void {
     try {
       const stored = localStorage.getItem(this.STORAGE_KEY);
-      if (stored && stored.trim() !== '') {
-        let authData: StoredAuthData;
-        try {
-          authData = JSON.parse(stored);
-        } catch {
-          return;
-        }
+      const authData = safeParseJson<StoredAuthData | null>(stored, null);
+      if (authData) {
         authData.lastActivity = Date.now();
         localStorage.setItem(this.STORAGE_KEY, JSON.stringify(authData));
         sessionStorage.setItem(this.STORAGE_KEY, JSON.stringify(authData));
@@ -455,13 +449,7 @@ class AuthPersistenceService {
   getLastUserData(): { email?: string; fullName?: string } | null {
     try {
       const userData = localStorage.getItem(this.USER_DATA_KEY);
-      if (!userData || userData.trim() === '') return null;
-      try {
-        return JSON.parse(userData);
-      } catch {
-        localStorage.removeItem(this.USER_DATA_KEY);
-        return null;
-      }
+      return safeParseJson(userData, null);
     } catch {
       return null;
     }

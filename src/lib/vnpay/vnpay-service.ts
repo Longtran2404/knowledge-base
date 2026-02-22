@@ -4,6 +4,7 @@
  */
 
 import crypto from 'crypto';
+import { safeResponseJson } from '../safe-json';
 
 export interface VNPayConfig {
   vnp_TmnCode: string; // Terminal ID
@@ -220,7 +221,7 @@ export class VNPayService {
       if (typeof window !== 'undefined') {
         // Browser environment - use a service to get public IP
         const response = await fetch('https://api.ipify.org?format=json');
-        const data = await response.json();
+        const data = await safeResponseJson(response, { ip: '127.0.0.1' } as { ip?: string });
         return data.ip || '127.0.0.1';
       }
       return '127.0.0.1';

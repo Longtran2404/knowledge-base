@@ -49,6 +49,9 @@ const ResetPasswordPage = React.lazy(() => import("./views/ResetPasswordPage"));
 const ResendVerificationPage = React.lazy(
   () => import("./views/ResendVerificationPage")
 );
+const ChoXacMinhEmailPage = React.lazy(
+  () => import("./views/ChoXacMinhEmailPage")
+);
 const PrivacyPolicyPage = React.lazy(() => import("./views/PrivacyPolicyPage"));
 const TermsOfServicePage = React.lazy(
   () => import("./views/TermsOfServicePage")
@@ -182,7 +185,7 @@ function App() {
                       }}
                     >
                       <ChatProvider>
-                        <div className="App min-h-screen flex flex-col bg-background">
+                        <div className="App min-h-screen flex flex-col bg-background overflow-x-hidden max-w-full">
                           {/* Theme trắng + xanh, ít hiệu ứng để giảm lag */}
                           <ModernSidebarV2 />
                           <ChatWidget />
@@ -256,6 +259,22 @@ function App() {
                             }
                           />
                           <Route
+                            path="/reset-password"
+                            element={
+                              <Suspense
+                                fallback={
+                                  <div className="min-h-screen flex items-center justify-center">
+                                    <div className="animate-pulse">
+                                      Đang tải...
+                                    </div>
+                                  </div>
+                                }
+                              >
+                                <ResetPasswordPage />
+                              </Suspense>
+                            }
+                          />
+                          <Route
                             path="/gui-lai-xac-minh"
                             element={
                               <Suspense
@@ -268,6 +287,22 @@ function App() {
                                 }
                               >
                                 <ResendVerificationPage />
+                              </Suspense>
+                            }
+                          />
+                          <Route
+                            path="/cho-xac-minh-email"
+                            element={
+                              <Suspense
+                                fallback={
+                                  <div className="min-h-screen flex items-center justify-center">
+                                    <div className="animate-pulse">
+                                      Đang tải...
+                                    </div>
+                                  </div>
+                                }
+                              >
+                                <ChoXacMinhEmailPage />
                               </Suspense>
                             }
                           />
@@ -409,7 +444,7 @@ function App() {
                             path="/*"
                             element={
                               <HeaderLayout>
-                                <main className="flex-1 min-h-0">
+                                <main className="flex-1 min-h-0 min-w-0 overflow-x-hidden">
                                   <Suspense
                                     fallback={
                                       <div className="flex items-center justify-center py-24 text-muted-foreground">

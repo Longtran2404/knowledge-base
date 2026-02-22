@@ -10,6 +10,7 @@ import {
   StripeElements,
   StripeCardElement,
 } from "@stripe/stripe-js";
+import { safeResponseJson } from "../safe-json";
 
 // Stripe Configuration
 export const STRIPE_CONFIG = {
@@ -278,14 +279,14 @@ class StripeService {
       );
 
       if (!response.ok) {
-        const error = await response.json();
+        const error = await safeResponseJson(response, { error: { message: "Unknown error" } } as { error?: { message?: string } });
         throw new Error(
           `Stripe API error: ${error.error?.message || "Unknown error"}`
         );
       }
 
-      const paymentIntent = await response.json();
-      return paymentIntent;
+      const paymentIntent = await safeResponseJson(response, {} as Record<string, unknown>);
+      return paymentIntent as unknown as StripePaymentIntent;
     } catch (error) {
       throw new Error(`Create payment intent failed: ${error}`);
     }

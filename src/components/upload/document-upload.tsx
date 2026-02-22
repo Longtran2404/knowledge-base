@@ -2,6 +2,7 @@ import React, { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/UnifiedAuthContext";
+import { safeParseJson } from "../../lib/safe-json";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -235,13 +236,8 @@ export function DocumentUpload() {
 
       // Save to localStorage (in real app, this would be API call)
       const raw = localStorage.getItem("nlc_uploaded_documents");
-      let existingDocs: unknown[];
-      try {
-        existingDocs = (raw && raw.trim() ? JSON.parse(raw) : []) as unknown[];
-        if (!Array.isArray(existingDocs)) existingDocs = [];
-      } catch {
-        existingDocs = [];
-      }
+      const parsed = safeParseJson(raw, [] as unknown[]);
+      const existingDocs: unknown[] = Array.isArray(parsed) ? parsed : [];
       existingDocs.push(finalData);
       localStorage.setItem(
         "nlc_uploaded_documents",

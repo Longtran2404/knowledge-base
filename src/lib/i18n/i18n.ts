@@ -4,6 +4,7 @@
  */
 
 import React from "react";
+import { safeResponseJson } from "../safe-json";
 
 export interface Translation {
   [key: string]: string | Translation;
@@ -145,7 +146,7 @@ export class I18nManager {
       // Try to load from server first
       const response = await fetch(`${this.config.loadPath}/${language}.json`);
       if (response.ok) {
-        return await response.json();
+        return await safeResponseJson(response, {} as Translation);
       }
     } catch (error) {
       console.warn(

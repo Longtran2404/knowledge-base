@@ -479,14 +479,9 @@ img, video, iframe {
   display: block;
 }
 
-/* Fix footer alignment */
+/* Footer - căn trái, không ép center */
 footer {
-  text-align: center;
-}
-
-footer * {
-  margin-left: auto;
-  margin-right: auto;
+  text-align: left;
 }
 
 /* Ensure proper spacing in navigation */

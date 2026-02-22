@@ -34,4 +34,20 @@ export const EMAIL_TEMPLATES = {
     subject: "Chào mừng đến với Knowledge Base",
     template: "welcome",
   },
+  payment_success: {
+    subject: "Thanh toán thành công - Knowledge Base",
+    template: "payment_success",
+  },
+  payment_failure: {
+    subject: "Thanh toán chưa thành công - Knowledge Base",
+    template: "payment_failure",
+  },
+  login_new_ip: {
+    subject: "Đăng nhập từ thiết bị mới - Knowledge Base",
+    template: "login_new_ip",
+  },
+  course_material_received: {
+    subject: "Chúc mừng - Thông tin nhận tài liệu - Knowledge Base",
+    template: "course_material_received",
+  },
 };

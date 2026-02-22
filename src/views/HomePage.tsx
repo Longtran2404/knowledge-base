@@ -226,7 +226,7 @@ export default function HomePage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
               <Link
-                to="/dang-nhap"
+                to="/dang-nhap?mode=signup"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-primary text-primary-foreground font-medium shadow-md hover:opacity-95 transition-opacity"
               >
                 <Sparkles className="h-5 w-5" />

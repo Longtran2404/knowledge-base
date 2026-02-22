@@ -6,6 +6,7 @@
 
 import { webhookHandler } from "../payment/webhook-handler";
 import { stripeService, STRIPE_CONFIG } from "../payment/stripe";
+import { safeResponseJson } from "../safe-json";
 import { orderManager } from "../order/order-manager";
 import type {
   VNPayWebhookData,
@@ -82,7 +83,7 @@ export async function handleStripeCreatePaymentIntent(
     });
 
     if (!response.ok) {
-      const error = await response.json();
+      const error = await safeResponseJson(response, { error: { message: "Failed to create payment intent" } } as { error?: { message?: string } });
       return {
         status: 400,
         data: {
@@ -91,7 +92,7 @@ export async function handleStripeCreatePaymentIntent(
       };
     }
 
-    const paymentIntent = await response.json();
+    const paymentIntent = await safeResponseJson(response, {} as Record<string, unknown>);
 
     return {
       status: 200,

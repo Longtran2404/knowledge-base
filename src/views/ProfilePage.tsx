@@ -20,6 +20,7 @@ import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
 import { Checkbox } from "../components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { useAuth } from "../contexts/UnifiedAuthContext";
+import { safeParseJson } from "../lib/safe-json";
 import { Loading } from "../components/ui/loading";
 import {
   User,
@@ -177,20 +178,19 @@ export default function ProfilePage() {
   const loadExtendedProfile = () => {
     try {
       const storedProfile = localStorage.getItem(`nlc_extended_profile_${user?.id}`);
-      if (storedProfile && storedProfile.trim() !== '') {
-        const parsed = JSON.parse(storedProfile);
-        const merged = { ...profileData, ...parsed, ...user };
+      const parsed = safeParseJson<Record<string, unknown>>(storedProfile, {});
+      if (Object.keys(parsed).length > 0) {
+        const merged = { ...profileData, ...parsed, ...user } as ExtendedUser;
         setProfileData(merged);
         setOriginalProfileData(merged);
       } else {
-        // Initialize with user data
-        const initial = { ...profileData, ...user };
+        const initial = { ...profileData, ...user } as ExtendedUser;
         setProfileData(initial);
         setOriginalProfileData(initial);
       }
     } catch (error) {
       console.error("Error loading extended profile:", error);
-      const initial = { ...profileData, ...user };
+      const initial = { ...profileData, ...user } as ExtendedUser;
       setProfileData(initial);
       setOriginalProfileData(initial);
     }
@@ -204,7 +204,12 @@ export default function ProfilePage() {
       const subscription = await userSubscriptionsApi.getCurrentSubscription();
       setCurrentSubscription(subscription);
     } catch (error) {
-      console.error("Error loading subscription:", error);
+      const e = error as { message?: string; code?: string };
+      const msg = typeof e?.message === "string" ? e.message : "";
+      if (!/infinite recursion|policy.*relation/i.test(msg)) {
+        console.error("Error loading subscription:", e?.message ?? e?.code ?? (typeof error === "object" ? JSON.stringify(error) : String(error)), e?.code != null ? { code: e.code } : "");
+      }
+      setCurrentSubscription(null);
     } finally {
       setSubscriptionLoading(false);
     }

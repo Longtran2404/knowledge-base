@@ -6,6 +6,7 @@
 import OpenAI from 'openai';
 import { aiConfig, MODEL_CAPABILITIES, PROMPT_TEMPLATES } from './config';
 import { logger } from '../../lib/logger/logger';
+import { safeParseJson } from '../../lib/safe-json';
 
 export interface ChatMessage {
   role: 'system' | 'user' | 'assistant';
@@ -160,12 +161,8 @@ Response format:
       maxTokens: 2000,
     });
 
-    try {
-      return JSON.parse(response);
-    } catch {
-      logger.error('Failed to parse recommendations JSON');
-      return { courses: [], learningPaths: [] };
-    }
+    const fallback = { courses: [] as Array<{ id: string; title: string; reason: string; priority: number }>, learningPaths: [] as Array<{ name: string; courses: string[]; description: string }> };
+    return safeParseJson(response, fallback);
   }
 
   /**
@@ -203,12 +200,8 @@ Response format:
       maxTokens: 3000,
     });
 
-    try {
-      return JSON.parse(response);
-    } catch {
-      logger.error('Failed to parse code review JSON');
-      return { score: 0, issues: [], suggestions: [] };
-    }
+    const fallback = { score: 0, issues: [] as Array<{ severity: 'low' | 'medium' | 'high'; message: string; line?: number }>, suggestions: [] as string[] };
+    return safeParseJson(response, fallback);
   }
 
   /**
@@ -258,12 +251,8 @@ Response format (JSON):
       maxTokens: 2000,
     });
 
-    try {
-      return JSON.parse(response);
-    } catch {
-      logger.error('Failed to parse quiz JSON');
-      return [];
-    }
+    const fallback: Array<{ question: string; options: string[]; correctAnswer: number; explanation: string }> = [];
+    return safeParseJson(response, fallback);
   }
 
   /**

@@ -6,6 +6,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '../ui/button';
+import { safeParseJson } from '../../lib/safe-json';
 import { Loader2, QrCode } from 'lucide-react';
 
 export interface SePayCheckoutFormProps {
@@ -59,7 +60,8 @@ export function SePayCheckoutForm({
           cancel_url: cancelUrl,
         }),
       });
-      const data = await res.json();
+      const text = await res.text();
+      const data = safeParseJson<{ checkoutURL?: string; formFields?: Record<string, string>; error?: string }>(text, {});
       if (!res.ok) {
         throw new Error(data.error || 'Không thể tạo phiên thanh toán');
       }

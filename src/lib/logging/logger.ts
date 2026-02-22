@@ -3,6 +3,8 @@
  * Provides structured logging, performance monitoring, and analytics
  */
 
+import { safeParseJson } from "../safe-json";
+
 export enum LogLevel {
   DEBUG = 0,
   INFO = 1,
@@ -656,7 +658,7 @@ export class Logger {
 
     // For now, we'll just store in localStorage for demo
     try {
-      const existingLogs = JSON.parse(localStorage.getItem("app_logs") || "[]");
+      const existingLogs = safeParseJson(localStorage.getItem("app_logs"), [] as LogEntry[]);
       existingLogs.push(logEntry);
 
       // Keep only last 100 logs in localStorage

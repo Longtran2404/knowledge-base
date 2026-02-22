@@ -33,11 +33,11 @@ export function Loading({
       >
         <div
           className={cn(
-            "animate-spin rounded-full border-2 border-gray-300 border-t-blue-600",
+            "animate-spin rounded-full border-2 border-muted border-t-primary",
             baseClasses
           )}
         />
-        {text && <p className="text-sm text-gray-600 animate-pulse">{text}</p>}
+        {text && <p className="text-sm text-muted-foreground animate-pulse">{text}</p>}
       </div>
     );
   }
@@ -55,7 +55,7 @@ export function Loading({
             <div
               key={i}
               className={cn(
-                "bg-blue-600 rounded-full animate-bounce",
+                "bg-primary rounded-full animate-bounce",
                 size === "sm"
                   ? "w-2 h-2"
                   : size === "md"
@@ -68,7 +68,7 @@ export function Loading({
             />
           ))}
         </div>
-        {text && <p className="text-sm text-gray-600 animate-pulse">{text}</p>}
+        {text && <p className="text-sm text-muted-foreground animate-pulse">{text}</p>}
       </div>
     );
   }
@@ -82,9 +82,9 @@ export function Loading({
         )}
       >
         <div
-          className={cn("bg-blue-600 rounded-full animate-pulse", baseClasses)}
+          className={cn("bg-primary rounded-full animate-pulse", baseClasses)}
         />
-        {text && <p className="text-sm text-gray-600 animate-pulse">{text}</p>}
+        {text && <p className="text-sm text-muted-foreground animate-pulse">{text}</p>}
       </div>
     );
   }
@@ -118,7 +118,7 @@ export function Loading({
             />
           ))}
         </div>
-        {text && <p className="text-sm text-gray-600 animate-pulse">{text}</p>}
+        {text && <p className="text-sm text-muted-foreground animate-pulse">{text}</p>}
       </div>
     );
   }
@@ -132,7 +132,7 @@ export function FullPageLoading({ text = "Đang tải..." }: { text?: string }) 
     <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-white rounded-2xl shadow-strong p-8 flex flex-col items-center gap-4">
         <Loading size="lg" variant="spinner" />
-        <p className="text-lg font-medium text-gray-700">{text}</p>
+        <p className="text-lg font-medium text-foreground">{text}</p>
       </div>
     </div>
   );
@@ -171,7 +171,7 @@ export function ButtonLoading({
         <div className="absolute inset-0 flex items-center justify-center bg-white/80 rounded-md">
           <div className="flex items-center gap-2">
             <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-300 border-t-blue-600" />
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-muted-foreground">
               {loadingText}
             </span>
           </div>
@@ -204,7 +204,7 @@ export function FormLoading({
         <div className="absolute inset-0 flex items-center justify-center bg-white/90 rounded-lg z-10">
           <div className="flex flex-col items-center gap-3">
             <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-300 border-t-blue-600" />
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-muted-foreground">
               {loadingText}
             </span>
           </div>

@@ -32,6 +32,15 @@ byidgbgvnrfhujprzzge.supabase.co/auth/v1/token
 2. ⚠️ **Database schema chưa được deploy**
 3. ⚠️ **Auth service trying to connect but tables don't exist**
 
+### Lỗi đăng ký: "Database error saving new user"
+
+Khi đăng ký, nếu xuất hiện **"Database error saving new user"** thì lỗi thường do **trigger hoặc schema** trên Supabase, không phải do code frontend:
+
+- **Cần có bảng `public.nlc_accounts`** và **trigger trên `auth.users`** tạo bản ghi khi user mới đăng ký (hàm `create_account_for_new_user`, trigger `on_auth_user_created`).
+- Kiểm tra: Supabase Dashboard → SQL Editor → xem bảng `nlc_accounts` có tồn tại; Table Editor → kiểm tra cột `user_id` (UUID), `email`, `full_name`, v.v.
+- Migration đầy đủ: dùng file `supabase/migrations/FULL_SCHEMA_001_subscription_002.sql` (hoặc bộ migration tương đương) để tạo bảng + trigger + RLS đúng. Nếu trước đó chỉ chạy `database/setup.sql`, cần chạy thêm migration dùng **UUID** cho `user_id` và trigger `create_account_for_new_user`.
+- Sau khi sửa schema/trigger, thử đăng ký lại; nếu vẫn lỗi, xem console trình duyệt (log `[Auth form error]`) và Supabase → Logs (Auth + Postgres) để có `code` / `details` lỗi.
+
 ---
 
 ## 📋 GIẢI PHÁP - DEPLOY DATABASE NGAY!
@@ -78,7 +87,42 @@ WHERE table_schema = 'public'
 ✅ nlc_subscriptions
 ```
 
-### Bước 4: Enable Row Level Security (RLS)
+### Bước 4: Chạy script trigger đăng ký (bảng nlc_accounts đã có)
+
+Để đăng ký tạo bản ghi trong `nlc_accounts` (tránh lỗi "Database error saving new user"):
+
+1. Mở file **`supabase/sql-editor-setup-auth-trigger.sql`** trong repo.
+2. Copy **toàn bộ** nội dung file.
+3. Trong Supabase Dashboard → **SQL Editor** → **New Query** → Paste.
+4. Click **Run** (hoặc Ctrl+Enter).
+
+Script này: thêm cột thiếu vào `nlc_accounts` nếu cần, tạo policy INSERT, và tạo function + trigger `on_auth_user_created` trên `auth.users`. Trigger **chỉ tạo bản ghi `nlc_accounts` khi email đã xác thực** (`email_confirmed_at IS NOT NULL`); profile (phone, birth_date, gender, address, city, ward, id_card) lấy từ `raw_user_meta_data`. Chạy nhiều lần không lỗi (idempotent).
+
+### Bước 4a: Bật xác thực email (Confirm email) và Redirect URLs
+
+Để luồng "xác thực xong mới tạo tài khoản" hoạt động:
+
+1. **Supabase Dashboard** → **Authentication** → **Providers** → **Email**
+   - Bật **Confirm email** (Enable email confirmations).
+2. **Authentication** → **URL Configuration**
+   - **Redirect URLs**: thêm URL trang đăng nhập sau khi user bấm link xác thực:
+     - `http://localhost:3000/dang-nhap` (dev)
+     - `https://your-domain.com/dang-nhap` (production, thay your-domain bằng domain thật)
+
+**Luồng đăng ký + xác thực:** User điền form đăng ký (email, mật khẩu, họ tên, SĐT, ngày sinh, giới tính, địa chỉ) → Supabase tạo bản ghi `auth.users` (chưa xác thực) → User nhận email, bấm link xác thực → Supabase set `email_confirmed_at` → Trigger tạo/cập nhật bản ghi `nlc_accounts` với đầy đủ profile từ metadata → User được chuyển về `/dang-nhap` với thông báo "Email đã xác thực. Tài khoản sẵn sàng." và có thể đăng nhập.
+
+### Bước 4b: Tạo tất cả các bảng còn lại (nlc_user_files, nlc_workflows, nlc_auth_errors, …)
+
+Nếu bạn cần đủ bảng cho app (upload file, workflow, ghi lỗi đăng nhập, thanh toán, …):
+
+1. Mở file **`supabase/migrations/FULL_SCHEMA_001_subscription_002.sql`** trong repo.
+2. Copy **toàn bộ** nội dung file.
+3. Trong Supabase Dashboard → **SQL Editor** → **New Query** → Paste.
+4. Click **Run** (hoặc Ctrl+Enter).
+
+File này tạo: `nlc_accounts`, `nlc_user_files`, `nlc_workflows`, `nlc_workflow_orders`, `nlc_user_subscriptions`, `nlc_subscription_plans`, `nlc_subscription_payments`, trigger đăng ký, RLS, và các bảng mở rộng. Nếu đã có bảng `nlc_accounts` từ trước, vẫn chạy được (CREATE TABLE IF NOT EXISTS). Sau khi chạy xong, có thể chạy tiếp **`supabase/migrations/002_extend_accounts_and_reports.sql`** để thêm `nlc_auth_errors`, `nlc_reports`, `nlc_sepay_pending_orders`, cột `id_card`, `city`, `ward` trên `nlc_accounts`.
+
+### Bước 5: Enable Row Level Security (RLS)
 
 ```sql
 -- Enable RLS for all NLC tables
@@ -115,7 +159,7 @@ USING (
 );
 ```
 
-### Bước 5: Setup Storage Buckets
+### Bước 6: Setup Storage Buckets
 
 ```sql
 -- Create storage buckets
@@ -178,12 +222,10 @@ npm start
 
 ```
 1. Mở http://localhost:3000/dang-nhap
-2. Đăng ký tài khoản mới:
-   - Email: test@example.com
-   - Password: Test123456!
-   - Full name: Test User
-3. Kiểm tra Supabase Dashboard → Table Editor → nlc_accounts
-4. Verify user được tạo
+2. Đăng ký tài khoản mới (email, mật khẩu, họ tên, SĐT, ngày sinh, giới tính, địa chỉ…)
+3. Kiểm tra email và bấm link xác thực (nếu đã bật Confirm email)
+4. Sau khi xác thực: bản ghi nlc_accounts được tạo bởi trigger; user có thể đăng nhập
+5. Kiểm tra Supabase Dashboard → Table Editor → nlc_accounts → verify user và profile (phone, birth_date, gender, address, city, ward, id_card)
 ```
 
 ### 3. Test Upload Page

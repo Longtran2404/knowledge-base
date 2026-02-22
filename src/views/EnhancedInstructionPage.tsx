@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { safeParseJson } from "../lib/safe-json";
 import { Button } from "../components/ui/button";
 import {
   Card,
@@ -368,14 +369,9 @@ const EnhancedInstructionPage: React.FC = () => {
   };
 
   const getCompletedSteps = () => {
-    try {
-      const raw = localStorage.getItem("nlc_enhanced_guide_items_done");
-      if (!raw || typeof raw !== 'string' || raw.trim() === '') return 0;
-      const arr: string[] = JSON.parse(raw);
-      return Array.isArray(arr) ? arr.length : 0;
-    } catch {
-      return 0;
-    }
+    const raw = localStorage.getItem("nlc_enhanced_guide_items_done");
+    const arr = safeParseJson<string[]>(raw, []);
+    return Array.isArray(arr) ? arr.length : 0;
   };
 
   const totalSteps = getTotalSteps();

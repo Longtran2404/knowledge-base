@@ -12,6 +12,7 @@ import { Skeleton } from "../../components/ui/skeleton";
 
 import { Post } from "../../types/post";
 import { formatDate } from "../../lib/shared/formatters";
+import { safeParseJson } from "../../lib/safe-json";
 
 interface BlogListProps {
   className?: string;
@@ -33,7 +34,7 @@ export default function BlogList({ className, showTitle = true, limit }: BlogLis
           throw new Error("Failed to fetch posts");
         }
         const text = await response.text();
-        const data: Post[] = (text && text.trim() ? (() => { try { return JSON.parse(text) as Post[]; } catch { return []; } })() : []);
+        const data = safeParseJson<Post[]>(text, []);
         setPosts(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error fetching posts:", error);

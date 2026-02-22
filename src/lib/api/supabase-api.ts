@@ -361,12 +361,10 @@ export const authApi = {
           email: email,
           full_name: fullName,
           account_role: (role === "teacher" || role === "giang_vien") ? "giang_vien" : "sinh_vien",
-          membership_plan: (plan === "premium" || plan === "vip" || plan === "business") ? plan : "free",
           account_status: "active" as "active",
-          is_paid: false,
-          is_verified: false,
-          auth_provider: "email" as "email",
-          login_count: 0,
+          subscription_plan: (plan === "premium" || plan === "vip" || plan === "business") ? plan : "free",
+          subscription_status: "active",
+          email_verified: false,
         };
 
         const { error: profileError } = await nlc

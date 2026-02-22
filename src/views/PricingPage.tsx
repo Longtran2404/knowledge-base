@@ -8,6 +8,9 @@ import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
 import { toast } from 'sonner';
 import { SEO } from '../components/SEO';
 import { SUBSCRIPTION_PLANS } from '../config/subscription-plans';
+import { useAuth } from '../contexts/UnifiedAuthContext';
+import { supabase } from '../lib/supabase-client';
+import { safeParseJson } from '../lib/safe-json';
 
 const PLAN_ICONS: Record<string, React.ReactNode> = {
   free: <Lock className="h-6 w-6" />,
@@ -15,16 +18,37 @@ const PLAN_ICONS: Record<string, React.ReactNode> = {
   partner: <Handshake className="h-6 w-6" />,
 };
 
+function formatExpiry(iso: string | undefined): string {
+  if (!iso) return '';
+  try {
+    const d = new Date(iso);
+    return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  } catch {
+    return '';
+  }
+}
+
 const PricingPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { isAuthenticated, user, userProfile } = useAuth();
   const status = searchParams.get('status');
   const planParam = searchParams.get('plan');
+
+  const currentPlanId: 'premium' | 'partner' | null =
+    userProfile?.membership_plan === 'premium'
+      ? 'premium'
+      : userProfile?.membership_plan === 'business'
+        ? 'partner'
+        : null;
+  const currentPlanExpiry = currentPlanId ? formatExpiry(userProfile?.membership_expires_at) : '';
+  const currentPlanName = currentPlanId === 'premium' ? 'Premium' : currentPlanId === 'partner' ? 'Đối tác' : '';
 
   const [loading, setLoading] = useState<'premium' | 'partner' | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [checkoutRedirect, setCheckoutRedirect] = useState<{ url: string; fields: Record<string, string> } | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
+  const paymentFailureNotifiedRef = useRef(false);
 
   useEffect(() => {
     if (checkoutRedirect && formRef.current) {
@@ -32,21 +56,49 @@ const PricingPage: React.FC = () => {
     }
   }, [checkoutRedirect]);
 
+  useEffect(() => {
+    if (status !== 'error' || !isAuthenticated || paymentFailureNotifiedRef.current) return;
+    paymentFailureNotifiedRef.current = true;
+    (async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.access_token) {
+          await fetch('/api/notify-payment-failure', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${session.access_token}`,
+            },
+            body: JSON.stringify({ reason: 'Thanh toán chưa hoàn tất' }),
+          });
+        }
+      } catch {
+        // ignore
+      }
+    })();
+  }, [status, isAuthenticated]);
+
   const handleFree = () => {
     toast.success('Đăng ký để sử dụng gói miễn phí', { description: 'Tạo tài khoản hoặc đăng nhập để bắt đầu.' });
     navigate('/dang-nhap');
   };
 
   const handlePaidPlan = async (plan: 'premium' | 'partner') => {
+    if (!isAuthenticated) {
+      toast.info('Vui lòng đăng nhập để thanh toán', { description: 'Sau khi đăng nhập bạn sẽ quay lại trang này.' });
+      navigate(`/dang-nhap?returnUrl=/goi-dich-vu&plan=${plan}`);
+      return;
+    }
     setError(null);
     setLoading(plan);
     try {
       const res = await fetch('/api/sepay-subscription-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan }),
+        body: JSON.stringify({ plan, user_id: user?.id ?? undefined }),
       });
-      const data = await res.json();
+      const text = await res.text();
+      const data = safeParseJson<{ checkoutURL?: string; formFields?: Record<string, string>; error?: string }>(text, {});
       if (!res.ok) {
         throw new Error(data.error || 'Không thể tạo phiên thanh toán');
       }
@@ -97,8 +149,28 @@ const PricingPage: React.FC = () => {
         {error && (
           <Alert variant="destructive" className="mb-6 max-w-2xl mx-auto" role="alert">
             <AlertTitle>Lỗi</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
+            <AlertDescription className="flex flex-wrap items-center gap-2">
+              <span>{error}</span>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="mt-2 sm:mt-0 border-destructive/50 text-destructive hover:bg-destructive/10"
+                onClick={() => setError(null)}
+              >
+                Thử lại
+              </Button>
+            </AlertDescription>
           </Alert>
+        )}
+
+        {isAuthenticated && currentPlanId && (
+          <div className="mb-6 max-w-2xl mx-auto text-center">
+            <Badge variant="secondary" className="text-sm font-normal px-4 py-2">
+              Gói hiện tại: {currentPlanName}
+              {currentPlanExpiry ? ` – hết hạn ${currentPlanExpiry}` : ''}
+            </Badge>
+          </div>
         )}
 
         {checkoutRedirect && (
@@ -126,16 +198,26 @@ const PricingPage: React.FC = () => {
             {SUBSCRIPTION_PLANS.map((plan) => {
               const isPaid = plan.id === 'premium' || plan.id === 'partner';
               const isLoading = isPaid && loading === plan.id;
+              const isCurrentPlan = isPaid && currentPlanId === plan.id;
               return (
                 <Card
                   key={plan.id}
                   className={`relative border-2 transition-all hover:shadow-lg overflow-visible ${
-                    plan.popular
-                      ? 'border-primary shadow-lg scale-[1.02] md:scale-105'
-                      : 'border-border bg-card hover:border-primary/50'
+                    isCurrentPlan
+                      ? 'border-primary/70 bg-primary/5'
+                      : plan.popular
+                        ? 'border-primary shadow-lg scale-[1.02] md:scale-105'
+                        : 'border-border bg-card hover:border-primary/50'
                   }`}
                 >
-                  {plan.popular && (
+                  {isCurrentPlan && (
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10 whitespace-nowrap">
+                      <Badge className="bg-primary/90 text-primary-foreground px-4 py-1.5 shadow-md">
+                        Gói đang dùng
+                      </Badge>
+                    </div>
+                  )}
+                  {plan.popular && !isCurrentPlan && (
                     <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10 whitespace-nowrap">
                       <Badge className="flex items-center justify-center gap-1.5 bg-primary text-primary-foreground px-4 py-1.5 shadow-md">
                         <Star className="h-3 w-3 fill-current shrink-0" />
@@ -143,7 +225,7 @@ const PricingPage: React.FC = () => {
                       </Badge>
                     </div>
                   )}
-                  <CardHeader className={`text-center pb-6 ${plan.popular ? 'pt-8' : ''}`}>
+                  <CardHeader className={`text-center pb-6 ${plan.popular || isCurrentPlan ? 'pt-8' : ''}`}>
                     <div
                       className={`flex justify-center mb-4 p-3 rounded-full mx-auto ${
                         plan.popular ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground'
@@ -192,6 +274,10 @@ const PricingPage: React.FC = () => {
                       >
                         {plan.buttonText}
                         <ArrowRight className="h-4 w-4 ml-2" />
+                      </Button>
+                    ) : isCurrentPlan ? (
+                      <Button variant="secondary" size="lg" className="w-full" disabled>
+                        Gói đang dùng
                       </Button>
                     ) : (
                       <Button

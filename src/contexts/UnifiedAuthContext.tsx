@@ -17,6 +17,7 @@ import { api } from "../lib/api/supabase-api";
 import { nlcApi } from "../lib/api/nlc-database-api";
 import { activityService } from "../lib/activity-service";
 import { authPersistence } from "../lib/auth-persistence";
+import { safeParseJson } from "../lib/safe-json";
 import { logger } from "../lib/logger/logger";
 import { ErrorHandler, AppError } from "../lib/errors/app-error";
 import StorageService from "../lib/storage-service";
@@ -33,6 +34,12 @@ export interface UserProfile {
   avatar_url?: string;
   phone?: string;
   bio?: string;
+  birth_date?: string;
+  gender?: string;
+  address?: string;
+  city?: string;
+  ward?: string;
+  id_card?: string;
   account_role: "sinh_vien" | "giang_vien" | "quan_ly" | "admin";
   membership_plan: "free" | "basic" | "premium" | "vip" | "business";
   account_status: "active" | "inactive" | "suspended" | "pending_approval";
@@ -111,6 +118,7 @@ export function UnifiedAuthProvider({
   // Refs để tránh stale closures
   const userRef = useRef<User | null>(null);
   const sessionRef = useRef<Session | null>(null);
+  const signOutRef = useRef<(() => Promise<void>) | null>(null);
 
   // Update refs khi state thay đổi
   useEffect(() => {
@@ -154,6 +162,10 @@ export function UnifiedAuthProvider({
     nlcAccount: NLCAccount,
     userId: string
   ): UserProfile => {
+    const plan =
+      nlcAccount.subscription_plan ||
+      nlcAccount.membership_plan ||
+      "free";
     return {
       id: userId,
       user_id: nlcAccount.user_id,
@@ -163,16 +175,23 @@ export function UnifiedAuthProvider({
       avatar_url: nlcAccount.avatar_url,
       phone: nlcAccount.phone,
       bio: nlcAccount.bio,
+      birth_date: nlcAccount.birth_date,
+      gender: nlcAccount.gender,
+      address: nlcAccount.address,
+      city: nlcAccount.city,
+      ward: nlcAccount.ward,
+      id_card: nlcAccount.id_card,
       account_role: nlcAccount.account_role,
-      membership_plan: nlcAccount.membership_plan,
+      membership_plan: validateMembershipPlan(plan),
       account_status: nlcAccount.account_status,
-      is_paid: nlcAccount.is_paid,
-      is_verified: nlcAccount.is_verified,
-      auth_provider: nlcAccount.auth_provider,
+      is_paid: nlcAccount.is_paid ?? false,
+      is_verified: nlcAccount.is_verified ?? nlcAccount.email_verified ?? false,
+      auth_provider: nlcAccount.auth_provider ?? "email",
       last_login_at: nlcAccount.last_login_at,
-      login_count: nlcAccount.login_count,
+      login_count: nlcAccount.login_count ?? 0,
       password_changed_at: nlcAccount.password_changed_at,
-      membership_expires_at: nlcAccount.membership_expires_at,
+      membership_expires_at:
+        nlcAccount.subscription_expires_at ?? nlcAccount.membership_expires_at,
       membership_type: nlcAccount.membership_type,
       approved_by: nlcAccount.approved_by,
       approved_at: nlcAccount.approved_at,
@@ -183,7 +202,12 @@ export function UnifiedAuthProvider({
   };
 
   const loadUserProfile = useCallback(
-    async (userId: string, userEmail?: string, userFullName?: string) => {
+    async (
+      userId: string,
+      userEmail?: string,
+      userFullName?: string,
+      options?: { isSessionRestore?: boolean }
+    ) => {
       if (!userId) return;
 
       setIsLoadingProfile(true);
@@ -210,6 +234,15 @@ export function UnifiedAuthProvider({
         ]) as any;
 
         if (error || !account) {
+          const errCode = (error as { code?: string })?.code;
+          const errMsg = typeof (error as { message?: string })?.message === "string" ? (error as { message: string }).message : "";
+          const isNoRow = errCode === "PGRST116";
+          const isRlsOrRecursion = /infinite recursion|policy.*relation/i.test(errMsg);
+          if (isNoRow || isRlsOrRecursion) {
+            await signOutRef.current?.();
+            return;
+          }
+
           // Immediate fallback - no more retries
 
           const fallbackProfile: UserProfile = {
@@ -232,19 +265,19 @@ export function UnifiedAuthProvider({
           setUserProfile(fallbackProfile);
           setProfileLoaded(true);
 
-          // Create account in background (non-blocking)
-          (supabase as any).from('nlc_accounts').insert([{
-            user_id: userId,
-            email: userEmail || "",
-            full_name: userFullName || userEmail?.split("@")[0] || "User",
-            account_role: "sinh_vien",
-            membership_plan: "free",
-            account_status: "active",
-            is_paid: false,
-            is_verified: false,
-            auth_provider: "email",
-            login_count: 0,
-          }]).catch(() => {});
+          if (!isNoRow) {
+            // Only auto-create row when no error (e.g. new user); never recreate when PGRST116 (account was removed)
+            (supabase as any).from('nlc_accounts').insert([{
+              user_id: userId,
+              email: userEmail || "",
+              full_name: userFullName || userEmail?.split("@")[0] || "User",
+              account_role: "sinh_vien",
+              account_status: "active",
+              subscription_plan: "free",
+              subscription_status: "active",
+              email_verified: false,
+            }]).catch(() => {});
+          }
         } else {
           const profile = convertNLCAccountToUserProfile(
             account as NLCAccount,
@@ -320,12 +353,19 @@ export function UnifiedAuthProvider({
         }
 
         if (session?.user) {
-          logger.info("Found existing session", { userId: session.user.id });
-          setUser(session.user);
+          // Validate session with Supabase server (getSession() only reads from storage)
+          const { data: { user: serverUser }, error: userError } = await supabase.auth.getUser();
+          if (userError || !serverUser) {
+            logger.info("Session invalid or user deleted on server", { error: userError?.message });
+            await signOutRef.current?.();
+            setIsLoading(false);
+            setInitialized(true);
+            return;
+          }
+          logger.info("Found existing session", { userId: serverUser.id });
+          setUser(serverUser);
           setIsAuthenticated(true);
-          
-          // Load profile
-          await loadUserProfile(session.user.id, session.user.email, session.user.user_metadata?.full_name);
+          await loadUserProfile(serverUser.id, serverUser.email, serverUser.user_metadata?.full_name, { isSessionRestore: true });
         } else {
           logger.info("No existing session found");
         }
@@ -345,11 +385,10 @@ export function UnifiedAuthProvider({
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         logger.info("Auth state changed", { event, userId: session?.user?.id });
-
+        if (event === 'INITIAL_SESSION') return;
         if (event === 'SIGNED_IN' && session?.user) {
           setUser(session.user);
           setIsAuthenticated(true);
-          // Load profile in background (non-blocking)
           loadUserProfile(session.user.id, session.user.email, session.user.user_metadata?.full_name);
         } else if (event === 'SIGNED_OUT') {
           setUser(null);
@@ -366,14 +405,15 @@ export function UnifiedAuthProvider({
   }, [loadUserProfile]);
 
   const signOut = useCallback(async () => {
+    setUser(null);
+    setUserProfile(null);
+    setIsAuthenticated(false);
+    setError(null);
+    setProfileLoaded(false);
+    localStorage.removeItem("nlc_username");
     try {
       setIsLoading(true);
       await api.auth.signOut();
-      setUser(null);
-      setUserProfile(null);
-      setIsAuthenticated(false);
-      setError(null);
-      localStorage.removeItem("nlc_username");
     } catch (error: any) {
       const appError = ErrorHandler.handle(error);
       logger.error("Error signing out", appError);
@@ -382,6 +422,7 @@ export function UnifiedAuthProvider({
       setIsLoading(false);
     }
   }, []);
+  signOutRef.current = signOut;
 
   const signUp = useCallback(
     async (
@@ -481,6 +522,27 @@ export function UnifiedAuthProvider({
           await loadUserProfile(data.user.id);
         }
 
+        if (data.session?.access_token) {
+          try {
+            const ipRes = await fetch("/api/my-ip");
+            const text = ipRes.ok ? await ipRes.text() : "";
+            const ipData = safeParseJson<{ ip?: string }>(text, {});
+            const ip = ipData?.ip;
+            if (ip) {
+              await fetch("/api/register-login", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${data.session.access_token}`,
+                },
+                body: JSON.stringify({ ip }),
+              });
+            }
+          } catch (_e) {
+            // ignore
+          }
+        }
+
         logger.info("User signed in successfully", { userId: data.user.id });
         return { success: true };
       } catch (error: any) {
@@ -573,11 +635,11 @@ export function UnifiedAuthProvider({
         );
 
         if (updateResponse.success && updateResponse.data) {
-          // Convert back to UserProfile format
-          const updatedProfile: UserProfile = {
-            id: user.id,
-            ...updateResponse.data,
-          };
+          // Convert back to UserProfile format (subscription_plan → membership_plan)
+          const updatedProfile = convertNLCAccountToUserProfile(
+            updateResponse.data as NLCAccount,
+            user.id
+          );
           setUserProfile(updatedProfile);
 
           // Log profile update activity

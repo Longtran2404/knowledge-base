@@ -9,6 +9,7 @@ import { Card, CardContent } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
 import { Progress } from "../../components/ui/progress";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../../components/ui/hover-card";
+import { safeParseJson } from "../../lib/safe-json";
 
 interface Course {
   id: string;
@@ -52,7 +53,7 @@ export default function CourseGridEnhanced({ showFilters = true }: CourseGridEnh
         const response = await fetch('/api/courses');
         if (!response.ok) throw new Error('Failed to fetch courses');
         const text = await response.text();
-        const data = (text && text.trim() ? (() => { try { return JSON.parse(text); } catch { return []; } })() : []);
+        const data = safeParseJson<Course[]>(text, []);
         setCourses(Array.isArray(data) ? data : []);
       } catch (error) {
         toast.error('Không thể tải danh sách khóa học');

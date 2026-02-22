@@ -63,21 +63,33 @@ export interface Database {
           phone?: string;
           bio?: string;
           account_role: "sinh_vien" | "giang_vien" | "quan_ly" | "admin";
-          membership_plan: "free" | "basic" | "premium" | "vip" | "business";
           account_status: "active" | "inactive" | "suspended" | "pending_approval";
-          is_paid: boolean;
-          is_verified: boolean;
-          auth_provider: "email" | "google" | "facebook";
+          email_verified?: boolean;
+          company?: string;
+          job_title?: string;
+          birth_date?: string;
+          gender?: string;
+          address?: string;
+          id_card?: string;
+          city?: string;
+          ward?: string;
+          subscription_plan?: string;
+          subscription_expires_at?: string;
+          subscription_status?: string;
+          created_at: string;
+          updated_at: string;
+          membership_plan?: "free" | "basic" | "premium" | "vip" | "business";
+          is_paid?: boolean;
+          is_verified?: boolean;
+          auth_provider?: "email" | "google" | "facebook";
           last_login_at?: string;
-          login_count: number;
+          login_count?: number;
           password_changed_at?: string;
           membership_expires_at?: string;
           membership_type?: "free" | "basic" | "premium" | "vip";
           approved_by?: string;
           approved_at?: string;
           rejected_reason?: string;
-          created_at: string;
-          updated_at: string;
         };
         Insert: {
           id?: string;
@@ -89,8 +101,22 @@ export interface Database {
           phone?: string;
           bio?: string;
           account_role?: "sinh_vien" | "giang_vien" | "quan_ly" | "admin";
-          membership_plan?: "free" | "basic" | "premium" | "vip" | "business";
           account_status?: "active" | "inactive" | "suspended" | "pending_approval";
+          email_verified?: boolean;
+          company?: string;
+          job_title?: string;
+          birth_date?: string;
+          gender?: string;
+          address?: string;
+          id_card?: string;
+          city?: string;
+          ward?: string;
+          subscription_plan?: string;
+          subscription_expires_at?: string;
+          subscription_status?: string;
+          created_at?: string;
+          updated_at?: string;
+          membership_plan?: "free" | "basic" | "premium" | "vip" | "business";
           is_paid?: boolean;
           is_verified?: boolean;
           auth_provider?: "email" | "google" | "facebook";
@@ -102,8 +128,6 @@ export interface Database {
           approved_by?: string;
           approved_at?: string;
           rejected_reason?: string;
-          created_at?: string;
-          updated_at?: string;
         };
         Update: {
           id?: string;
@@ -112,24 +136,120 @@ export interface Database {
           full_name?: string;
           display_name?: string;
           avatar_url?: string;
-          phone?: string;
-          bio?: string;
+          phone?: string | null;
+          bio?: string | null;
           account_role?: "sinh_vien" | "giang_vien" | "quan_ly" | "admin";
-          membership_plan?: "free" | "basic" | "premium" | "vip" | "business";
           account_status?: "active" | "inactive" | "suspended" | "pending_approval";
+          email_verified?: boolean;
+          company?: string | null;
+          job_title?: string | null;
+          birth_date?: string | null;
+          gender?: string | null;
+          address?: string | null;
+          id_card?: string | null;
+          city?: string | null;
+          ward?: string | null;
+          subscription_plan?: string;
+          subscription_expires_at?: string | null;
+          subscription_status?: string;
+          created_at?: string;
+          updated_at?: string;
+          membership_plan?: "free" | "basic" | "premium" | "vip" | "business";
           is_paid?: boolean;
           is_verified?: boolean;
           auth_provider?: "email" | "google" | "facebook";
           last_login_at?: string;
           login_count?: number;
           password_changed_at?: string;
-          membership_expires_at?: string;
+          membership_expires_at?: string | null;
           membership_type?: "free" | "basic" | "premium" | "vip";
           approved_by?: string;
           approved_at?: string;
           rejected_reason?: string;
+        };
+      };
+      nlc_auth_errors: {
+        Row: {
+          id: string;
+          user_id?: string;
+          email?: string;
+          error_code?: string;
+          error_message?: string;
+          ip_or_origin?: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          email?: string;
+          error_code?: string;
+          error_message?: string;
+          ip_or_origin?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          email?: string;
+          error_code?: string;
+          error_message?: string;
+          ip_or_origin?: string;
+          created_at?: string;
+        };
+      };
+      nlc_reports: {
+        Row: {
+          id: string;
+          user_id?: string;
+          type: string;
+          title?: string;
+          description?: string;
+          status?: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          type?: string;
+          title?: string;
+          description?: string;
+          status?: string;
           created_at?: string;
           updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          type?: string;
+          title?: string;
+          description?: string;
+          status?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      nlc_sepay_pending_orders: {
+        Row: {
+          order_invoice_number: string;
+          user_id: string;
+          plan: string;
+          amount_cents: number;
+          created_at: string;
+        };
+        Insert: {
+          order_invoice_number: string;
+          user_id: string;
+          plan: string;
+          amount_cents: number;
+          created_at?: string;
+        };
+        Update: {
+          order_invoice_number?: string;
+          user_id?: string;
+          plan?: string;
+          amount_cents?: number;
+          created_at?: string;
         };
       };
       users: {

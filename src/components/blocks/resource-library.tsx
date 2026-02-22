@@ -29,6 +29,7 @@ import { Checkbox } from "../../components/ui/checkbox";
 
 import { Resource } from "../../types/resource";
 import { getAccessBadgeColor } from "../../lib/spotlight";
+import { safeParseJson } from "../../lib/safe-json";
 
 interface ResourceLibraryProps {
   className?: string;
@@ -52,7 +53,7 @@ export default function ResourceLibrary({ className }: ResourceLibraryProps) {
           throw new Error("Failed to fetch resources");
         }
         const text = await response.text();
-        const data: Resource[] = (text && text.trim() ? (() => { try { return JSON.parse(text) as Resource[]; } catch { return []; } })() : []);
+        const data = safeParseJson<Resource[]>(text, []);
         setResources(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error fetching resources:", error);

@@ -1,4 +1,5 @@
 import CryptoJS from "crypto-js";
+import { safeParseJson } from "../lib/safe-json";
 
 export interface TokenData {
   token: string;
@@ -113,12 +114,7 @@ export class TokenManager {
    */
   static getUserData(): any | null {
     const userData = localStorage.getItem(this.USER_DATA_KEY);
-    if (!userData || userData.trim() === '') return null;
-    try {
-      return JSON.parse(userData);
-    } catch {
-      return null;
-    }
+    return safeParseJson(userData, null);
   }
 
   /**

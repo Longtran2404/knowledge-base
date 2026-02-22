@@ -4,6 +4,7 @@
  */
 
 import CryptoJS from 'crypto-js';
+import { safeResponseJson } from '../safe-json';
 
 /**
  * Get client IP address
@@ -14,7 +15,7 @@ async function getClientIP(): Promise<string> {
     const response = await fetch('https://api.ipify.org?format=json', {
       signal: AbortSignal.timeout(3000), // 3 second timeout
     });
-    const data = await response.json();
+    const data = await safeResponseJson(response, { ip: '127.0.0.1' } as { ip?: string });
     return data.ip || '127.0.0.1';
   } catch (error) {
     console.warn('Failed to get client IP, using fallback:', error);
@@ -248,7 +249,7 @@ class VNPayService {
         body: JSON.stringify(finalData),
       });
 
-      return await response.json();
+      return await safeResponseJson(response, {} as Record<string, unknown>);
     } catch (error) {
       throw new Error(`Query transaction failed: ${error}`);
     }

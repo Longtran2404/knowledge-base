@@ -30,6 +30,7 @@ export const ROUTES = {
   // Auth (no header/footer)
   DANG_NHAP: '/dang-nhap',
   XAC_MINH_EMAIL: '/xac-minh-email',
+  CHO_XAC_MINH_EMAIL: '/cho-xac-minh-email',
   QUEN_MAT_KHAU: '/quen-mat-khau',
   DAT_LAI_MAT_KHAU: '/dat-lai-mat-khau',
   GUI_LAI_XAC_MINH: '/gui-lai-xac-minh',

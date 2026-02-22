@@ -24,6 +24,7 @@ import { Skeleton } from "../../components/ui/skeleton";
 
 import { Product } from "../../types/product";
 import { formatPrice } from "../../lib/spotlight";
+import { safeParseJson } from "../../lib/safe-json";
 
 interface MarketplaceTabsProps {
   className?: string;
@@ -43,7 +44,7 @@ export default function MarketplaceTabs({ className }: MarketplaceTabsProps) {
           throw new Error("Failed to fetch products");
         }
         const text = await response.text();
-        const data: Product[] = (text && text.trim() ? (() => { try { return JSON.parse(text) as Product[]; } catch { return []; } })() : []);
+        const data = safeParseJson<Product[]>(text, []);
         setProducts(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error fetching products:", error);

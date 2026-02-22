@@ -8,6 +8,7 @@ import { stripeService } from './stripe';
 import { vnPayService } from './vnpay';
 import { logger } from '../logger/logger';
 import { ErrorHandler, AppError } from '../errors/app-error';
+import { safeResponseJson } from '../safe-json';
 
 // Type helper for NLC tables
 const nlc = (supabase as any);
@@ -188,19 +189,19 @@ export class RefundManager {
       });
 
       if (!response.ok) {
-        const error = await response.json();
+        const error = await safeResponseJson(response, { message: 'Stripe refund failed' } as { message?: string });
         throw new Error(error.message || 'Stripe refund failed');
       }
 
-      const refundData = await response.json();
+      const refundData = await safeResponseJson(response, {} as { id?: string; status?: string });
 
       return {
         success: true,
-        refundId: refundData.id,
+        refundId: refundData.id ?? '',
         amount: request.amount,
         status: refundData.status === 'succeeded' ? 'completed' : 'pending',
         message: 'Refund processed successfully',
-        transactionId: refundData.id,
+        transactionId: refundData.id ?? '',
       };
     } catch (error: any) {
       logger.error('Stripe refund failed', error, {
@@ -235,19 +236,19 @@ export class RefundManager {
       });
 
       if (!response.ok) {
-        const error = await response.json();
+        const error = await safeResponseJson(response, { message: 'VNPay refund failed' } as { message?: string });
         throw new Error(error.message || 'VNPay refund failed');
       }
 
-      const refundData = await response.json();
+      const refundData = await safeResponseJson(response, {} as { refund_id?: string; response_code?: string; message?: string; transaction_no?: string });
 
       return {
         success: true,
-        refundId: refundData.refund_id,
+        refundId: refundData.refund_id ?? '',
         amount: request.amount,
         status: refundData.response_code === '00' ? 'completed' : 'pending',
         message: refundData.message || 'Refund processed successfully',
-        transactionId: refundData.transaction_no,
+        transactionId: refundData.transaction_no ?? '',
       };
     } catch (error: any) {
       logger.error('VNPay refund failed', error, {

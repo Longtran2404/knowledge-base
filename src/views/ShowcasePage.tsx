@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ParticleHero } from '../components/showcase/ParticleHero';
 import { InteractiveShowcase } from '../components/showcase/InteractiveShowcase';
@@ -285,16 +286,18 @@ export default function ShowcasePage() {
                 Tham gia cùng 50,000+ học viên đang học tập và phát triển kỹ năng tại Knowledge Base
               </p>
 
-              <motion.button
-                whileHover={{
-                  scale: 1.05,
-                  boxShadow: '0 0 60px rgba(59, 130, 246, 0.8)',
-                }}
-                whileTap={{ scale: 0.95 }}
-                className="px-12 py-5 rounded-full bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 text-white font-bold text-xl shadow-2xl shadow-blue-500/50"
-              >
-                Đăng ký ngay - Miễn phí
-              </motion.button>
+              <Link to="/dang-nhap?mode=signup">
+                <motion.span
+                  whileHover={{
+                    scale: 1.05,
+                    boxShadow: '0 0 60px rgba(59, 130, 246, 0.8)',
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                  className="inline-block px-12 py-5 rounded-full bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 text-white font-bold text-xl shadow-2xl shadow-blue-500/50"
+                >
+                  Đăng ký ngay - Miễn phí
+                </motion.span>
+              </Link>
             </motion.div>
           </div>
         </section>

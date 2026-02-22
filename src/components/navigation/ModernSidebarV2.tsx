@@ -383,7 +383,7 @@ export function ModernSidebarV2() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => { navigate('/dang-nhap'); handleNavClick(); }}
+                      onClick={() => { navigate('/dang-nhap?mode=signup'); handleNavClick(); }}
                       className="w-full px-4 py-3 rounded-xl bg-primary text-primary-foreground font-medium hover:opacity-95 transition-opacity flex items-center justify-center gap-2"
                     >
                       <Sparkles className="h-5 w-5" />

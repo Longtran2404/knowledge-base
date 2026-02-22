@@ -133,7 +133,17 @@ export function GlobalDataProvider({ children }: { children: ReactNode }) {
       }));
     } catch (err) {
       const isTimeout = err instanceof Error && err.message === "Timeout";
-      console.error("Error loading user files:", err);
+      const e = err as { message?: string; code?: string; details?: string; error?: { message?: string } };
+      const msg = err instanceof Error ? err.message : (e?.message ?? e?.error?.message);
+      const code = e?.code;
+      const msgStr = typeof msg === "string" ? msg : "";
+      const isTableMissing = /schema cache|Could not find the table|relation.*does not exist|nlc_user_files/i.test(msgStr);
+      const isRlsRecursion = /infinite recursion.*policy/i.test(msgStr);
+      if (isTableMissing || isRlsRecursion) {
+        setState(prev => ({ ...prev, userFiles: [], filesLoading: false }));
+        return;
+      }
+      console.error("Error loading user files:", msg ?? code ?? e?.details ?? (typeof err === "object" ? JSON.stringify(err) : String(err)), code != null ? { code } : "");
       if (isTimeout) showTimeoutToast("Tải danh sách file quá lâu. Vui lòng thử lại.");
       setState(prev => ({ ...prev, filesLoading: false }));
     }

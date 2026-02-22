@@ -9,10 +9,12 @@ import React, {
   useReducer,
   useEffect,
   useCallback,
+  useRef,
   ReactNode,
 } from "react";
 import { NLCCartItem, Product, Course } from "../lib/supabase-config";
 import { supabase } from "../lib/supabase-config";
+import { safeParseJson } from "../lib/safe-json";
 import { useAuth } from "./UnifiedAuthContext";
 import { toast } from "sonner";
 
@@ -183,21 +185,32 @@ function cartReducer(state: CartState, action: CartAction): CartState {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 // Provider
+/** Returns true if error indicates nlc_cart_items table is missing (Supabase schema cache). */
+function isCartTableMissingError(error: unknown): boolean {
+  const msg = typeof (error as { message?: string })?.message === "string"
+    ? (error as { message: string }).message
+    : "";
+  return (
+    msg.includes("Could not find the table") ||
+    msg.includes("nlc_cart_items") && msg.includes("schema cache")
+  );
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, initialState);
   const { user } = useAuth();
+  const cartTableAvailable = useRef(true);
 
   // Stable syncCart function to prevent infinite re-renders
   const syncCart = useCallback(async () => {
     if (!user) return;
+    if (!cartTableAvailable.current) return;
 
-    console.log("Syncing cart for user:", user.id);
     dispatch({ type: "SET_LOADING", payload: true });
 
     try {
       dispatch({ type: "SET_ERROR", payload: null });
 
-      // Load cart from Supabase
       const { data: cartItems, error } = await supabase
         .from("nlc_cart_items")
         .select("*")
@@ -205,7 +218,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
       if (error) throw error;
 
-      // Transform data from nlc_cart_items schema
       const itemsWithDetails: CartItemWithDetails[] = (cartItems || []).map(
         (item: any) => {
           return {
@@ -217,27 +229,29 @@ export function CartProvider({ children }: { children: ReactNode }) {
       );
 
       dispatch({ type: "SET_ITEMS", payload: itemsWithDetails });
-    } catch (error) {
-      console.error("Error syncing cart:", error);
+    } catch (error: unknown) {
+      if (isCartTableMissingError(error)) {
+        cartTableAvailable.current = false;
+        dispatch({ type: "SET_ERROR", payload: null });
+        return;
+      }
+      const err = error as { message?: string; code?: string };
+      const msg = err?.message ?? (error instanceof Error ? error.message : String(error));
+      const code = err?.code;
+      console.error("Error syncing cart:", msg, code != null ? { code } : "", error);
       dispatch({ type: "SET_ERROR", payload: "Không thể đồng bộ giỏ hàng" });
     } finally {
       dispatch({ type: "SET_LOADING", payload: false });
     }
-  }, [user]); // Include user dependency but memoize properly
+  }, [user]);
 
   // Load cart from localStorage on mount
   useEffect(() => {
     const loadCartFromStorage = () => {
       try {
         const savedCart = localStorage.getItem("cart");
-        if (savedCart && savedCart.trim() !== '') {
-          try {
-            const cartData = JSON.parse(savedCart);
-            dispatch({ type: "SET_ITEMS", payload: Array.isArray(cartData) ? cartData : [] });
-          } catch {
-            localStorage.removeItem("cart");
-          }
-        }
+        const cartData = safeParseJson<unknown>(savedCart, []);
+        dispatch({ type: "SET_ITEMS", payload: Array.isArray(cartData) ? cartData : [] });
       } catch (error) {
         console.error("Error loading cart from storage:", error);
       }
@@ -279,8 +293,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       dispatch({ type: "SET_LOADING", payload: true });
       dispatch({ type: "SET_ERROR", payload: null });
 
-      if (user) {
-        // Sync with Supabase - nlc_cart_items schema
+      if (user && cartTableAvailable.current) {
         const cartInsertData = {
           user_id: user.id,
           product_id: item.product_id || item.course_id || '',
@@ -301,16 +314,36 @@ export function CartProvider({ children }: { children: ReactNode }) {
           .select()
           .single();
 
-        if (error) throw error;
+        if (error) {
+          if (isCartTableMissingError(error)) cartTableAvailable.current = false;
+          else throw error;
+        }
 
-        // Add to local state
-        const cartItem: CartItemWithDetails = {
-          ...data,
-          name: item.name,
-          image_url: item.image_url,
-        };
-
-        dispatch({ type: "ADD_ITEM", payload: cartItem });
+        if (data) {
+          const cartItem: CartItemWithDetails = {
+            ...data,
+            name: item.name,
+            image_url: item.image_url,
+          };
+          dispatch({ type: "ADD_ITEM", payload: cartItem });
+        } else {
+          const cartItem: CartItemWithDetails = {
+            id: `temp_${Date.now()}`,
+            user_id: user.id,
+            product_id: item.product_id || item.course_id || '',
+            product_type: item.item_type,
+            product_name: item.name,
+            product_price: item.price,
+            quantity: 1,
+            product_image: item.image_url,
+            product_metadata: {},
+            name: item.name,
+            image_url: item.image_url,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
+          dispatch({ type: "ADD_ITEM", payload: cartItem });
+        }
 
         // Success toast with custom styling
         toast.success(`Đã thêm "${item.name}" vào giỏ hàng`, {
@@ -366,17 +399,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
     try {
       dispatch({ type: "SET_LOADING", payload: true });
 
-      if (user) {
-        // Remove from Supabase
+      if (user && cartTableAvailable.current) {
         const { error } = await supabase
           .from("nlc_cart_items")
           .delete()
           .eq("id", itemId);
 
-        if (error) throw error;
+        if (error) {
+          if (isCartTableMissingError(error)) cartTableAvailable.current = false;
+          else throw error;
+        }
       }
 
-      // Remove from local state
       dispatch({ type: "REMOVE_ITEM", payload: itemId });
     } catch (error) {
       console.error("Error removing from cart:", error);
@@ -395,17 +429,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      if (user) {
-        // Update in Supabase
+      if (user && cartTableAvailable.current) {
         const { error } = await (supabase as any)
           .from("nlc_cart_items")
           .update({ quantity: quantity })
           .eq("id", itemId);
 
-        if (error) throw error;
+        if (error) {
+          if (isCartTableMissingError(error)) cartTableAvailable.current = false;
+          else throw error;
+        }
       }
 
-      // Update local state
       dispatch({ type: "UPDATE_ITEM", payload: { id: itemId, quantity } });
     } catch (error) {
       console.error("Error updating quantity:", error);
@@ -419,17 +454,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
     try {
       dispatch({ type: "SET_LOADING", payload: true });
 
-      if (user) {
-        // Clear from Supabase
+      if (user && cartTableAvailable.current) {
         const { error } = await supabase
           .from("nlc_cart_items")
           .delete()
           .eq("user_id", user.id);
 
-        if (error) throw error;
+        if (error) {
+          if (isCartTableMissingError(error)) cartTableAvailable.current = false;
+          else throw error;
+        }
       }
 
-      // Clear local state
       dispatch({ type: "CLEAR_CART" });
     } catch (error) {
       console.error("Error clearing cart:", error);

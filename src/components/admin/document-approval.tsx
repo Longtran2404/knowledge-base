@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../contexts/UnifiedAuthContext";
+import { safeParseJson } from "../../lib/safe-json";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -88,13 +89,8 @@ export function DocumentApproval() {
   const loadDocuments = () => {
     try {
       const storedDocs = localStorage.getItem("nlc_uploaded_documents");
-      if (storedDocs && storedDocs.trim() !== '') {
-        try {
-          setDocuments(JSON.parse(storedDocs));
-        } catch {
-          localStorage.removeItem("nlc_uploaded_documents");
-        }
-      }
+      const parsed = safeParseJson(storedDocs, [] as unknown[]);
+      setDocuments(Array.isArray(parsed) ? parsed : []);
     } catch (error) {
       console.error("Error loading documents:", error);
       toast.error("Có lỗi khi tải danh sách tài liệu");

@@ -35,6 +35,15 @@ interface PaymentWithDetails extends Omit<SubscriptionPayment, 'plan'> {
   plan?: SubscriptionPlan;
 }
 
+interface SePayPendingOrder {
+  order_invoice_number: string;
+  user_id: string;
+  plan: string;
+  amount_cents: number;
+  created_at: string;
+  email?: string;
+}
+
 export default function AdminSubscriptionManagementPage() {
   const { userProfile, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -46,6 +55,9 @@ export default function AdminSubscriptionManagementPage() {
   const [selectedPayment, setSelectedPayment] = useState<PaymentWithDetails | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [verifying, setVerifying] = useState(false);
+  const [sepayPending, setSepayPending] = useState<SePayPendingOrder[]>([]);
+  const [loadingPending, setLoadingPending] = useState(false);
+  const [filterSePayOnly, setFilterSePayOnly] = useState(false);
 
   useEffect(() => {
     if (!authLoading) {
@@ -59,6 +71,7 @@ export default function AdminSubscriptionManagementPage() {
         return;
       }
       loadPayments();
+      loadPendingSePay();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userProfile, authLoading, navigate]);
@@ -66,7 +79,35 @@ export default function AdminSubscriptionManagementPage() {
   useEffect(() => {
     filterPayments();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchTerm, filterStatus, payments]);
+  }, [searchTerm, filterStatus, filterSePayOnly, payments]);
+
+  const loadPendingSePay = async () => {
+    try {
+      setLoadingPending(true);
+      const { data: rows, error } = await supabase
+        .from("nlc_sepay_pending_orders")
+        .select("order_invoice_number, user_id, plan, amount_cents, created_at")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      const withEmail: SePayPendingOrder[] = await Promise.all(
+        (rows || []).map(async (r: any) => {
+          const { data: acc } = await supabase
+            .from("nlc_accounts")
+            .select("email")
+            .eq("user_id", r.user_id)
+            .single();
+          const email = acc && typeof acc === "object" && "email" in acc ? (acc as { email: string }).email : undefined;
+          return { ...r, email };
+        })
+      );
+      setSepayPending(withEmail);
+    } catch (e: any) {
+      console.error("Load SePay pending failed:", e);
+      toast.error(e.message || "Không tải được đơn SePay đang chờ");
+    } finally {
+      setLoadingPending(false);
+    }
+  };
 
   const loadPayments = async () => {
     try {
@@ -116,6 +157,10 @@ export default function AdminSubscriptionManagementPage() {
 
   const filterPayments = () => {
     let filtered = [...payments];
+
+    if (filterSePayOnly) {
+      filtered = filtered.filter(p => (p as any).payment_method === "sepay");
+    }
 
     // Filter by status
     if (filterStatus !== "all") {
@@ -249,6 +294,59 @@ export default function AdminSubscriptionManagementPage() {
             </div>
           </div>
 
+          {/* SePay pending orders */}
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CreditCard className="h-5 w-5" />
+                Đơn SePay đang chờ
+              </CardTitle>
+              <CardDescription>
+                Các đơn thanh toán qua SePay chưa hoàn tất (sẽ tự cập nhật khi IPN nhận callback)
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {loadingPending ? (
+                <div className="py-6 text-center text-muted-foreground">Đang tải...</div>
+              ) : sepayPending.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-4">Không có đơn nào đang chờ.</p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b text-left">
+                        <th className="pb-2 pr-4 font-medium">Mã đơn</th>
+                        <th className="pb-2 pr-4 font-medium">Email</th>
+                        <th className="pb-2 pr-4 font-medium">Gói</th>
+                        <th className="pb-2 pr-4 font-medium">Số tiền</th>
+                        <th className="pb-2 pr-4 font-medium">Thời gian</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sepayPending.map((row) => (
+                        <tr key={row.order_invoice_number} className="border-b last:border-0">
+                          <td className="py-3 pr-4 font-mono text-xs">{row.order_invoice_number}</td>
+                          <td className="py-3 pr-4">{row.email || row.user_id}</td>
+                          <td className="py-3 pr-4">{row.plan}</td>
+                          <td className="py-3 pr-4">{row.amount_cents?.toLocaleString("vi-VN")}đ</td>
+                          <td className="py-3 pr-4 text-muted-foreground">
+                            {new Date(row.created_at).toLocaleString("vi-VN", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           {/* Filters */}
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
@@ -262,7 +360,14 @@ export default function AdminSubscriptionManagementPage() {
                 />
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant={filterSePayOnly ? "default" : "outline"}
+                onClick={() => setFilterSePayOnly(!filterSePayOnly)}
+              >
+                <CreditCard className="w-4 h-4 mr-1" />
+                SePay
+              </Button>
               <Button
                 variant={filterStatus === "all" ? "default" : "outline"}
                 onClick={() => setFilterStatus("all")}
